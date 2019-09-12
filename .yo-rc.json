@@ -1,0 +1,41 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "com.niitcoder.coursegrade",
+      "nativeLanguage": "zh-cn"
+    },
+    "jhipsterVersion": "6.2.0",
+    "applicationType": "monolith",
+    "baseName": "coursegrade",
+    "packageName": "com.niitcoder.coursegrade",
+    "packageFolder": "com/niitcoder/coursegrade",
+    "serverPort": "8080",
+    "authenticationType": "jwt",
+    "cacheProvider": "ehcache",
+    "enableHibernateCache": true,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "mysql",
+    "prodDatabaseType": "mysql",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": false,
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "NGY2NTA2ZmRhYTFmNDU3NTFmM2QxYjI2YmEwM2UwNzQzODE0NzBkN2Y0MWMwMTI2YjNkMGY2MWFmMmFkNTgzZWI0NDc1NmM4OTIzNWZjOWE0ZDc1NWVjMDAyZGUxNGQwNzhmYTJkN2RkYWU0YmRhNjhkNjZlMTdjZWM0OThhOTE=",
+    "useSass": true,
+    "clientPackageManager": "npm",
+    "clientFramework": "angularX",
+    "clientTheme": "none",
+    "clientThemeVariant": "",
+    "testFrameworks": [],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": true,
+    "nativeLanguage": "zh-cn",
+    "languages": ["zh-cn", "en"],
+    "blueprints": []
+  }
+}
