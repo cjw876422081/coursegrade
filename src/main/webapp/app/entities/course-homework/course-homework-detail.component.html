@@ -1,0 +1,53 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="courseHomework">
+            <h2><span jhiTranslate="coursegradeApp.courseHomework.detail.title">Course Homework</span> {{courseHomework.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="coursegradeApp.courseHomework.homeworkCode">Homework Code</span></dt>
+                <dd>
+                    <span>{{courseHomework.homeworkCode}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseHomework.homeworkMemo">Homework Memo</span></dt>
+                <dd>
+                    <span>{{courseHomework.homeworkMemo}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseHomework.homeworkTarget">Homework Target</span></dt>
+                <dd>
+                    <span>{{courseHomework.homeworkTarget}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseHomework.homeworkGrade">Homework Grade</span></dt>
+                <dd>
+                    <span>{{courseHomework.homeworkGrade}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseHomework.homeworkDeadline">Homework Deadline</span></dt>
+                <dd>
+                    <span>{{courseHomework.homeworkDeadline}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseHomework.dataTime">Data Time</span></dt>
+                <dd>
+                    <span>{{courseHomework.dataTime}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseHomework.plan">Plan</span></dt>
+                <dd>
+                    <div *ngIf="courseHomework.plan">
+                        <a [routerLink]="['/course-plan', courseHomework.plan?.id, 'view']">{{courseHomework.plan?.id}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/course-homework', courseHomework.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

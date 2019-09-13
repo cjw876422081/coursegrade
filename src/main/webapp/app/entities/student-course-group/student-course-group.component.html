@@ -1,0 +1,73 @@
+<div>
+    <h2 id="page-heading">
+        <span jhiTranslate="coursegradeApp.studentCourseGroup.home.title">Student Course Groups</span>
+        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-student-course-group" [routerLink]="['/student-course-group/new']">
+            <fa-icon [icon]="'plus'"></fa-icon>
+            <span  jhiTranslate="coursegradeApp.studentCourseGroup.home.createLabel">
+            Create a new Student Course Group
+            </span>
+        </button>
+    </h2>
+    <jhi-alert></jhi-alert>
+    <br/>
+    <div class="alert alert-warning" *ngIf="studentCourseGroups?.length === 0">
+        <span jhiTranslate="coursegradeApp.studentCourseGroup.home.notFound">No studentCourseGroups found</span>
+    </div>
+    <div class="table-responsive" *ngIf="studentCourseGroups?.length > 0">
+        <table class="table table-striped">
+            <thead>
+            <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
+            <th jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th jhiSortBy="student"><span jhiTranslate="coursegradeApp.studentCourseGroup.student">Student</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th jhiSortBy="joinTime"><span jhiTranslate="coursegradeApp.studentCourseGroup.joinTime">Join Time</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th jhiSortBy="group.id"><span jhiTranslate="coursegradeApp.studentCourseGroup.group">Group</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let studentCourseGroup of studentCourseGroups ;trackBy: trackId">
+                <td><a [routerLink]="['/student-course-group', studentCourseGroup.id, 'view' ]">{{studentCourseGroup.id}}</a></td>
+                <td>{{studentCourseGroup.student}}</td>
+                <td>{{studentCourseGroup.joinTime | date:'medium'}}</td>
+                <td>
+                    <div *ngIf="studentCourseGroup.group">
+                        <a [routerLink]="['/course-group', studentCourseGroup.group?.id, 'view' ]" >{{studentCourseGroup.group?.id}}</a>
+                    </div>
+                </td>
+                <td class="text-right">
+                    <div class="btn-group">
+                        <button type="submit"
+                                [routerLink]="['/student-course-group', studentCourseGroup.id, 'view' ]"
+                                class="btn btn-info btn-sm">
+                            <fa-icon [icon]="'eye'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/student-course-group', studentCourseGroup.id, 'edit']"
+                                class="btn btn-primary btn-sm">
+                            <fa-icon [icon]="'pencil-alt'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/student-course-group', { outlets: { popup: studentCourseGroup.id + '/delete'} }]"
+                                replaceUrl="true"
+                                queryParamsHandling="merge"
+                                class="btn btn-danger btn-sm">
+                            <fa-icon [icon]="'times'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div [hidden]="studentCourseGroups?.length === 0">
+        <div class="row justify-content-center">
+            <jhi-item-count [page]="page" [total]="totalItems" [maxSize]="5" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+        </div>
+        <div class="row justify-content-center">
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="page" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage(page)"></ngb-pagination>
+        </div>
+    </div>
+</div>

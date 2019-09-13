@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <!--
+        Added the constraints for entity CourseAttachment.
+    -->
+    <changeSet id="20190912082957-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="homework_id"
+                                 baseTableName="course_attachment"
+                                 constraintName="fk_course_attachment_homework_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="student_homework"/>
+
+        <addForeignKeyConstraint baseColumnNames="note_id"
+                                 baseTableName="course_attachment"
+                                 constraintName="fk_course_attachment_note_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="course_note"/>
+
+    </changeSet>
+</databaseChangeLog>

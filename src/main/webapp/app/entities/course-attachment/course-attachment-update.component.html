@@ -1,0 +1,79 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+            <h2 id="jhi-course-attachment-heading" jhiTranslate="coursegradeApp.courseAttachment.home.createOrEditLabel">Create or edit a Course Attachment</h2>
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+                <div class="form-group" [hidden]="!editForm.get('id').value">
+                    <label for="id" jhiTranslate="global.field.id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id" formControlName="id"
+                        readonly />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseAttachment.attachmentType" for="field_attachmentType">Attachment Type</label>
+                    <input type="text" class="form-control" name="attachmentType" id="field_attachmentType"
+                           formControlName="attachmentType"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseAttachment.attachmentUse" for="field_attachmentUse">Attachment Use</label>
+                    <input type="text" class="form-control" name="attachmentUse" id="field_attachmentUse"
+                           formControlName="attachmentUse"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseAttachment.fileName" for="field_fileName">File Name</label>
+                    <input type="text" class="form-control" name="fileName" id="field_fileName"
+                           formControlName="fileName"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseAttachment.originName" for="field_originName">Origin Name</label>
+                    <input type="text" class="form-control" name="originName" id="field_originName"
+                           formControlName="originName"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseAttachment.filePath" for="field_filePath">File Path</label>
+                    <input type="text" class="form-control" name="filePath" id="field_filePath"
+                           formControlName="filePath"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseAttachment.fileSize" for="field_fileSize">File Size</label>
+                    <input type="number" class="form-control" name="fileSize" id="field_fileSize"
+                           formControlName="fileSize"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseAttachment.uploadTime" for="field_uploadTime">Upload Time</label>
+                    <div class="d-flex">
+                        <input id="field_uploadTime" type="datetime-local" class="form-control" name="uploadTime" formControlName="uploadTime" placeholder="YYYY-MM-DD HH:mm"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseAttachment.fileUser" for="field_fileUser">File User</label>
+                    <input type="text" class="form-control" name="fileUser" id="field_fileUser"
+                           formControlName="fileUser"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseAttachment.homework" for="field_homework">Homework</label>
+                    <select class="form-control" id="field_homework" name="homework" formControlName="homework">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="studentHomeworkOption.id === editForm.get('homework').value?.id ? editForm.get('homework').value : studentHomeworkOption" *ngFor="let studentHomeworkOption of studenthomeworks; trackBy: trackStudentHomeworkById">{{studentHomeworkOption.id}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseAttachment.note" for="field_note">Note</label>
+                    <select class="form-control" id="field_note" name="note" formControlName="note">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="courseNoteOption.id === editForm.get('note').value?.id ? editForm.get('note').value : courseNoteOption" *ngFor="let courseNoteOption of coursenotes; trackBy: trackCourseNoteById">{{courseNoteOption.id}}</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary"  (click)="previousState()">
+                    <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+                </button>
+                <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

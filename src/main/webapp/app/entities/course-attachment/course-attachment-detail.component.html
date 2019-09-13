@@ -1,0 +1,67 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="courseAttachment">
+            <h2><span jhiTranslate="coursegradeApp.courseAttachment.detail.title">Course Attachment</span> {{courseAttachment.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="coursegradeApp.courseAttachment.attachmentType">Attachment Type</span></dt>
+                <dd>
+                    <span>{{courseAttachment.attachmentType}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseAttachment.attachmentUse">Attachment Use</span></dt>
+                <dd>
+                    <span>{{courseAttachment.attachmentUse}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseAttachment.fileName">File Name</span></dt>
+                <dd>
+                    <span>{{courseAttachment.fileName}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseAttachment.originName">Origin Name</span></dt>
+                <dd>
+                    <span>{{courseAttachment.originName}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseAttachment.filePath">File Path</span></dt>
+                <dd>
+                    <span>{{courseAttachment.filePath}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseAttachment.fileSize">File Size</span></dt>
+                <dd>
+                    <span>{{courseAttachment.fileSize}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseAttachment.uploadTime">Upload Time</span></dt>
+                <dd>
+                    <span>{{courseAttachment.uploadTime}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseAttachment.fileUser">File User</span></dt>
+                <dd>
+                    <span>{{courseAttachment.fileUser}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseAttachment.homework">Homework</span></dt>
+                <dd>
+                    <div *ngIf="courseAttachment.homework">
+                        <a [routerLink]="['/student-homework', courseAttachment.homework?.id, 'view']">{{courseAttachment.homework?.id}}</a>
+                    </div>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseAttachment.note">Note</span></dt>
+                <dd>
+                    <div *ngIf="courseAttachment.note">
+                        <a [routerLink]="['/course-note', courseAttachment.note?.id, 'view']">{{courseAttachment.note?.id}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/course-attachment', courseAttachment.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

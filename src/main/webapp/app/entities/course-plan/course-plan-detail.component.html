@@ -1,0 +1,59 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="coursePlan">
+            <h2><span jhiTranslate="coursegradeApp.coursePlan.detail.title">Course Plan</span> {{coursePlan.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="coursegradeApp.coursePlan.planCode">Plan Code</span></dt>
+                <dd>
+                    <span>{{coursePlan.planCode}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.coursePlan.planMemo">Plan Memo</span></dt>
+                <dd>
+                    <span>{{coursePlan.planMemo}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.coursePlan.planTarget">Plan Target</span></dt>
+                <dd>
+                    <span>{{coursePlan.planTarget}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.coursePlan.planCount">Plan Count</span></dt>
+                <dd>
+                    <span>{{coursePlan.planCount}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.coursePlan.planParentCode">Plan Parent Code</span></dt>
+                <dd>
+                    <span>{{coursePlan.planParentCode}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.coursePlan.dataTime">Data Time</span></dt>
+                <dd>
+                    <span>{{coursePlan.dataTime}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.coursePlan.parentPlan">Parent Plan</span></dt>
+                <dd>
+                    <div *ngIf="coursePlan.parentPlan">
+                        <a [routerLink]="['/course-plan', coursePlan.parentPlan?.id, 'view']">{{coursePlan.parentPlan?.id}}</a>
+                    </div>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.coursePlan.course">Course</span></dt>
+                <dd>
+                    <div *ngIf="coursePlan.course">
+                        <a [routerLink]="['/course-info', coursePlan.course?.id, 'view']">{{coursePlan.course?.id}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/course-plan', coursePlan.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

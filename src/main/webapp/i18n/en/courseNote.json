@@ -1,0 +1,29 @@
+{
+  "coursegradeApp": {
+    "courseNote": {
+      "home": {
+        "title": "Course Notes",
+        "createLabel": "Create a new Course Note",
+        "createOrEditLabel": "Create or edit a Course Note",
+        "notFound": "No Course Notes found"
+      },
+      "created": "A new Course Note is created with identifier {{ param }}",
+      "updated": "A Course Note is updated with identifier {{ param }}",
+      "deleted": "A Course Note is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Course Note {{ id }}?"
+      },
+      "detail": {
+        "title": "Course Note"
+      },
+      "noteType": "Note Type",
+      "noteMemo": "Note Memo",
+      "noteTime": "Note Time",
+      "publishUser": "Publish User",
+      "course": "Course",
+      "plan": "Plan",
+      "homework": "Homework",
+      "parentNote": "Parent Note"
+    }
+  }
+}

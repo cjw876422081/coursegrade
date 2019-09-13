@@ -1,0 +1,39 @@
+{
+    "name": "CourseGroup",
+    "fields": [
+        {
+            "fieldName": "groupCode",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "groupName",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "groupCount",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "dataTime",
+            "fieldType": "ZonedDateTime"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "courseInfo",
+            "otherEntityRelationshipName": "courseGroup",
+            "relationshipName": "course",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20190912082956",
+    "entityTableName": "course_group",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

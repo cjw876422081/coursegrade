@@ -1,0 +1,46 @@
+{
+    "name": "CourseInfo",
+    "fields": [
+        {
+            "fieldName": "courseCode",
+            "javadoc": "课程代码",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "courseName",
+            "javadoc": "课程名称",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "courseCount",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "courseWeekCount",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "courseMemo",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "dataTime",
+            "fieldType": "ZonedDateTime"
+        },
+        {
+            "fieldName": "courseUser",
+            "fieldType": "String"
+        }
+    ],
+    "relationships": [],
+    "changelogDate": "20190912082950",
+    "javadoc": "课程信息",
+    "entityTableName": "course_info",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

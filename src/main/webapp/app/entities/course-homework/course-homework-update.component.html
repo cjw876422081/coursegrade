@@ -1,0 +1,63 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+            <h2 id="jhi-course-homework-heading" jhiTranslate="coursegradeApp.courseHomework.home.createOrEditLabel">Create or edit a Course Homework</h2>
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+                <div class="form-group" [hidden]="!editForm.get('id').value">
+                    <label for="id" jhiTranslate="global.field.id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id" formControlName="id"
+                        readonly />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseHomework.homeworkCode" for="field_homeworkCode">Homework Code</label>
+                    <input type="text" class="form-control" name="homeworkCode" id="field_homeworkCode"
+                           formControlName="homeworkCode"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseHomework.homeworkMemo" for="field_homeworkMemo">Homework Memo</label>
+                    <input type="text" class="form-control" name="homeworkMemo" id="field_homeworkMemo"
+                           formControlName="homeworkMemo"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseHomework.homeworkTarget" for="field_homeworkTarget">Homework Target</label>
+                    <input type="text" class="form-control" name="homeworkTarget" id="field_homeworkTarget"
+                           formControlName="homeworkTarget"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseHomework.homeworkGrade" for="field_homeworkGrade">Homework Grade</label>
+                    <input type="number" class="form-control" name="homeworkGrade" id="field_homeworkGrade"
+                           formControlName="homeworkGrade"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseHomework.homeworkDeadline" for="field_homeworkDeadline">Homework Deadline</label>
+                    <div class="d-flex">
+                        <input id="field_homeworkDeadline" type="datetime-local" class="form-control" name="homeworkDeadline" formControlName="homeworkDeadline" placeholder="YYYY-MM-DD HH:mm"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseHomework.dataTime" for="field_dataTime">Data Time</label>
+                    <div class="d-flex">
+                        <input id="field_dataTime" type="datetime-local" class="form-control" name="dataTime" formControlName="dataTime" placeholder="YYYY-MM-DD HH:mm"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseHomework.plan" for="field_plan">Plan</label>
+                    <select class="form-control" id="field_plan" name="plan" formControlName="plan">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="coursePlanOption.id === editForm.get('plan').value?.id ? editForm.get('plan').value : coursePlanOption" *ngFor="let coursePlanOption of courseplans; trackBy: trackCoursePlanById">{{coursePlanOption.id}}</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary"  (click)="previousState()">
+                    <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+                </button>
+                <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

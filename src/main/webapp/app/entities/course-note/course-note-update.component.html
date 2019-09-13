@@ -1,0 +1,73 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+            <h2 id="jhi-course-note-heading" jhiTranslate="coursegradeApp.courseNote.home.createOrEditLabel">Create or edit a Course Note</h2>
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+                <div class="form-group" [hidden]="!editForm.get('id').value">
+                    <label for="id" jhiTranslate="global.field.id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id" formControlName="id"
+                        readonly />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseNote.noteType" for="field_noteType">Note Type</label>
+                    <input type="text" class="form-control" name="noteType" id="field_noteType"
+                           formControlName="noteType"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseNote.noteMemo" for="field_noteMemo">Note Memo</label>
+                    <input type="text" class="form-control" name="noteMemo" id="field_noteMemo"
+                           formControlName="noteMemo"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseNote.noteTime" for="field_noteTime">Note Time</label>
+                    <div class="d-flex">
+                        <input id="field_noteTime" type="datetime-local" class="form-control" name="noteTime" formControlName="noteTime" placeholder="YYYY-MM-DD HH:mm"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseNote.publishUser" for="field_publishUser">Publish User</label>
+                    <input type="text" class="form-control" name="publishUser" id="field_publishUser"
+                           formControlName="publishUser"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseNote.course" for="field_course">Course</label>
+                    <select class="form-control" id="field_course" name="course" formControlName="course">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="courseInfoOption.id === editForm.get('course').value?.id ? editForm.get('course').value : courseInfoOption" *ngFor="let courseInfoOption of courseinfos; trackBy: trackCourseInfoById">{{courseInfoOption.id}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseNote.plan" for="field_plan">Plan</label>
+                    <select class="form-control" id="field_plan" name="plan" formControlName="plan">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="coursePlanOption.id === editForm.get('plan').value?.id ? editForm.get('plan').value : coursePlanOption" *ngFor="let coursePlanOption of courseplans; trackBy: trackCoursePlanById">{{coursePlanOption.id}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseNote.homework" for="field_homework">Homework</label>
+                    <select class="form-control" id="field_homework" name="homework" formControlName="homework">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="courseHomeworkOption.id === editForm.get('homework').value?.id ? editForm.get('homework').value : courseHomeworkOption" *ngFor="let courseHomeworkOption of coursehomeworks; trackBy: trackCourseHomeworkById">{{courseHomeworkOption.id}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="coursegradeApp.courseNote.parentNote" for="field_parentNote">Parent Note</label>
+                    <select class="form-control" id="field_parentNote" name="parentNote" formControlName="parentNote">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="courseNoteOption.id === editForm.get('parentNote').value?.id ? editForm.get('parentNote').value : courseNoteOption" *ngFor="let courseNoteOption of coursenotes; trackBy: trackCourseNoteById">{{courseNoteOption.id}}</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary"  (click)="previousState()">
+                    <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+                </button>
+                <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

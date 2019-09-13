@@ -1,0 +1,24 @@
+{
+  "coursegradeApp": {
+    "studentCourseGroup": {
+      "home": {
+        "title": "Student Course Groups",
+        "createLabel": "创建新 Student Course Group",
+        "createOrEditLabel": "创建或编辑 Student Course Group",
+        "notFound": "No Student Course Groups found"
+      },
+      "created": "Student Course Group {{ param }} 创建成功",
+      "updated": "Student Course Group {{ param }} 更新成功",
+      "deleted": "Student Course Group {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Student Course Group {{ id }} 吗？"
+      },
+      "detail": {
+        "title": "Student Course Group"
+      },
+      "student": "Student",
+      "joinTime": "Join Time",
+      "group": "Group"
+    }
+  }
+}

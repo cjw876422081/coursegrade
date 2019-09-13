@@ -1,0 +1,47 @@
+{
+    "name": "CourseHomework",
+    "fields": [
+        {
+            "fieldName": "homeworkCode",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "homeworkMemo",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "homeworkTarget",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "homeworkGrade",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "homeworkDeadline",
+            "fieldType": "ZonedDateTime"
+        },
+        {
+            "fieldName": "dataTime",
+            "fieldType": "ZonedDateTime"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "coursePlan",
+            "otherEntityRelationshipName": "courseHomework",
+            "relationshipName": "plan",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20190912082952",
+    "entityTableName": "course_homework",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

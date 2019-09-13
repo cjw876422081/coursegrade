@@ -1,0 +1,62 @@
+{
+    "name": "CourseAttachment",
+    "fields": [
+        {
+            "fieldName": "attachmentType",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "attachmentUse",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "fileName",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "originName",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "filePath",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "fileSize",
+            "fieldType": "Long"
+        },
+        {
+            "fieldName": "uploadTime",
+            "fieldType": "ZonedDateTime"
+        },
+        {
+            "fieldName": "fileUser",
+            "fieldType": "String"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "studentHomework",
+            "otherEntityRelationshipName": "courseAttachment",
+            "relationshipName": "homework",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "courseNote",
+            "otherEntityRelationshipName": "courseAttachment",
+            "relationshipName": "note",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20190912082957",
+    "entityTableName": "course_attachment",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

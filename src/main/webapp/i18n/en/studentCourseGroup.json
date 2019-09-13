@@ -1,0 +1,24 @@
+{
+  "coursegradeApp": {
+    "studentCourseGroup": {
+      "home": {
+        "title": "Student Course Groups",
+        "createLabel": "Create a new Student Course Group",
+        "createOrEditLabel": "Create or edit a Student Course Group",
+        "notFound": "No Student Course Groups found"
+      },
+      "created": "A new Student Course Group is created with identifier {{ param }}",
+      "updated": "A Student Course Group is updated with identifier {{ param }}",
+      "deleted": "A Student Course Group is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Student Course Group {{ id }}?"
+      },
+      "detail": {
+        "title": "Student Course Group"
+      },
+      "student": "Student",
+      "joinTime": "Join Time",
+      "group": "Group"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "coursegradeApp": {
+    "courseHomework": {
+      "home": {
+        "title": "Course Homeworks",
+        "createLabel": "创建新 Course Homework",
+        "createOrEditLabel": "创建或编辑 Course Homework",
+        "notFound": "No Course Homeworks found"
+      },
+      "created": "Course Homework {{ param }} 创建成功",
+      "updated": "Course Homework {{ param }} 更新成功",
+      "deleted": "Course Homework {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Course Homework {{ id }} 吗？"
+      },
+      "detail": {
+        "title": "Course Homework"
+      },
+      "homeworkCode": "Homework Code",
+      "homeworkMemo": "Homework Memo",
+      "homeworkTarget": "Homework Target",
+      "homeworkGrade": "Homework Grade",
+      "homeworkDeadline": "Homework Deadline",
+      "dataTime": "Data Time",
+      "plan": "Plan"
+    }
+  }
+}

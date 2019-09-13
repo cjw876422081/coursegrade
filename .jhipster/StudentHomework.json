@@ -1,0 +1,47 @@
+{
+    "name": "StudentHomework",
+    "fields": [
+        {
+            "fieldName": "submitMemo",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "submitTime",
+            "fieldType": "ZonedDateTime"
+        },
+        {
+            "fieldName": "readTime",
+            "fieldType": "ZonedDateTime"
+        },
+        {
+            "fieldName": "grade",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "student",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "teacher",
+            "fieldType": "String"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "courseHomework",
+            "otherEntityRelationshipName": "studentHomework",
+            "relationshipName": "homework",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20190912082953",
+    "entityTableName": "student_homework",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

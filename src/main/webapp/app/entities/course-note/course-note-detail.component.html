@@ -1,0 +1,63 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="courseNote">
+            <h2><span jhiTranslate="coursegradeApp.courseNote.detail.title">Course Note</span> {{courseNote.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="coursegradeApp.courseNote.noteType">Note Type</span></dt>
+                <dd>
+                    <span>{{courseNote.noteType}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseNote.noteMemo">Note Memo</span></dt>
+                <dd>
+                    <span>{{courseNote.noteMemo}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseNote.noteTime">Note Time</span></dt>
+                <dd>
+                    <span>{{courseNote.noteTime}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseNote.publishUser">Publish User</span></dt>
+                <dd>
+                    <span>{{courseNote.publishUser}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseNote.course">Course</span></dt>
+                <dd>
+                    <div *ngIf="courseNote.course">
+                        <a [routerLink]="['/course-info', courseNote.course?.id, 'view']">{{courseNote.course?.id}}</a>
+                    </div>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseNote.plan">Plan</span></dt>
+                <dd>
+                    <div *ngIf="courseNote.plan">
+                        <a [routerLink]="['/course-plan', courseNote.plan?.id, 'view']">{{courseNote.plan?.id}}</a>
+                    </div>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseNote.homework">Homework</span></dt>
+                <dd>
+                    <div *ngIf="courseNote.homework">
+                        <a [routerLink]="['/course-homework', courseNote.homework?.id, 'view']">{{courseNote.homework?.id}}</a>
+                    </div>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.courseNote.parentNote">Parent Note</span></dt>
+                <dd>
+                    <div *ngIf="courseNote.parentNote">
+                        <a [routerLink]="['/course-note', courseNote.parentNote?.id, 'view']">{{courseNote.parentNote?.id}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/course-note', courseNote.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,54 @@
+{
+    "name": "CoursePlan",
+    "fields": [
+        {
+            "fieldName": "planCode",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "planMemo",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "planTarget",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "planCount",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "planParentCode",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "dataTime",
+            "fieldType": "ZonedDateTime"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "coursePlan",
+            "otherEntityRelationshipName": "coursePlan",
+            "relationshipName": "parentPlan",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "courseInfo",
+            "otherEntityRelationshipName": "coursePlan",
+            "relationshipName": "course",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20190912082951",
+    "entityTableName": "course_plan",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

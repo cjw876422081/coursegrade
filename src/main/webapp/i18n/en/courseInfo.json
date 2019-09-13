@@ -1,0 +1,32 @@
+{
+  "coursegradeApp": {
+    "courseInfo": {
+      "home": {
+        "title": "Course Infos",
+        "createLabel": "Create a new Course Info",
+        "createOrEditLabel": "Create or edit a Course Info",
+        "notFound": "No Course Infos found"
+      },
+      "created": "A new Course Info is created with identifier {{ param }}",
+      "updated": "A Course Info is updated with identifier {{ param }}",
+      "deleted": "A Course Info is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Course Info {{ id }}?"
+      },
+      "detail": {
+        "title": "Course Info"
+      },
+      "courseCode": "Course Code",
+      "courseName": "Course Name",
+      "courseCount": "Course Count",
+      "courseWeekCount": "Course Week Count",
+      "courseMemo": "Course Memo",
+      "dataTime": "Data Time",
+      "courseUser": "Course User",
+      "help": {
+        "courseCode": "课程代码",
+        "courseName": "课程名称"
+      }
+    }
+  }
+}

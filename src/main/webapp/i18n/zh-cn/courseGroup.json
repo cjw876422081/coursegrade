@@ -1,0 +1,26 @@
+{
+  "coursegradeApp": {
+    "courseGroup": {
+      "home": {
+        "title": "Course Groups",
+        "createLabel": "创建新 Course Group",
+        "createOrEditLabel": "创建或编辑 Course Group",
+        "notFound": "No Course Groups found"
+      },
+      "created": "Course Group {{ param }} 创建成功",
+      "updated": "Course Group {{ param }} 更新成功",
+      "deleted": "Course Group {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Course Group {{ id }} 吗？"
+      },
+      "detail": {
+        "title": "Course Group"
+      },
+      "groupCode": "Group Code",
+      "groupName": "Group Name",
+      "groupCount": "Group Count",
+      "dataTime": "Data Time",
+      "course": "Course"
+    }
+  }
+}

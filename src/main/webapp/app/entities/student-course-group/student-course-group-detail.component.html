@@ -1,0 +1,37 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="studentCourseGroup">
+            <h2><span jhiTranslate="coursegradeApp.studentCourseGroup.detail.title">Student Course Group</span> {{studentCourseGroup.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="coursegradeApp.studentCourseGroup.student">Student</span></dt>
+                <dd>
+                    <span>{{studentCourseGroup.student}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.studentCourseGroup.joinTime">Join Time</span></dt>
+                <dd>
+                    <span>{{studentCourseGroup.joinTime}}</span>
+                </dd>
+                <dt><span jhiTranslate="coursegradeApp.studentCourseGroup.group">Group</span></dt>
+                <dd>
+                    <div *ngIf="studentCourseGroup.group">
+                        <a [routerLink]="['/course-group', studentCourseGroup.group?.id, 'view']">{{studentCourseGroup.group?.id}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/student-course-group', studentCourseGroup.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

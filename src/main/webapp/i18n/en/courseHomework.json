@@ -1,0 +1,28 @@
+{
+  "coursegradeApp": {
+    "courseHomework": {
+      "home": {
+        "title": "Course Homeworks",
+        "createLabel": "Create a new Course Homework",
+        "createOrEditLabel": "Create or edit a Course Homework",
+        "notFound": "No Course Homeworks found"
+      },
+      "created": "A new Course Homework is created with identifier {{ param }}",
+      "updated": "A Course Homework is updated with identifier {{ param }}",
+      "deleted": "A Course Homework is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Course Homework {{ id }}?"
+      },
+      "detail": {
+        "title": "Course Homework"
+      },
+      "homeworkCode": "Homework Code",
+      "homeworkMemo": "Homework Memo",
+      "homeworkTarget": "Homework Target",
+      "homeworkGrade": "Homework Grade",
+      "homeworkDeadline": "Homework Deadline",
+      "dataTime": "Data Time",
+      "plan": "Plan"
+    }
+  }
+}

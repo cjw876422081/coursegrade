@@ -1,0 +1,31 @@
+{
+  "coursegradeApp": {
+    "courseAttachment": {
+      "home": {
+        "title": "Course Attachments",
+        "createLabel": "创建新 Course Attachment",
+        "createOrEditLabel": "创建或编辑 Course Attachment",
+        "notFound": "No Course Attachments found"
+      },
+      "created": "Course Attachment {{ param }} 创建成功",
+      "updated": "Course Attachment {{ param }} 更新成功",
+      "deleted": "Course Attachment {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Course Attachment {{ id }} 吗？"
+      },
+      "detail": {
+        "title": "Course Attachment"
+      },
+      "attachmentType": "Attachment Type",
+      "attachmentUse": "Attachment Use",
+      "fileName": "File Name",
+      "originName": "Origin Name",
+      "filePath": "File Path",
+      "fileSize": "File Size",
+      "uploadTime": "Upload Time",
+      "fileUser": "File User",
+      "homework": "Homework",
+      "note": "Note"
+    }
+  }
+}

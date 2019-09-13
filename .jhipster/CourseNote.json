@@ -1,0 +1,60 @@
+{
+    "name": "CourseNote",
+    "fields": [
+        {
+            "fieldName": "noteType",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "noteMemo",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "noteTime",
+            "fieldType": "ZonedDateTime"
+        },
+        {
+            "fieldName": "publishUser",
+            "fieldType": "String"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "courseInfo",
+            "otherEntityRelationshipName": "courseNote",
+            "relationshipName": "course",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "coursePlan",
+            "otherEntityRelationshipName": "courseNote",
+            "relationshipName": "plan",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "courseHomework",
+            "otherEntityRelationshipName": "courseNote",
+            "relationshipName": "homework",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "courseNote",
+            "otherEntityRelationshipName": "courseNote",
+            "relationshipName": "parentNote",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20190912082954",
+    "entityTableName": "course_note",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

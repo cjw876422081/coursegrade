@@ -1,0 +1,31 @@
+{
+    "name": "StudentCourseGroup",
+    "fields": [
+        {
+            "fieldName": "student",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "joinTime",
+            "fieldType": "ZonedDateTime"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "courseGroup",
+            "otherEntityRelationshipName": "studentCourseGroup",
+            "relationshipName": "group",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20190912082955",
+    "entityTableName": "student_course_group",
+    "dto": "no",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

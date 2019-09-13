@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <!--
+        Added the constraints for entity CourseNote.
+    -->
+    <changeSet id="20190912082954-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="course_id"
+                                 baseTableName="course_note"
+                                 constraintName="fk_course_note_course_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="course_info"/>
+
+        <addForeignKeyConstraint baseColumnNames="plan_id"
+                                 baseTableName="course_note"
+                                 constraintName="fk_course_note_plan_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="course_plan"/>
+
+        <addForeignKeyConstraint baseColumnNames="homework_id"
+                                 baseTableName="course_note"
+                                 constraintName="fk_course_note_homework_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="course_homework"/>
+
+        <addForeignKeyConstraint baseColumnNames="parent_note_id"
+                                 baseTableName="course_note"
+                                 constraintName="fk_course_note_parent_note_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="course_note"/>
+
+    </changeSet>
+</databaseChangeLog>

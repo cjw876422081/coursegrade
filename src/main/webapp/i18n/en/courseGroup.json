@@ -1,0 +1,26 @@
+{
+  "coursegradeApp": {
+    "courseGroup": {
+      "home": {
+        "title": "Course Groups",
+        "createLabel": "Create a new Course Group",
+        "createOrEditLabel": "Create or edit a Course Group",
+        "notFound": "No Course Groups found"
+      },
+      "created": "A new Course Group is created with identifier {{ param }}",
+      "updated": "A Course Group is updated with identifier {{ param }}",
+      "deleted": "A Course Group is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Course Group {{ id }}?"
+      },
+      "detail": {
+        "title": "Course Group"
+      },
+      "groupCode": "Group Code",
+      "groupName": "Group Name",
+      "groupCount": "Group Count",
+      "dataTime": "Data Time",
+      "course": "Course"
+    }
+  }
+}

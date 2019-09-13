@@ -1,0 +1,31 @@
+{
+  "coursegradeApp": {
+    "courseAttachment": {
+      "home": {
+        "title": "Course Attachments",
+        "createLabel": "Create a new Course Attachment",
+        "createOrEditLabel": "Create or edit a Course Attachment",
+        "notFound": "No Course Attachments found"
+      },
+      "created": "A new Course Attachment is created with identifier {{ param }}",
+      "updated": "A Course Attachment is updated with identifier {{ param }}",
+      "deleted": "A Course Attachment is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Course Attachment {{ id }}?"
+      },
+      "detail": {
+        "title": "Course Attachment"
+      },
+      "attachmentType": "Attachment Type",
+      "attachmentUse": "Attachment Use",
+      "fileName": "File Name",
+      "originName": "Origin Name",
+      "filePath": "File Path",
+      "fileSize": "File Size",
+      "uploadTime": "Upload Time",
+      "fileUser": "File User",
+      "homework": "Homework",
+      "note": "Note"
+    }
+  }
+}
