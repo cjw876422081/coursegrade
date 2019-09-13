@@ -43,6 +43,14 @@ public class CacheConfiguration {
             createCache(cm, com.niitcoder.coursegrade.domain.User.class.getName());
             createCache(cm, com.niitcoder.coursegrade.domain.Authority.class.getName());
             createCache(cm, com.niitcoder.coursegrade.domain.User.class.getName() + ".authorities");
+            createCache(cm, com.niitcoder.coursegrade.domain.CourseInfo.class.getName());
+            createCache(cm, com.niitcoder.coursegrade.domain.CoursePlan.class.getName());
+            createCache(cm, com.niitcoder.coursegrade.domain.CourseHomework.class.getName());
+            createCache(cm, com.niitcoder.coursegrade.domain.StudentHomework.class.getName());
+            createCache(cm, com.niitcoder.coursegrade.domain.CourseNote.class.getName());
+            createCache(cm, com.niitcoder.coursegrade.domain.StudentCourseGroup.class.getName());
+            createCache(cm, com.niitcoder.coursegrade.domain.CourseGroup.class.getName());
+            createCache(cm, com.niitcoder.coursegrade.domain.CourseAttachment.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

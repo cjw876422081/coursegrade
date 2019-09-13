@@ -1,0 +1,99 @@
+/**
+*课程信息
+*/
+entity CourseInfo {
+    /**
+    *课程代码
+    */
+	courseCode String,
+    /**
+    *课程名称
+    */
+    courseName String,
+    courseCount Integer,
+    courseWeekCount Integer,
+    courseMemo String,
+    dataTime ZonedDateTime,
+    courseUser String
+}
+
+
+entity CoursePlan{
+	planCode Integer,
+    planMemo String,
+    planTarget String,
+    planCount Integer,
+    planParentCode Integer,
+    dataTime ZonedDateTime
+}
+
+
+entity CourseHomework {
+	homeworkCode String,
+    homeworkMemo String,
+    homeworkTarget String,
+    homeworkGrade Integer,
+    homeworkDeadline ZonedDateTime,
+    dataTime ZonedDateTime
+}
+
+entity StudentHomework {
+	submitMemo String,
+    submitTime ZonedDateTime,
+    readTime ZonedDateTime,
+    grade Integer,
+    student String,
+    teacher String
+}
+
+entity CourseNote{
+	noteType String,
+    noteMemo String,
+    noteTime ZonedDateTime,
+    publishUser String
+}
+
+entity StudentCourseGroup{
+	student String,
+	joinTime ZonedDateTime
+}
+
+entity CourseGroup{
+	groupCode String,
+    groupName String,
+    groupCount Integer,
+    dataTime ZonedDateTime
+}
+
+entity CourseAttachment{
+	attachmentType String,
+    attachmentUse String,
+    fileName String,
+    originName String,
+    filePath String,
+    fileSize Long,
+    uploadTime ZonedDateTime,
+    fileUser String
+}
+
+
+relationship ManyToOne {
+    CoursePlan{parentPlan} to CoursePlan,
+    CoursePlan{course} to CourseInfo,
+    CourseHomework{plan} to CoursePlan,
+    StudentHomework{homework} to CourseHomework,
+    CourseNote{course} to CourseInfo,
+    CourseNote{plan} to CoursePlan,
+    CourseNote{homework} to CourseHomework,
+    CourseNote{parentNote} to CourseNote,
+    StudentCourseGroup{group} to CourseGroup,
+    CourseGroup{course} to CourseInfo,
+    CourseAttachment{homework} to StudentHomework,
+    CourseAttachment{note} to CourseNote
+}
+
+paginate all with pagination
+service all with serviceImpl
+
+// Set an angular suffix
+// angularSuffix * with mySuffix

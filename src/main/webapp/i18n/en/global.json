@@ -7,6 +7,14 @@
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
       "entities": {
         "main": "Entities",
+        "courseInfo": "Course Info",
+        "coursePlan": "Course Plan",
+        "courseHomework": "Course Homework",
+        "studentHomework": "Student Homework",
+        "courseNote": "Course Note",
+        "studentCourseGroup": "Student Course Group",
+        "courseGroup": "Course Group",
+        "courseAttachment": "Course Attachment",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {
