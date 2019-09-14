@@ -123,3 +123,6 @@ jhipster:
 # ===================================================================
 
 # application:
+file:
+  vpath: /file
+  server-disk: /Users/joyceju/fileupload/
