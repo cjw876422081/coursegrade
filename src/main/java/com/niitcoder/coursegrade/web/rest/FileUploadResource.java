@@ -32,7 +32,12 @@ public class FileUploadResource {
         if(StringUtils.isEmpty(loginname)){
             loginname=String.valueOf(System.currentTimeMillis());
         }
-        path+=File.separator+loginname;
+        if(path.length()==0){
+            path+=loginname;
+        }else{
+            path+=File.separator+loginname;
+        }
+
         FileInfo result=processFile(path,file);
         return ResponseEntity.ok(result);
 
@@ -44,7 +49,11 @@ public class FileUploadResource {
         if(StringUtils.isEmpty(loginname)){
             loginname=String.valueOf(System.currentTimeMillis());
         }
-        path+=File.separator+loginname;
+        if(path.length()==0){
+            path+=loginname;
+        }else{
+            path+=File.separator+loginname;
+        }
         List<FileInfo> result=new ArrayList<FileInfo>();
         if(files!=null && files.length>0){
             for (MultipartFile file : files) {
@@ -78,7 +87,7 @@ public class FileUploadResource {
         //文件在服务器上的绝对路径
         String serverPath=fileUploadProperteis.getServerDisk()+(path!=null?File.separator+path+File.separator:"");
         //构建虚拟目录路径
-        String vpath=fileUploadProperteis.getVpath()+(path!=null?"/"+path+"/":"")+serverFilename;
+        String vpath=fileUploadProperteis.getVpath()+(path!=null?(path.startsWith("/")?"":"/")+path+"/":"")+serverFilename;
         File serverDir= new File(serverPath);
         try {
             //如果目录不存在，自动创建
