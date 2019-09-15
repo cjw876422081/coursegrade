@@ -1,5 +1,7 @@
 package com.niitcoder.coursegrade.service.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,26 +10,25 @@ import java.util.List;
  * 笔记树形结构
  */
 public class CourseNoteDTO {
+    @ApiModelProperty(value = "笔记Id")
     private Long id;
-
+    @ApiModelProperty(value = "笔记父级id")
     private Long pid;
 
+    @ApiModelProperty(value = "笔记类型：课程，授课内容，作业")
     private String noteType;
 
+    @ApiModelProperty(value = "笔记内容")
     private String noteMemo;
-
+    @ApiModelProperty(value = "发布时间")
     private ZonedDateTime noteTime;
-
+    @ApiModelProperty(value = "发布者")
     private String publishUser;
 
-    /**
-     * 子笔记，即回复的内容
-     */
+    @ApiModelProperty(value = "下级笔记，即回复的笔记")
     private List<CourseNoteDTO> children=new ArrayList<CourseNoteDTO>();
 
-    /**
-     * 是否叶子节点
-     */
+    @ApiModelProperty(value = "是否叶子节点")
     private boolean leaf=false;
 
 

@@ -1,28 +1,25 @@
 package com.niitcoder.coursegrade.service.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.niitcoder.coursegrade.domain.CourseHomework;
-import com.niitcoder.coursegrade.domain.CourseInfo;
-import com.niitcoder.coursegrade.domain.CourseNote;
-import com.niitcoder.coursegrade.domain.CoursePlan;
+import com.niitcoder.coursegrade.domain.*;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class NotePostItem {
+    @ApiModelProperty(value = "笔记Id")
     private Long id;
-
+    @ApiModelProperty(value = "笔记类型")
     private String noteType;
-
+    @ApiModelProperty(value = "笔记内容")
     private String noteMemo;
-
-
+    @ApiModelProperty(value = "关联课程")
     private CourseInfo course;
-
+    @ApiModelProperty(value = "关联授课内容")
     private CoursePlan plan;
-
+    @ApiModelProperty(value = "关联作业")
     private CourseHomework homework;
-
+    @ApiModelProperty(value = "关联父级笔记")
     private CourseNote parentNote;
 
     List<FileInfo> files=new ArrayList<>();

@@ -4,6 +4,8 @@ import com.niitcoder.coursegrade.config.FileUploadProperties;
 import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.dto.FileInfo;
 import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,8 @@ public class FileUploadResource {
     @Autowired
     private FileUploadProperties fileUploadProperteis;
 
+    @ApiOperation(value="单个文件上传")
+    @ApiImplicitParam(name = "path",value="需要指定的虚拟目录")
     @PostMapping("/file/upload")
     public ResponseEntity uploadFile(@RequestParam(required = false,defaultValue = "") String path, MultipartFile file){
         //使用登录名作为虚拟目录的子目录，如果没有获取到当前登录用户，则使用时间戳命名
@@ -42,6 +46,8 @@ public class FileUploadResource {
         return ResponseEntity.ok(result);
 
     }
+    @ApiOperation(value="批量文件上传")
+    @ApiImplicitParam(name = "path",value="需要指定的虚拟目录")
     @PostMapping("/files/upload")
     public ResponseEntity uploadFiles(@RequestParam(required = false,defaultValue = "") String path,@RequestParam("files") MultipartFile[] files){
         //使用登录名作为虚拟目录的子目录，如果没有获取到当前登录用户，则使用时间戳命名

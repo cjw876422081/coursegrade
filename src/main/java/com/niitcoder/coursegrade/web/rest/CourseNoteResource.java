@@ -52,13 +52,7 @@ public class CourseNoteResource {
         this.courseNoteService = courseNoteService;
     }
 
-    /**
-     * {@code POST  /course-notes} : Create a new courseNote.
-     *
-     * @param courseNote the courseNote to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new courseNote, or with status {@code 400 (Bad Request)} if the courseNote has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
+    @ApiOperation(value="添加笔记")
     @PostMapping("/course-notes")
     public ResponseEntity<CourseNote> createCourseNote(@RequestBody NotePostItem courseNote) throws URISyntaxException {
         log.debug("REST request to save CourseNote : {}", courseNote);
