@@ -22,9 +22,6 @@ public class CoursePlan implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "plan_code")
-    private Integer planCode;
-
     @Column(name = "plan_memo")
     private String planMemo;
 
@@ -34,8 +31,6 @@ public class CoursePlan implements Serializable {
     @Column(name = "plan_count")
     private Integer planCount;
 
-    @Column(name = "plan_parent_code")
-    private Integer planParentCode;
 
     @Column(name = "data_time")
     private ZonedDateTime dataTime;
@@ -57,18 +52,6 @@ public class CoursePlan implements Serializable {
         this.id = id;
     }
 
-    public Integer getPlanCode() {
-        return planCode;
-    }
-
-    public CoursePlan planCode(Integer planCode) {
-        this.planCode = planCode;
-        return this;
-    }
-
-    public void setPlanCode(Integer planCode) {
-        this.planCode = planCode;
-    }
 
     public String getPlanMemo() {
         return planMemo;
@@ -107,19 +90,6 @@ public class CoursePlan implements Serializable {
 
     public void setPlanCount(Integer planCount) {
         this.planCount = planCount;
-    }
-
-    public Integer getPlanParentCode() {
-        return planParentCode;
-    }
-
-    public CoursePlan planParentCode(Integer planParentCode) {
-        this.planParentCode = planParentCode;
-        return this;
-    }
-
-    public void setPlanParentCode(Integer planParentCode) {
-        this.planParentCode = planParentCode;
     }
 
     public ZonedDateTime getDataTime() {
@@ -182,11 +152,9 @@ public class CoursePlan implements Serializable {
     public String toString() {
         return "CoursePlan{" +
             "id=" + getId() +
-            ", planCode=" + getPlanCode() +
             ", planMemo='" + getPlanMemo() + "'" +
             ", planTarget='" + getPlanTarget() + "'" +
             ", planCount=" + getPlanCount() +
-            ", planParentCode=" + getPlanParentCode() +
             ", dataTime='" + getDataTime() + "'" +
             "}";
     }

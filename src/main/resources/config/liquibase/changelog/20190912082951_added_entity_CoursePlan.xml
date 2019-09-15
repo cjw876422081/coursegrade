@@ -83,4 +83,11 @@
         </loadData>
     </changeSet>
 
+    <changeSet id="201909150001" author="juhuguang">
+        <dropColumn tableName="course_plan">
+            <column name="plan_code"></column>
+            <column name="plan_parent_code"></column>
+        </dropColumn>
+    </changeSet>
+
 </databaseChangeLog>

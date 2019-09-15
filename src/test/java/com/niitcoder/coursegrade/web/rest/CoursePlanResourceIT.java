@@ -106,11 +106,9 @@ public class CoursePlanResourceIT {
      */
     public static CoursePlan createEntity(EntityManager em) {
         CoursePlan coursePlan = new CoursePlan()
-            .planCode(DEFAULT_PLAN_CODE)
             .planMemo(DEFAULT_PLAN_MEMO)
             .planTarget(DEFAULT_PLAN_TARGET)
             .planCount(DEFAULT_PLAN_COUNT)
-            .planParentCode(DEFAULT_PLAN_PARENT_CODE)
             .dataTime(DEFAULT_DATA_TIME);
         return coursePlan;
     }
@@ -122,11 +120,9 @@ public class CoursePlanResourceIT {
      */
     public static CoursePlan createUpdatedEntity(EntityManager em) {
         CoursePlan coursePlan = new CoursePlan()
-            .planCode(UPDATED_PLAN_CODE)
             .planMemo(UPDATED_PLAN_MEMO)
             .planTarget(UPDATED_PLAN_TARGET)
             .planCount(UPDATED_PLAN_COUNT)
-            .planParentCode(UPDATED_PLAN_PARENT_CODE)
             .dataTime(UPDATED_DATA_TIME);
         return coursePlan;
     }
@@ -151,11 +147,11 @@ public class CoursePlanResourceIT {
         List<CoursePlan> coursePlanList = coursePlanRepository.findAll();
         assertThat(coursePlanList).hasSize(databaseSizeBeforeCreate + 1);
         CoursePlan testCoursePlan = coursePlanList.get(coursePlanList.size() - 1);
-        assertThat(testCoursePlan.getPlanCode()).isEqualTo(DEFAULT_PLAN_CODE);
+
         assertThat(testCoursePlan.getPlanMemo()).isEqualTo(DEFAULT_PLAN_MEMO);
         assertThat(testCoursePlan.getPlanTarget()).isEqualTo(DEFAULT_PLAN_TARGET);
         assertThat(testCoursePlan.getPlanCount()).isEqualTo(DEFAULT_PLAN_COUNT);
-        assertThat(testCoursePlan.getPlanParentCode()).isEqualTo(DEFAULT_PLAN_PARENT_CODE);
+
         assertThat(testCoursePlan.getDataTime()).isEqualTo(DEFAULT_DATA_TIME);
     }
 
@@ -238,11 +234,11 @@ public class CoursePlanResourceIT {
         // Disconnect from session so that the updates on updatedCoursePlan are not directly saved in db
         em.detach(updatedCoursePlan);
         updatedCoursePlan
-            .planCode(UPDATED_PLAN_CODE)
+
             .planMemo(UPDATED_PLAN_MEMO)
             .planTarget(UPDATED_PLAN_TARGET)
             .planCount(UPDATED_PLAN_COUNT)
-            .planParentCode(UPDATED_PLAN_PARENT_CODE)
+
             .dataTime(UPDATED_DATA_TIME);
 
         restCoursePlanMockMvc.perform(put("/api/course-plans")
@@ -254,11 +250,11 @@ public class CoursePlanResourceIT {
         List<CoursePlan> coursePlanList = coursePlanRepository.findAll();
         assertThat(coursePlanList).hasSize(databaseSizeBeforeUpdate);
         CoursePlan testCoursePlan = coursePlanList.get(coursePlanList.size() - 1);
-        assertThat(testCoursePlan.getPlanCode()).isEqualTo(UPDATED_PLAN_CODE);
+
         assertThat(testCoursePlan.getPlanMemo()).isEqualTo(UPDATED_PLAN_MEMO);
         assertThat(testCoursePlan.getPlanTarget()).isEqualTo(UPDATED_PLAN_TARGET);
         assertThat(testCoursePlan.getPlanCount()).isEqualTo(UPDATED_PLAN_COUNT);
-        assertThat(testCoursePlan.getPlanParentCode()).isEqualTo(UPDATED_PLAN_PARENT_CODE);
+
         assertThat(testCoursePlan.getDataTime()).isEqualTo(UPDATED_DATA_TIME);
     }
 

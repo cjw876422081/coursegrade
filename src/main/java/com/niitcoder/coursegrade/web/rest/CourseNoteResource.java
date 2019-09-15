@@ -2,11 +2,16 @@ package com.niitcoder.coursegrade.web.rest;
 
 import com.niitcoder.coursegrade.domain.CourseNote;
 import com.niitcoder.coursegrade.service.CourseNoteService;
+import com.niitcoder.coursegrade.service.dto.CourseNoteDTO;
+import com.niitcoder.coursegrade.service.dto.CourseNoteType;
 import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,62 +68,39 @@ public class CourseNoteResource {
             .body(result);
     }
 
-    /**
-     * {@code PUT  /course-notes} : Updates an existing courseNote.
-     *
-     * @param courseNote the courseNote to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated courseNote,
-     * or with status {@code 400 (Bad Request)} if the courseNote is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the courseNote couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PutMapping("/course-notes")
-    public ResponseEntity<CourseNote> updateCourseNote(@RequestBody CourseNote courseNote) throws URISyntaxException {
-        log.debug("REST request to update CourseNote : {}", courseNote);
-        if (courseNote.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+
+    @ApiOperation(value="分页获取单个类型的笔记")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "type",value = "笔记类型：课程，授课内容，作业"),
+        @ApiImplicitParam(name = "entityId",value = "对应的类型元素id，如课程id,授课内容id，作业id")
+    })
+    @GetMapping("/course-notes/type")
+    public ResponseEntity<Page<CourseNoteDTO>> getAllCourseNotes(@RequestParam String type,@RequestParam Long entityId,Pageable pageable) {
+        Page<CourseNote> notes=null;
+        if(type.equalsIgnoreCase(CourseNoteType.COURSE)){
+            notes=courseNoteService.findRootNoteByCourse(entityId,pageable);
+        }else if(type.equalsIgnoreCase(CourseNoteType.PLAN)){
+            notes=courseNoteService.findRootNoteByCoursePlan(entityId,pageable);
+        }else if(type.equalsIgnoreCase(CourseNoteType.HOMEWORK)){
+            notes=courseNoteService.findRootNoteByHomewrok(entityId,pageable);
         }
-        CourseNote result = courseNoteService.save(courseNote);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, courseNote.getId().toString()))
-            .body(result);
+
+        Page<CourseNoteDTO> result=courseNoteService.getNoteTreeList(notes);
+        return ResponseEntity.ok(result);
     }
 
-    /**
-     * {@code GET  /course-notes} : get all the courseNotes.
-     *
 
-     * @param pageable the pagination information.
 
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of courseNotes in body.
-     */
-    @GetMapping("/course-notes")
-    public ResponseEntity<List<CourseNote>> getAllCourseNotes(Pageable pageable) {
-        log.debug("REST request to get a page of CourseNotes");
-        Page<CourseNote> page = courseNoteService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
-    }
-
-    /**
-     * {@code GET  /course-notes/:id} : get the "id" courseNote.
-     *
-     * @param id the id of the courseNote to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the courseNote, or with status {@code 404 (Not Found)}.
-     */
+    @ApiOperation(value="获取单个笔记及全部回复")
+    @ApiImplicitParam(name = "id",value = "笔记编号")
     @GetMapping("/course-notes/{id}")
-    public ResponseEntity<CourseNote> getCourseNote(@PathVariable Long id) {
-        log.debug("REST request to get CourseNote : {}", id);
-        Optional<CourseNote> courseNote = courseNoteService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(courseNote);
+    public ResponseEntity<CourseNoteDTO> getCourseNote(@PathVariable Long id) {
+        CourseNoteDTO result=courseNoteService.getNoteItemById(id);
+        return ResponseEntity.ok(result);
     }
 
-    /**
-     * {@code DELETE  /course-notes/:id} : delete the "id" courseNote.
-     *
-     * @param id the id of the courseNote to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
+    @ApiOperation(value="删除单个笔记")
+    @ApiImplicitParam(name = "id",value = "笔记编号")
     @DeleteMapping("/course-notes/{id}")
     public ResponseEntity<Void> deleteCourseNote(@PathVariable Long id) {
         log.debug("REST request to delete CourseNote : {}", id);
