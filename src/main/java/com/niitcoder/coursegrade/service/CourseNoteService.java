@@ -3,6 +3,8 @@ package com.niitcoder.coursegrade.service;
 import com.niitcoder.coursegrade.domain.CourseNote;
 
 import com.niitcoder.coursegrade.service.dto.CourseNoteDTO;
+import com.niitcoder.coursegrade.service.dto.FileInfo;
+import com.niitcoder.coursegrade.service.dto.NotePostItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,7 +22,7 @@ public interface CourseNoteService {
      * @param courseNote the entity to save.
      * @return the persisted entity.
      */
-    CourseNote save(CourseNote courseNote);
+    CourseNote save(CourseNote courseNote,List<FileInfo> files);
 
     /**
      * Get all the courseNotes.

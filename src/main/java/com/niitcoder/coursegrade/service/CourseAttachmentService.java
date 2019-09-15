@@ -2,6 +2,7 @@ package com.niitcoder.coursegrade.service;
 
 import com.niitcoder.coursegrade.domain.CourseAttachment;
 
+import com.niitcoder.coursegrade.service.dto.FileInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,6 +20,8 @@ public interface CourseAttachmentService {
      * @return the persisted entity.
      */
     CourseAttachment save(CourseAttachment courseAttachment);
+
+    CourseAttachment save(String type, Long entity, FileInfo fileInfo);
 
     /**
      * Get all the courseAttachments.

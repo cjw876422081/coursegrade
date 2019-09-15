@@ -1,8 +1,16 @@
 package com.niitcoder.coursegrade.service.impl;
 
+import com.niitcoder.coursegrade.domain.CourseNote;
+import com.niitcoder.coursegrade.domain.StudentHomework;
+import com.niitcoder.coursegrade.repository.CourseHomeworkRepository;
+import com.niitcoder.coursegrade.repository.CourseNoteRepository;
+import com.niitcoder.coursegrade.repository.StudentHomeworkRepository;
+import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.CourseAttachmentService;
 import com.niitcoder.coursegrade.domain.CourseAttachment;
 import com.niitcoder.coursegrade.repository.CourseAttachmentRepository;
+import com.niitcoder.coursegrade.service.dto.CourseNoteType;
+import com.niitcoder.coursegrade.service.dto.FileInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 /**
@@ -24,7 +33,8 @@ public class CourseAttachmentServiceImpl implements CourseAttachmentService {
 
     private final CourseAttachmentRepository courseAttachmentRepository;
 
-    public CourseAttachmentServiceImpl(CourseAttachmentRepository courseAttachmentRepository) {
+
+    public CourseAttachmentServiceImpl(CourseAttachmentRepository courseAttachmentRepository, CourseNoteRepository courseNoteRepository, CourseHomeworkRepository courseHomeworkRepository, StudentHomeworkRepository studentHomeworkRepository) {
         this.courseAttachmentRepository = courseAttachmentRepository;
     }
 
@@ -38,6 +48,31 @@ public class CourseAttachmentServiceImpl implements CourseAttachmentService {
     public CourseAttachment save(CourseAttachment courseAttachment) {
         log.debug("Request to save CourseAttachment : {}", courseAttachment);
         return courseAttachmentRepository.save(courseAttachment);
+    }
+
+    @Override
+    public CourseAttachment save(String type, Long entity, FileInfo fileInfo) {
+        CourseAttachment courseAttachment=new CourseAttachment();
+        courseAttachment.setAttachmentType(type);
+        courseAttachment.setFileName(fileInfo.getFullPath());
+        courseAttachment.setFilePath(fileInfo.getPath());
+        courseAttachment.setFileUser(SecurityUtils.getCurrentUserLogin().get());
+        courseAttachment.setFileSize(fileInfo.getSize());
+        courseAttachment.setOriginName(fileInfo.getFileName()+"."+fileInfo.getFileExtName());
+        courseAttachment.setUploadTime(ZonedDateTime.now());
+        //根据类型创建对象
+        if(type.equalsIgnoreCase(CourseNoteType.NOTE)){
+            CourseNote note=new CourseNote();
+            note.setId(entity);
+            courseAttachment.setNote(note);
+
+        }else if(type.equalsIgnoreCase(CourseNoteType.HOMEWORK)){
+            StudentHomework homework=new StudentHomework();
+            homework.setId(entity);
+            courseAttachment.setHomework(homework);
+        }
+        courseAttachment=courseAttachmentRepository.save(courseAttachment);
+        return courseAttachment;
     }
 
     /**

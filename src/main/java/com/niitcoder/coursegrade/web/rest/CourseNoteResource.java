@@ -1,9 +1,11 @@
 package com.niitcoder.coursegrade.web.rest;
 
 import com.niitcoder.coursegrade.domain.CourseNote;
+import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.CourseNoteService;
 import com.niitcoder.coursegrade.service.dto.CourseNoteDTO;
 import com.niitcoder.coursegrade.service.dto.CourseNoteType;
+import com.niitcoder.coursegrade.service.dto.NotePostItem;
 import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,12 +60,22 @@ public class CourseNoteResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/course-notes")
-    public ResponseEntity<CourseNote> createCourseNote(@RequestBody CourseNote courseNote) throws URISyntaxException {
+    public ResponseEntity<CourseNote> createCourseNote(@RequestBody NotePostItem courseNote) throws URISyntaxException {
         log.debug("REST request to save CourseNote : {}", courseNote);
         if (courseNote.getId() != null) {
             throw new BadRequestAlertException("A new courseNote cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        CourseNote result = courseNoteService.save(courseNote);
+        CourseNote note=new CourseNote();
+        note.setPublishUser(SecurityUtils.getCurrentUserLogin().get());
+        note.setCourse(courseNote.getCourse());
+        note.setHomework(courseNote.getHomework());
+        note.setNoteMemo(courseNote.getNoteMemo());
+        note.setNoteTime(ZonedDateTime.now());
+        note.setNoteType(courseNote.getNoteType());
+        note.setParentNote(courseNote.getParentNote());
+        note.setPlan(courseNote.getPlan());
+
+        CourseNote result = courseNoteService.save(note,courseNote.getFiles());
         return ResponseEntity.created(new URI("/api/course-notes/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);

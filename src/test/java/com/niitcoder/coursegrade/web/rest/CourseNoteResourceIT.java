@@ -4,6 +4,7 @@ import com.niitcoder.coursegrade.CoursegradeApp;
 import com.niitcoder.coursegrade.domain.CourseNote;
 import com.niitcoder.coursegrade.repository.CourseNoteRepository;
 import com.niitcoder.coursegrade.service.CourseNoteService;
+import com.niitcoder.coursegrade.service.dto.NotePostItem;
 import com.niitcoder.coursegrade.web.rest.errors.ExceptionTranslator;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -120,7 +121,7 @@ public class CourseNoteResourceIT {
 
     @BeforeEach
     public void initTest() {
-        courseNote = createEntity(em);
+        courseNote = (CourseNote)createEntity(em);
     }
 
     @Test
@@ -210,7 +211,7 @@ public class CourseNoteResourceIT {
     @Transactional
     public void updateCourseNote() throws Exception {
         // Initialize the database
-        courseNoteService.save(courseNote);
+        courseNoteService.save(courseNote,null);
 
         int databaseSizeBeforeUpdate = courseNoteRepository.findAll().size();
 
@@ -261,7 +262,7 @@ public class CourseNoteResourceIT {
     @Transactional
     public void deleteCourseNote() throws Exception {
         // Initialize the database
-        courseNoteService.save(courseNote);
+        courseNoteService.save(courseNote,null);
 
         int databaseSizeBeforeDelete = courseNoteRepository.findAll().size();
 

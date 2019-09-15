@@ -1,10 +1,15 @@
 package com.niitcoder.coursegrade.service.impl;
 
 import com.alibaba.fastjson.util.TypeUtils;
+import com.niitcoder.coursegrade.security.SecurityUtils;
+import com.niitcoder.coursegrade.service.CourseAttachmentService;
 import com.niitcoder.coursegrade.service.CourseNoteService;
 import com.niitcoder.coursegrade.domain.CourseNote;
 import com.niitcoder.coursegrade.repository.CourseNoteRepository;
 import com.niitcoder.coursegrade.service.dto.CourseNoteDTO;
+import com.niitcoder.coursegrade.service.dto.CourseNoteType;
+import com.niitcoder.coursegrade.service.dto.FileInfo;
+import com.niitcoder.coursegrade.service.dto.NotePostItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +20,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Type;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,9 +41,12 @@ public class CourseNoteServiceImpl implements CourseNoteService {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public CourseNoteServiceImpl(CourseNoteRepository courseNoteRepository, JdbcTemplate jdbcTemplate) {
+    private final CourseAttachmentService courseAttachmentService;
+
+    public CourseNoteServiceImpl(CourseNoteRepository courseNoteRepository, JdbcTemplate jdbcTemplate, CourseAttachmentService courseAttachmentService) {
         this.courseNoteRepository = courseNoteRepository;
         this.jdbcTemplate = jdbcTemplate;
+        this.courseAttachmentService = courseAttachmentService;
     }
 
     /**
@@ -49,9 +56,16 @@ public class CourseNoteServiceImpl implements CourseNoteService {
      * @return the persisted entity.
      */
     @Override
-    public CourseNote save(CourseNote courseNote) {
+    public CourseNote save(CourseNote courseNote,List<FileInfo> files) {
         log.debug("Request to save CourseNote : {}", courseNote);
-        return courseNoteRepository.save(courseNote);
+        courseNote.setPublishUser(SecurityUtils.getCurrentUserLogin().get());
+        CourseNote note=courseNoteRepository.save(courseNote);
+        if(files!=null && !files.isEmpty()){
+            for (FileInfo file : files) {
+                courseAttachmentService.save(CourseNoteType.NOTE,note.getId(),file);
+            }
+        }
+        return courseNote;
     }
 
     /**
