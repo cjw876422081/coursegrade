@@ -43,4 +43,6 @@ public interface CourseInfoService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    Page<CourseInfo> findByLogin(String login,Pageable page);
 }

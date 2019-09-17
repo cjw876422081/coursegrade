@@ -77,4 +77,9 @@ public class CourseInfoServiceImpl implements CourseInfoService {
         log.debug("Request to delete CourseInfo : {}", id);
         courseInfoRepository.deleteById(id);
     }
+
+    @Override
+    public Page<CourseInfo> findByLogin(String login, Pageable page) {
+        return courseInfoRepository.findByCourseUser(login,page);
+    }
 }
