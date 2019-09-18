@@ -1,5 +1,7 @@
 package com.niitcoder.coursegrade.service.impl;
 
+import com.niitcoder.coursegrade.domain.CourseInfo;
+import com.niitcoder.coursegrade.repository.CourseInfoRepository;
 import com.niitcoder.coursegrade.service.StudentCourseGroupService;
 import com.niitcoder.coursegrade.domain.StudentCourseGroup;
 import com.niitcoder.coursegrade.repository.StudentCourseGroupRepository;
@@ -26,10 +28,12 @@ public class StudentCourseGroupServiceImpl implements StudentCourseGroupService 
     private final Logger log = LoggerFactory.getLogger(StudentCourseGroupServiceImpl.class);
 
     private final StudentCourseGroupRepository studentCourseGroupRepository;
+    private final CourseInfoRepository courseInfoRepository;
     private final JdbcTemplate jdbcTemplate ;
 
-    public StudentCourseGroupServiceImpl(StudentCourseGroupRepository studentCourseGroupRepository, JdbcTemplate jdbcTemplate) {
+    public StudentCourseGroupServiceImpl(StudentCourseGroupRepository studentCourseGroupRepository,CourseInfoRepository courseInfoRepository, JdbcTemplate jdbcTemplate) {
         this.studentCourseGroupRepository = studentCourseGroupRepository;
+        this.courseInfoRepository= courseInfoRepository;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -92,5 +96,10 @@ public class StudentCourseGroupServiceImpl implements StudentCourseGroupService 
             ") " ;
         List<Map<String, Object>> result = jdbcTemplate.queryForList(sql) ;
         return result ;
+    }
+
+    @Override
+    public List<CourseInfo> getMyCourse(String student) {
+        return courseInfoRepository.findByStudent(student);
     }
 }

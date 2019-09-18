@@ -1,8 +1,11 @@
 package com.niitcoder.coursegrade.repository;
 
+import com.niitcoder.coursegrade.domain.CourseInfo;
 import com.niitcoder.coursegrade.domain.StudentCourseGroup;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 
 /**

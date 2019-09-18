@@ -132,4 +132,8 @@ public class StudentCourseGroupResource {
             studentCourseGroupService.getCourseGroup(student , course_id)
         );
     }
+    @GetMapping("/student-course-group/student")
+    public ResponseEntity getMyCourse(@RequestParam String student){
+        return ResponseEntity.ok(studentCourseGroupService.getMyCourse(student));
+    }
 }
