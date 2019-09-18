@@ -62,7 +62,7 @@ public class CourseInfoServiceImpl implements CourseInfoService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<CourseInfo> findOne(Long id) {
+    public Optional<CourseInfo> getOrderInfo(Long id) {
         log.debug("Request to get CourseInfo : {}", id);
         return courseInfoRepository.findById(id);
     }

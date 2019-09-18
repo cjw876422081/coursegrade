@@ -109,7 +109,7 @@ public class CourseInfoResource {
     @GetMapping("/course-infos/{id}")
     public ResponseEntity<CourseInfo> getCourseInfo(@PathVariable Long id) {
         log.debug("REST request to get CourseInfo : {}", id);
-        Optional<CourseInfo> courseInfo = courseInfoService.findOne(id);
+        Optional<CourseInfo> courseInfo = courseInfoService.getOrderInfo(id);
         return ResponseUtil.wrapOrNotFound(courseInfo);
     }
 

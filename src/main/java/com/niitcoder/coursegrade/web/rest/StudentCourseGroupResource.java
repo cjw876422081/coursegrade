@@ -125,4 +125,11 @@ public class StudentCourseGroupResource {
         studentCourseGroupService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
+    @GetMapping("/student-course-order-group/{student}/{course_id}")
+    public  ResponseEntity getCourseGroup(@PathVariable String student ,@PathVariable Long course_id ){
+        log.debug("REST request to get  getCourseGroup : {}", student , course_id);
+        return ResponseEntity.ok(
+            studentCourseGroupService.getCourseGroup(student , course_id)
+        );
+    }
 }
