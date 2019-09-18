@@ -1,5 +1,6 @@
 package com.niitcoder.coursegrade.service;
 
+import com.niitcoder.coursegrade.domain.CourseInfo;
 import com.niitcoder.coursegrade.domain.StudentCourseGroup;
 
 import org.springframework.data.domain.Page;
@@ -45,6 +46,9 @@ public interface StudentCourseGroupService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
     List<Map<String, Object>> getCourseGroup(String student , Long course_id ) ;
+
+    List<CourseInfo> getMyCourse(String student);
 
 }
