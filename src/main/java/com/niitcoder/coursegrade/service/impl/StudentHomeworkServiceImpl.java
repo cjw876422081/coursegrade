@@ -8,9 +8,12 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -23,9 +26,11 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
     private final Logger log = LoggerFactory.getLogger(StudentHomeworkServiceImpl.class);
 
     private final StudentHomeworkRepository studentHomeworkRepository;
+    private final JdbcTemplate jdbcTemplate;
 
-    public StudentHomeworkServiceImpl(StudentHomeworkRepository studentHomeworkRepository) {
+    public StudentHomeworkServiceImpl(StudentHomeworkRepository studentHomeworkRepository, JdbcTemplate jdbcTemplate) {
         this.studentHomeworkRepository = studentHomeworkRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     /**
@@ -77,4 +82,17 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
         log.debug("Request to delete StudentHomework : {}", id);
         studentHomeworkRepository.deleteById(id);
     }
+
+    @Override
+    public Integer getOrderCourseGrade(Integer homework, String student) {
+        log.debug("Request to delete StudentHomework : {}", homework , student);
+        String sql = "select grade from student_homework where homework_id=" +homework +" and student = "+ "\""+student +"\"";
+        List<Map<String, Object>> sqlResult =jdbcTemplate.queryForList(sql);
+        if (!sqlResult.isEmpty()){
+            return (Integer) sqlResult.get(0).get("grade");
+        }
+        return 0 ;
+    }
+
+
 }

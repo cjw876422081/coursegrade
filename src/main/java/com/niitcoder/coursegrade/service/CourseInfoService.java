@@ -35,7 +35,7 @@ public interface CourseInfoService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<CourseInfo> findOne(Long id);
+    Optional<CourseInfo> getOrderInfo(Long id);
 
     /**
      * Delete the "id" courseInfo.

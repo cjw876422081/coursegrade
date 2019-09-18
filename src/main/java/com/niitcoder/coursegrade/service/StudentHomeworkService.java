@@ -1,5 +1,6 @@
 package com.niitcoder.coursegrade.service;
 
+import com.niitcoder.coursegrade.domain.CourseHomework;
 import com.niitcoder.coursegrade.domain.StudentHomework;
 
 import org.springframework.data.domain.Page;
@@ -43,4 +44,5 @@ public interface StudentHomeworkService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+    Integer getOrderCourseGrade(Integer homework , String  student) ;
 }

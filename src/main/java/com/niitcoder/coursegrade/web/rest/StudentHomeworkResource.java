@@ -1,6 +1,8 @@
 package com.niitcoder.coursegrade.web.rest;
 
+import com.niitcoder.coursegrade.domain.CourseHomework;
 import com.niitcoder.coursegrade.domain.StudentHomework;
+import com.niitcoder.coursegrade.service.CourseHomeworkService;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
 import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 
@@ -13,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +43,7 @@ public class StudentHomeworkResource {
 
     public StudentHomeworkResource(StudentHomeworkService studentHomeworkService) {
         this.studentHomeworkService = studentHomeworkService;
+
     }
 
     /**
@@ -125,4 +127,13 @@ public class StudentHomeworkResource {
         studentHomeworkService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
+    @GetMapping("/student-homeworks-grade/{homework}/{student}")
+    public ResponseEntity<Integer> getStudentHomework(@PathVariable Integer homework , @PathVariable String student) {
+        log.debug("REST request to get StudentHomework : {}", homework , student);
+        Integer result = studentHomeworkService.getOrderCourseGrade(homework , student) ;
+        return ResponseEntity.ok(
+            result
+        );
+    }
+
 }
