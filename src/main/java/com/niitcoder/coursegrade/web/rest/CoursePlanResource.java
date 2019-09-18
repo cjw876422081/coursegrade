@@ -1,12 +1,17 @@
 package com.niitcoder.coursegrade.web.rest;
 
+import com.niitcoder.coursegrade.domain.CourseInfo;
 import com.niitcoder.coursegrade.domain.CoursePlan;
 import com.niitcoder.coursegrade.service.CoursePlanService;
+import com.niitcoder.coursegrade.service.dto.CourseInfoPlan;
+import com.niitcoder.coursegrade.service.dto.CoursePlanDTO;
 import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,9 +92,7 @@ public class CoursePlanResource {
     /**
      * {@code GET  /course-plans} : get all the coursePlans.
      *
-
      * @param pageable the pagination information.
-
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of coursePlans in body.
      */
     @GetMapping("/course-plans")
@@ -124,5 +127,32 @@ public class CoursePlanResource {
         log.debug("REST request to delete CoursePlan : {}", id);
         coursePlanService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+    }
+
+    @ApiOperation(value = "根据父级内容查询下级授课内容")
+    @ApiImplicitParam(name = "id", value = "授课内容父级id")
+    @GetMapping("/course-plans/child/{id}")
+    public ResponseEntity<List<CoursePlan>> getCoursePlanByParentsId(@PathVariable Long id) {
+//        log.debug("REST request to get getCoursePlanByParentsId : {}", id);
+        List<CoursePlan> coursePlan = coursePlanService.getPlanByParentId(id);
+        return ResponseEntity.ok(coursePlan);
+    }
+
+    @ApiOperation(value = "查询单个课程的全部授课内容，没有课程信息")
+    @ApiImplicitParam(name = "courseId", value = "课程id")
+    @GetMapping("/course-plans/tree2/{courseId}")
+    public ResponseEntity<List<CoursePlanDTO>> getCoursePlanTree2(@PathVariable Long courseId) {
+        log.debug("REST request to get getCoursePlanByParentsId : {}", courseId);
+        List<CoursePlanDTO> coursePlan = coursePlanService.getCoursePlanDTOByCourseId(courseId);
+        return ResponseEntity.ok(coursePlan);
+    }
+
+    @ApiOperation(value = "查询单个课程的全部授课内容，有课程信息")
+    @ApiImplicitParam(name = "courseId", value = "课程id")
+    @GetMapping("/course-plans/tree/{courseId}")
+    public ResponseEntity<CourseInfoPlan> getCoursePlanTree(@PathVariable Long courseId) {
+        log.debug("REST request to get getCoursePlanByParentsId : {}", courseId);
+        CourseInfoPlan coursePlan = coursePlanService.getCourseInfoPlan(courseId);
+        return ResponseEntity.ok(coursePlan);
     }
 }
