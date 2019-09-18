@@ -44,5 +44,7 @@ public interface StudentHomeworkService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
     Integer getOrderCourseGrade(Integer homework , String  student) ;
+
 }

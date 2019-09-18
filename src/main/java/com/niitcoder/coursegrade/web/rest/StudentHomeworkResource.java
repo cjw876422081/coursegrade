@@ -1,8 +1,9 @@
 package com.niitcoder.coursegrade.web.rest;
 
-import com.niitcoder.coursegrade.domain.CourseHomework;
+import com.niitcoder.coursegrade.domain.CourseAttachment;
+import com.niitcoder.coursegrade.domain.CourseAttachment_;
 import com.niitcoder.coursegrade.domain.StudentHomework;
-import com.niitcoder.coursegrade.service.CourseHomeworkService;
+import com.niitcoder.coursegrade.service.CourseAttachmentService;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
 import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 
@@ -18,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.niitcoder.coursegrade.security.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -41,9 +43,11 @@ public class StudentHomeworkResource {
 
     private final StudentHomeworkService studentHomeworkService;
 
-    public StudentHomeworkResource(StudentHomeworkService studentHomeworkService) {
-        this.studentHomeworkService = studentHomeworkService;
+    private final CourseAttachmentService courseAttachmentService;
 
+    public StudentHomeworkResource(StudentHomeworkService studentHomeworkService, CourseAttachmentService courseAttachmentService) {
+        this.studentHomeworkService = studentHomeworkService;
+        this.courseAttachmentService = courseAttachmentService;
     }
 
     /**
@@ -124,8 +128,17 @@ public class StudentHomeworkResource {
     @DeleteMapping("/student-homeworks/{id}")
     public ResponseEntity<Void> deleteStudentHomework(@PathVariable Long id) {
         log.debug("REST request to delete StudentHomework : {}", id);
+        Optional<StudentHomework> studentHomework = studentHomeworkService.findOne(id);
+        Long homeworkId = studentHomework.get().getHomework().getId();
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        // 查找提交作业时所携带的附件 如果有则删除
+        Optional<List<CourseAttachment>> courseAttachments = courseAttachmentService.getCourseAttachmentsByFileUserAndHomeworkId(loginName,homeworkId);
+        if(courseAttachments.isPresent()){
+            courseAttachmentService.deleteByFileUserAndHomeworkId(loginName,homeworkId);
+        }
         studentHomeworkService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+
     }
     @GetMapping("/student-homeworks-grade/{homework}/{student}")
     public ResponseEntity<Integer> getStudentHomework(@PathVariable Integer homework , @PathVariable String student) {

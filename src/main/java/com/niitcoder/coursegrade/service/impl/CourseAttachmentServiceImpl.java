@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -111,5 +112,17 @@ public class CourseAttachmentServiceImpl implements CourseAttachmentService {
     public void delete(Long id) {
         log.debug("Request to delete CourseAttachment : {}", id);
         courseAttachmentRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<List<CourseAttachment>> getCourseAttachmentsByFileUserAndHomeworkId(String fileUser, Long homeworkId) {
+        log.debug("Request to get CourseAttachments : {}",fileUser,homeworkId);
+        return courseAttachmentRepository.findCourseAttachmentsByFileUserAndHomework_Id(fileUser, homeworkId);
+    }
+
+    @Override
+    public void deleteByFileUserAndHomeworkId(String fileUser, Long homeworkId) {
+        log.debug("Request to delete CourseAttachment ：{}",fileUser,homeworkId);
+        courseAttachmentRepository.deleteCourseAttachmentByFileUserAndHomework_Id(fileUser,homeworkId);
     }
 }

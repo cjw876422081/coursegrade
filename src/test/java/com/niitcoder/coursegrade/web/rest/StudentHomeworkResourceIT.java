@@ -3,6 +3,7 @@ package com.niitcoder.coursegrade.web.rest;
 import com.niitcoder.coursegrade.CoursegradeApp;
 import com.niitcoder.coursegrade.domain.StudentHomework;
 import com.niitcoder.coursegrade.repository.StudentHomeworkRepository;
+import com.niitcoder.coursegrade.service.CourseAttachmentService;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
 import com.niitcoder.coursegrade.web.rest.errors.ExceptionTranslator;
 
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
@@ -78,6 +80,8 @@ public class StudentHomeworkResourceIT {
     @Autowired
     private EntityManager em;
 
+
+    @Qualifier("")
     @Autowired
     private Validator validator;
 
@@ -85,10 +89,11 @@ public class StudentHomeworkResourceIT {
 
     private StudentHomework studentHomework;
 
+    private CourseAttachmentService courseAttachmentService;
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final StudentHomeworkResource studentHomeworkResource = new StudentHomeworkResource(studentHomeworkService);
+        final StudentHomeworkResource studentHomeworkResource = new StudentHomeworkResource(studentHomeworkService, courseAttachmentService);
         this.restStudentHomeworkMockMvc = MockMvcBuilders.standaloneSetup(studentHomeworkResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)

@@ -6,6 +6,7 @@ import com.niitcoder.coursegrade.service.dto.FileInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -46,4 +47,20 @@ public interface CourseAttachmentService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    /**
+     * 查找作业附件
+     * @param fileUser
+     * @param homeworkId
+     * @return
+     */
+    Optional<List<CourseAttachment>> getCourseAttachmentsByFileUserAndHomeworkId(String fileUser,Long homeworkId);
+
+    /**
+     * 删除作业附件
+     * @param fileUser
+     * @param homeworkId
+     */
+    void deleteByFileUserAndHomeworkId(String fileUser,Long homeworkId);
+
 }
