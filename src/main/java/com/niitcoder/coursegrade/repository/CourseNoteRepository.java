@@ -20,4 +20,6 @@ public interface CourseNoteRepository extends JpaRepository<CourseNote, Long> {
     Page<CourseNote> findByPlanId(Long planId,Pageable pageable);
 
     List<CourseNote> findByParentNoteId(Long pid);
+
+    List<CourseNote> findByCourseId(Long courseId);
 }

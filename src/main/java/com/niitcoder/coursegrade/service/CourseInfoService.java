@@ -28,21 +28,14 @@ public interface CourseInfoService {
      */
     Page<CourseInfo> findAll(Pageable pageable);
 
-
-    /**
-     * Get the "id" courseInfo.
-     *
-     * @param id the id of the entity.
-     * @return the entity.
-     */
-    Optional<CourseInfo> getOrderInfo(Long id);
-
     /**
      * Delete the "id" courseInfo.
      *
      * @param id the id of the entity.
      */
-    void delete(Long id);
+    void delete(Long id) throws Exception;
 
     Page<CourseInfo> findByLogin(String login,Pageable page);
+
+    CourseInfo findById(Long id) throws Exception;
 }

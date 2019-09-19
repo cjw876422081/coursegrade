@@ -1,12 +1,14 @@
 package com.niitcoder.coursegrade.web.rest;
 
 import com.niitcoder.coursegrade.domain.CourseInfo;
+import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.CourseInfoService;
 import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,13 +46,7 @@ public class CourseInfoResource {
         this.courseInfoService = courseInfoService;
     }
 
-    /**
-     * {@code POST  /course-infos} : Create a new courseInfo.
-     *
-     * @param courseInfo the courseInfo to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new courseInfo, or with status {@code 400 (Bad Request)} if the courseInfo has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
+    @ApiOperation(value="教师创建新课程")
     @PostMapping("/course-infos")
     public ResponseEntity<CourseInfo> createCourseInfo(@RequestBody CourseInfo courseInfo) throws URISyntaxException {
         log.debug("REST request to save CourseInfo : {}", courseInfo);
@@ -63,66 +59,42 @@ public class CourseInfoResource {
             .body(result);
     }
 
-    /**
-     * {@code PUT  /course-infos} : Updates an existing courseInfo.
-     *
-     * @param courseInfo the courseInfo to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated courseInfo,
-     * or with status {@code 400 (Bad Request)} if the courseInfo is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the courseInfo couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PutMapping("/course-infos")
-    public ResponseEntity<CourseInfo> updateCourseInfo(@RequestBody CourseInfo courseInfo) throws URISyntaxException {
-        log.debug("REST request to update CourseInfo : {}", courseInfo);
-        if (courseInfo.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        CourseInfo result = courseInfoService.save(courseInfo);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, courseInfo.getId().toString()))
-            .body(result);
-    }
 
-    /**
-     * {@code GET  /course-infos} : get all the courseInfos.
-     *
 
-     * @param pageable the pagination information.
-
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of courseInfos in body.
-     */
-    @GetMapping("/course-infos")
-    public ResponseEntity<List<CourseInfo>> getAllCourseInfos(Pageable pageable) {
+    @ApiOperation("根据当前登录的教师，获取教师已创建的课程")
+    @GetMapping("/course-infos/teacher")
+    public ResponseEntity getAllCourseInfos(Pageable pageable) {
         log.debug("REST request to get a page of CourseInfos");
-        Page<CourseInfo> page = courseInfoService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        String loginName= SecurityUtils.getCurrentUserLogin().get();
+        Page<CourseInfo> page = courseInfoService.findByLogin(loginName, pageable);
+        return ResponseEntity.ok(page);
     }
 
-    /**
-     * {@code GET  /course-infos/:id} : get the "id" courseInfo.
-     *
-     * @param id the id of the courseInfo to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the courseInfo, or with status {@code 404 (Not Found)}.
-     */
+    @ApiOperation(value="根据课程编码获取课程信息")
     @GetMapping("/course-infos/{id}")
     public ResponseEntity<CourseInfo> getCourseInfo(@PathVariable Long id) {
         log.debug("REST request to get CourseInfo : {}", id);
-        Optional<CourseInfo> courseInfo = courseInfoService.getOrderInfo(id);
-        return ResponseUtil.wrapOrNotFound(courseInfo);
+        CourseInfo courseInfo = null;
+        try {
+            courseInfo = courseInfoService.findById(id);
+            return ResponseEntity.ok(courseInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "not found");
+        }
+
     }
 
-    /**
-     * {@code DELETE  /course-infos/:id} : delete the "id" courseInfo.
-     *
-     * @param id the id of the courseInfo to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
+    @ApiOperation(value="删除已创建课程")
     @DeleteMapping("/course-infos/{id}")
     public ResponseEntity<Void> deleteCourseInfo(@PathVariable Long id) {
         log.debug("REST request to delete CourseInfo : {}", id);
-        courseInfoService.delete(id);
+        try {
+            courseInfoService.delete(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "group exists");
+        }
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
 }
