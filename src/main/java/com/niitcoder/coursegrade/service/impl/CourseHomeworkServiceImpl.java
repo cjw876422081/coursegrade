@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -76,5 +78,17 @@ public class CourseHomeworkServiceImpl implements CourseHomeworkService {
     public void delete(Long id) {
         log.debug("Request to delete CourseHomework : {}", id);
         courseHomeworkRepository.deleteById(id);
+    }
+    /**
+     * Get one courseHomework by id.
+     *
+     * @param id the id of the entity.
+     * @return the entity.
+     */
+    @Override
+    public List<CourseHomework> findByPlanId(Long id) {
+        List<CourseHomework> courseHomework = new ArrayList<>();
+        courseHomework = courseHomeworkRepository.findByPlanId(id);
+        return courseHomework;
     }
 }
