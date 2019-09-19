@@ -11,6 +11,7 @@ import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -148,10 +149,16 @@ public class StudentHomeworkResource {
             result
         );
     }
-
-    @GetMapping("/student-homeworks/name")
-    public ResponseEntity<Page<StudentHomework>> findCourseHomework(@RequestParam String name, Pageable pageable) {
-        Page<StudentHomework> page = studentHomeworkService.findHomework(name, pageable);
+    @ApiOperation(value = "查询指定的一条学生提交记录")
+    @GetMapping("/student-homeworks/student")
+    public ResponseEntity<Page<StudentHomework>> findCourseHomework(@RequestParam String student, Pageable pageable) {
+        Page<StudentHomework> page = null;
+        try {
+            page = studentHomeworkService.findHomework(student, pageable);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(),ENTITY_NAME,"StudentHomework find error");
+        }
         return ResponseEntity.ok(page);
     }
 

@@ -1,6 +1,7 @@
 package com.niitcoder.coursegrade.service.impl;
 
 import com.alibaba.fastjson.util.TypeUtils;
+import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
 import com.niitcoder.coursegrade.domain.StudentHomework;
 import com.niitcoder.coursegrade.repository.StudentHomeworkRepository;
@@ -115,9 +116,19 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
     }
 
     @Override
-    public Page<StudentHomework> findHomework(String name,Pageable pageable)
-    {
-        return studentHomeworkRepository.findByStudent(name,pageable);
+    public Page<StudentHomework> findHomework(String student,Pageable pageable) throws Exception {
+        List<StudentHomework> studentHomeworks=studentHomeworkRepository.findByStudent(student,pageable);
+        String loginName= SecurityUtils.getCurrentUserLogin().get();
+        for(StudentHomework studentHomework:studentHomeworks){
+            String courseUser=studentHomework.getHomework().getPlan().getCourse().getCourseUser();
+            if(loginName.equals(courseUser)){
+                return listConvertToPage(studentHomeworks,pageable);
+            }else{
+                throw new Exception("没有查看权限");
+            }
+        }
+        return null;
+
     }
 
     @Override
