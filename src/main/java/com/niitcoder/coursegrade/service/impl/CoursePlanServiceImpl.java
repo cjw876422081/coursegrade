@@ -1,8 +1,13 @@
 package com.niitcoder.coursegrade.service.impl;
 
 import com.alibaba.fastjson.util.TypeUtils;
+import com.niitcoder.coursegrade.domain.CourseHomework;
 import com.niitcoder.coursegrade.domain.CourseInfo;
+import com.niitcoder.coursegrade.domain.CourseNote;
+import com.niitcoder.coursegrade.repository.CourseHomeworkRepository;
 import com.niitcoder.coursegrade.repository.CourseInfoRepository;
+import com.niitcoder.coursegrade.repository.CourseNoteRepository;
+import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.CoursePlanService;
 import com.niitcoder.coursegrade.domain.CoursePlan;
 import com.niitcoder.coursegrade.repository.CoursePlanRepository;
@@ -12,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -38,11 +44,17 @@ public class CoursePlanServiceImpl implements CoursePlanService {
 
     private final CourseInfoRepository courseInfoRepository;
 
+    private final CourseNoteRepository courseNoteRepository;
+
+    private  final CourseHomeworkRepository courseHomeworkRepository;
+
     private final JdbcTemplate jdbcTemplate;
 
-    public CoursePlanServiceImpl(CoursePlanRepository coursePlanRepository, CourseInfoRepository courseInfoRepository, JdbcTemplate jdbcTemplate) {
+    public CoursePlanServiceImpl(CoursePlanRepository coursePlanRepository, CourseInfoRepository courseInfoRepository, CourseNoteRepository courseNoteRepository, CourseHomeworkRepository courseHomeworkRepository, JdbcTemplate jdbcTemplate) {
         this.coursePlanRepository = coursePlanRepository;
         this.courseInfoRepository = courseInfoRepository;
+        this.courseNoteRepository = courseNoteRepository;
+        this.courseHomeworkRepository = courseHomeworkRepository;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -52,9 +64,13 @@ public class CoursePlanServiceImpl implements CoursePlanService {
      * @param coursePlan the entity to save.
      * @return the persisted entity.
      */
-    @Override
-    public CoursePlan save(CoursePlan coursePlan) {
+    @Override    public CoursePlan save(CoursePlan coursePlan) {
+
         log.debug("Request to save CoursePlan : {}", coursePlan);
+        /*CourseInfo courseInfo = new CourseInfo();
+        courseInfo.setId(coursePlan.getCourse().getId());
+        coursePlan.setCourse(courseInfo);*/
+        coursePlan.setDataTime(ZonedDateTime.now());
         return coursePlanRepository.save(coursePlan);
     }
 
@@ -91,9 +107,33 @@ public class CoursePlanServiceImpl implements CoursePlanService {
      * @param id the id of the entity.
      */
     @Override
-    public void delete(Long id) {
+    public void delete(Long id)throws Exception{
         log.debug("Request to delete CoursePlan : {}", id);
-        coursePlanRepository.deleteById(id);
+        // 对当前id对应的授课内容是否是当前登录用户
+        Optional<CoursePlan> coursePlan = coursePlanRepository.findById(id);
+        if (coursePlan.isPresent()){//id可以查到授课内容
+            CoursePlan course = coursePlan.get();
+            String loginName = SecurityUtils.getCurrentUserLogin().get();
+            if (! course.getCourse().getCourseUser().equals(loginName)){
+                throw new Exception("无权限删除此课程！");
+            }
+            //检查有没有课堂笔记
+            Page<CourseNote> notes=courseNoteRepository.findByPlanId(id, PageRequest.of(0,5));
+            if(notes.getTotalElements()>0){
+                throw new Exception("课程已经存在笔记信息。");
+            }
+            //检查有没有作业内容
+            List<CourseHomework> homeworks = courseHomeworkRepository.findByPlanId(id);
+            if(notes.getTotalElements()>0){
+                throw new Exception("课程已经存在作业信息。");
+            }
+
+            coursePlanRepository.deleteById(id);
+        }else {//id对应的授课内容不存在
+            throw new Exception("授课内容不存在！");
+        }
+
+
     }
 
     @Override
