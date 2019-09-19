@@ -148,4 +148,16 @@ public class CourseHomeworkResource {
         List<CourseHomework> list = courseHomeworkService.getAllTaskByCourse(course_id);
         return ResponseEntity.ok(list);
     }
+    @ApiOperation(value = "修改作业内容")
+    @PutMapping("/course-homeworks/updateCourseHomework")
+    public ResponseEntity<Void> updateCourseHomework(@RequestParam Long id,@RequestParam String homework_memo) throws URISyntaxException {
+        log.debug("REST request to update CourseHomework : {},{}", id,homework_memo);
+        if (id == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        courseHomeworkService.updateTask(id,homework_memo);
+        return ResponseEntity.noContent()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
+    }
 }

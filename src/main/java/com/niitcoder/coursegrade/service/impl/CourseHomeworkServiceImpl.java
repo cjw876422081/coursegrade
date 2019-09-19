@@ -103,5 +103,12 @@ public class CourseHomeworkServiceImpl implements CourseHomeworkService {
         courseHomework = courseHomeworkRepository.findByCourseId(course_id);
         return courseHomework;
     }
+
+    @Override
+    public void updateTask(Long id, String homework_memo) {
+        log.debug("REST request to update CourseHomework : {},{}", id,homework_memo);
+        CourseHomework result=courseHomeworkRepository.findById(id).get();
+        result.setHomeworkMemo(homework_memo);
+    }
 }
 

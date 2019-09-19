@@ -61,4 +61,6 @@ public interface CourseHomeworkService {
      * @return the entity.
      */
     List<CourseHomework> getAllTaskByCourse(Long course_id);
+
+    void updateTask(Long id,String homework_memo);
 }
