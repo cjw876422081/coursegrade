@@ -1,19 +1,23 @@
 package com.niitcoder.coursegrade.service.impl;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.niitcoder.coursegrade.domain.CourseInfo;
 import com.niitcoder.coursegrade.repository.CourseInfoRepository;
 import com.niitcoder.coursegrade.service.StudentCourseGroupService;
 import com.niitcoder.coursegrade.domain.StudentCourseGroup;
 import com.niitcoder.coursegrade.repository.StudentCourseGroupRepository;
+import com.niitcoder.coursegrade.service.dto.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -74,6 +78,40 @@ public class StudentCourseGroupServiceImpl implements StudentCourseGroupService 
     public Optional<StudentCourseGroup> findOne(Long id) {
         log.debug("Request to get StudentCourseGroup : {}", id);
         return studentCourseGroupRepository.findById(id);
+    }
+
+    /**
+     * list转page
+     * @param list
+     * @param pageable
+     * @param <T>
+     * @return
+     */
+    public <T> Page<T> listConvertToPage(List<T> list, Pageable pageable) {
+        int start = (int)pageable.getOffset();
+        int end = (start + pageable.getPageSize()) > list.size() ? list.size() : ( start + pageable.getPageSize());
+        return new PageImpl<T>(list.subList(start, end), pageable, list.size());
+    }
+
+    @Override
+    public Page<Student> findStudentByGroup(String group, Pageable pageable) {
+        log.debug("Request to findByCourseName  : {}", group);
+        String sql="SELECT a.* FROM student_course_group a,"+" course_group. b  WHERE b.group_name = '"+
+            group+"' AND a.group_id = b.id";
+
+        List<Map<String,Object>> sqlResult=this.jdbcTemplate.queryForList(sql);
+        List<Student> result = new ArrayList<Student>();
+
+        if(sqlResult!=null && sqlResult.size()>0){
+            for (Map<String, Object> sqlItem : sqlResult) {
+                Student item=new Student();
+                item.setId(TypeUtils.castToLong(sqlItem.get("id")));
+                item.setLogin(TypeUtils.castToString(sqlItem.get("student")));
+                result.add(item);
+            }
+            return listConvertToPage(result,pageable);
+        }
+        return null;
     }
 
     /**

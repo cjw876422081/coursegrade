@@ -5,6 +5,7 @@ import com.niitcoder.coursegrade.domain.CourseAttachment_;
 import com.niitcoder.coursegrade.domain.StudentHomework;
 import com.niitcoder.coursegrade.service.CourseAttachmentService;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
+import com.niitcoder.coursegrade.service.dto.StudentHomewrokDTO;
 import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
@@ -147,6 +148,31 @@ public class StudentHomeworkResource {
         return ResponseEntity.ok(
             result
         );
+    }
+
+    @GetMapping("/student-homeworks/name")
+    public ResponseEntity<List<StudentHomework>> findCourseHomework(@RequestParam String name,Pageable pageable){
+        Page<StudentHomework> page=studentHomeworkService.findHomework(name,pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/student-homeworks/homeworkCode")
+    public ResponseEntity<List<StudentHomewrokDTO>> getStudentHomeworkByomeworkCode(@RequestParam String homeworkCode,Pageable pageable) {
+        log.debug("REST request Hto get StudentHomework : {}", homeworkCode);
+        Page<StudentHomewrokDTO> page=studentHomeworkService.getStudentHomeworkByCourseHomework(homeworkCode,pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @PutMapping("/student-homeworks/id/grade")
+    public ResponseEntity<StudentHomework> updateStudentHomeworkGrade(@RequestParam Long id,@RequestParam Long grade) throws URISyntaxException {
+        log.debug("REST request to update StudentHomeworkGrade : {},{}",id,grade);
+        if (id == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        Optional<StudentHomework> studentHomework =studentHomeworkService.updateStudentHomeworkGrade(id,grade);
+        return ResponseUtil.wrapOrNotFound(studentHomework);
     }
 
 }

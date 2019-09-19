@@ -3,6 +3,7 @@ package com.niitcoder.coursegrade.service;
 import com.niitcoder.coursegrade.domain.CourseInfo;
 import com.niitcoder.coursegrade.domain.StudentCourseGroup;
 
+import com.niitcoder.coursegrade.service.dto.Student;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -39,6 +40,14 @@ public interface StudentCourseGroupService {
      * @return the entity.
      */
     Optional<StudentCourseGroup> findOne(Long id);
+
+    /**
+     * Get the "group" studentCourseGroup.
+     *
+     * @param group the group of the entity.
+     * @return the entity.
+     */
+    Page<Student> findStudentByGroup(String group, Pageable pageable);
 
     /**
      * Delete the "id" studentCourseGroup.

@@ -1,17 +1,24 @@
 package com.niitcoder.coursegrade.service.impl;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
 import com.niitcoder.coursegrade.domain.StudentHomework;
 import com.niitcoder.coursegrade.repository.StudentHomeworkRepository;
+import com.niitcoder.coursegrade.service.dto.StudentHomewrokDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -94,5 +101,64 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
         return 0 ;
     }
 
+    /**
+     * list转page
+     * @param list
+     * @param pageable
+     * @param <T>
+     * @return
+     */
+    public <T> Page<T> listConvertToPage(List<T> list, Pageable pageable) {
+        int start = (int)pageable.getOffset();
+        int end = (start + pageable.getPageSize()) > list.size() ? list.size() : ( start + pageable.getPageSize());
+        return new PageImpl<T>(list.subList(start, end), pageable, list.size());
+    }
+
+    @Override
+    public Page<StudentHomework> findHomework(String name,Pageable pageable)
+    {
+        return studentHomeworkRepository.findByStudent(name,pageable);
+    }
+
+    @Override
+    public Page<StudentHomewrokDTO> getStudentHomeworkByCourseHomework(String homeworkCode, Pageable pageable) {
+        log.debug("Request to get StudentHomework : {}", homeworkCode);
+        String sql="SELECT a.* FROM student_homework a,course_homework b WHERE b.homework_code='"+
+            homeworkCode+"' AND a.homework_id=b.id";
+
+        List<Map<String,Object>> sqlResult=this.jdbcTemplate.queryForList(sql);
+        List<StudentHomewrokDTO> result = new ArrayList<StudentHomewrokDTO>();
+
+        if(sqlResult!=null && sqlResult.size()>0){
+            for (Map<String, Object> sqlItem : sqlResult) {
+                StudentHomewrokDTO item = new StudentHomewrokDTO();
+                item.setId(TypeUtils.castToLong(sqlItem.get("id")));
+                item.setSubmitMemo(TypeUtils.castToString(sqlItem.get("submit_memo")));
+
+                String time1=TypeUtils.castToString(sqlItem.get("read_time"));
+                time1=time1.replace(".0",".000Z").replace(" ","T");
+                item.setSubmitTime(ZonedDateTime.parse(time1, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.systemDefault())));
+
+                String time2=TypeUtils.castToString(sqlItem.get("submit_time"));
+                time2=time2.replace(".0",".000Z").replace(" ","T");
+                item.setReadTime(ZonedDateTime.parse(time2, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.systemDefault())));
+
+                item.setGrade(TypeUtils.castToInt(sqlItem.get("grade")));
+                item.setStudent(TypeUtils.castToString(sqlItem.get("student")));
+                item.setTeacher(TypeUtils.castToString(sqlItem.get("teacher")));
+                result.add(item);
+            }
+            return listConvertToPage(result,pageable);
+        }
+        return null;
+    }
+
+    @Override
+    public Optional<StudentHomework> updateStudentHomeworkGrade(Long id, Long grade) {
+        log.debug("Request to update StudentHomeworkGrade : {},{}", id,grade);
+        String sql="UPDATE student_homework SET grade="+grade+" WHERE id="+id;
+        this.jdbcTemplate.update(sql);
+        return studentHomeworkRepository.findById(id);
+    }
 
 }

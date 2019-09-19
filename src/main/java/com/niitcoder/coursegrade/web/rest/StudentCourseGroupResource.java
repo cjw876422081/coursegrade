@@ -1,5 +1,6 @@
 package com.niitcoder.coursegrade.web.rest;
 
+import com.niitcoder.coursegrade.service.dto.Student;
 import com.niitcoder.coursegrade.domain.StudentCourseGroup;
 import com.niitcoder.coursegrade.service.StudentCourseGroupService;
 import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -111,6 +111,20 @@ public class StudentCourseGroupResource {
         log.debug("REST request to get StudentCourseGroup : {}", id);
         Optional<StudentCourseGroup> studentCourseGroup = studentCourseGroupService.findOne(id);
         return ResponseUtil.wrapOrNotFound(studentCourseGroup);
+    }
+
+    /**
+     * {@code GET  /student-course-groups/:group} : get the "group" studentCourseGroup.
+     *
+     * @param group the student of the studentCourseGroup to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the studentCourseGroup, or with status {@code 404 (Not Found)}.
+     */
+    @GetMapping("/student-course-groups/group")
+    public ResponseEntity<List<Student>> getStudentByCourseGroup(@RequestParam String group,Pageable pageable) {
+        log.debug("REST request to get StudentCourseGroup : {}", group);
+        Page<Student> page = studentCourseGroupService.findStudentByGroup(group,pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
     /**
