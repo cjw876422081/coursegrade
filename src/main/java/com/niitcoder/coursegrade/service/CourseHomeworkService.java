@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -53,4 +54,11 @@ public interface CourseHomeworkService {
      */
     List<CourseHomework> findByPlanId(Long id);
 
+    /**
+     * Get the "course_id" courseHomework.
+     *
+     * @param course_id the id of the entity.
+     * @return the entity.
+     */
+    List<CourseHomework> getAllTaskByCourse(Long course_id);
 }
