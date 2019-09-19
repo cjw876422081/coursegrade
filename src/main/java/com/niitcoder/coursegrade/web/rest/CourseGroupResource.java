@@ -1,7 +1,9 @@
 package com.niitcoder.coursegrade.web.rest;
 
 import com.niitcoder.coursegrade.domain.CourseGroup;
+import com.niitcoder.coursegrade.domain.CourseInfo;
 import com.niitcoder.coursegrade.service.CourseGroupService;
+import com.niitcoder.coursegrade.service.dto.CourseGroupDTO;
 import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
@@ -114,6 +116,20 @@ public class CourseGroupResource {
     }
 
     /**
+     * {@code GET  /course-groups/:id} : get the "id" courseGroup.
+     *
+     * @param course the course of the courseGroup to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the courseGroup, or with status {@code 404 (Not Found)}.
+     */
+    @GetMapping("/course-groups/course")
+    public ResponseEntity<List<CourseGroupDTO>> getCourseGroupByCourse(@RequestParam String course,Pageable pageable) {
+        log.debug("REST request to get CourseGroup : {}", course);
+        Page<CourseGroupDTO> page = courseGroupService.findByCourse(course,pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    /**
      * {@code DELETE  /course-groups/:id} : delete the "id" courseGroup.
      *
      * @param id the id of the courseGroup to delete.
@@ -123,6 +139,7 @@ public class CourseGroupResource {
     public ResponseEntity<Void> deleteCourseGroup(@PathVariable Long id) {
         log.debug("REST request to delete CourseGroup : {}", id);
         courseGroupService.delete(id);
+
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
 }

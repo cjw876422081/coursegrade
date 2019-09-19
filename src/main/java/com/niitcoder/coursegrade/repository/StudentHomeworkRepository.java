@@ -1,11 +1,13 @@
 package com.niitcoder.coursegrade.repository;
 
-import com.niitcoder.coursegrade.domain.CourseHomework;
+
 import com.niitcoder.coursegrade.domain.StudentHomework;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+
 
 
 /**
@@ -15,5 +17,6 @@ import java.util.Optional;
 @Repository
 public interface StudentHomeworkRepository extends JpaRepository<StudentHomework, Long> {
 
+    Page<StudentHomework> findByStudent(String name, Pageable pageable);
 
 }

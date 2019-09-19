@@ -99,6 +99,9 @@ public class CourseGroup implements Serializable {
         this.dataTime = dataTime;
     }
 
+    /*public void setDataTime(Date dataTime) {this.dataTime = dataTime;
+    }*/
+
     public CourseInfo getCourse() {
         return course;
     }

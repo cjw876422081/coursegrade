@@ -2,9 +2,13 @@ package com.niitcoder.coursegrade.service;
 
 import com.niitcoder.coursegrade.domain.CourseGroup;
 
+import com.niitcoder.coursegrade.domain.CourseInfo;
+import com.niitcoder.coursegrade.service.dto.CourseGroupDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -37,6 +41,16 @@ public interface CourseGroupService {
      */
     Optional<CourseGroup> findOne(Long id);
 
+    /**
+     * Get the "course" courseGroup.
+     *
+     * @param course the course of the entity.
+     * @return the entity.
+     */
+    /*List<CourseGroup> findGroupByCourse(CourseInfo course);*/
+
+
+    Page<CourseGroupDTO> findByCourse(String course,Pageable pageable);
     /**
      * Delete the "id" courseGroup.
      *
