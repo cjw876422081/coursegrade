@@ -1,5 +1,7 @@
 package com.niitcoder.coursegrade.service.dto;
 
+import com.niitcoder.coursegrade.domain.CourseHomework;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.time.ZonedDateTime;
@@ -30,6 +32,30 @@ public class CoursePlanDTO {
 
     @ApiModelProperty(value = "所属课程")
     private Long course;
+
+    public List<CourseHomework> getCourseHomeworks() {
+        return courseHomeworks;
+    }
+
+    public void setCourseHomeworks(List<CourseHomework> courseHomeworks) {
+        this.courseHomeworks = courseHomeworks;
+    }
+
+    public CoursePlanDTO(Long id, Long pId, String planMemo, String planTarget, Integer planCount, ZonedDateTime planTime, Long course, List<CourseHomework> courseHomeworks, List<CoursePlanDTO> children, boolean leaf) {
+        this.id = id;
+        this.pId = pId;
+        this.planMemo = planMemo;
+        this.planTarget = planTarget;
+        this.planCount = planCount;
+        this.planTime = planTime;
+        this.course = course;
+        this.courseHomeworks = courseHomeworks;
+        this.children = children;
+        this.leaf = leaf;
+    }
+
+    @ApiModelProperty(value = "作业内容")
+    private List<CourseHomework> courseHomeworks;
 
     @ApiModelProperty(value = "下级授课内容")
     private List<CoursePlanDTO> children = new ArrayList<CoursePlanDTO>();
