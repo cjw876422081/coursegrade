@@ -138,15 +138,6 @@ public class CoursePlanResource {
         return ResponseEntity.ok(coursePlan);
     }
 
-    @ApiOperation(value = "查询单个课程的全部授课内容，没有课程信息")
-    @ApiImplicitParam(name = "courseId", value = "课程id")
-    @GetMapping("/course-plans/tree2/{courseId}")
-    public ResponseEntity<List<CoursePlanDTO>> getCoursePlanTree2(@PathVariable Long courseId) {
-        log.debug("REST request to get getCoursePlanByParentsId : {}", courseId);
-        List<CoursePlanDTO> coursePlan = coursePlanService.getCoursePlanDTOByCourseId(courseId);
-        return ResponseEntity.ok(coursePlan);
-    }
-
     @ApiOperation(value = "查询单个课程的全部授课内容，有课程信息")
     @ApiImplicitParam(name = "courseId", value = "课程id")
     @GetMapping("/course-plans/tree/{courseId}")
