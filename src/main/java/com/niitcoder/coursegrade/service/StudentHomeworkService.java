@@ -52,10 +52,10 @@ public interface StudentHomeworkService {
     /**
      * 根据student查询一条作业提交记录
      */
-    Page<StudentHomework> findHomework(String name,Pageable pageable);
-
-    Page<StudentHomework> getStudentHomeworkByCourseHomework(Long id,Pageable pageable) throws Exception;
+    Page<StudentHomework> findHomework(String student, Pageable pageable) throws Exception;
 
     Optional<StudentHomework> updateStudentHomeworkGrade(Long id,Long grade);
+
+    Page<StudentHomework> getStudentHomeworkByCourseHomework(Long id,Pageable pageable) throws Exception;
 
 }

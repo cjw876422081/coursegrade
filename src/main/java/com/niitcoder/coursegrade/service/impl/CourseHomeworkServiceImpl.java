@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +24,6 @@ public class CourseHomeworkServiceImpl implements CourseHomeworkService {
     private final Logger log = LoggerFactory.getLogger(CourseHomeworkServiceImpl.class);
 
     private final CourseHomeworkRepository courseHomeworkRepository;
-
     public CourseHomeworkServiceImpl(CourseHomeworkRepository courseHomeworkRepository) {
         this.courseHomeworkRepository = courseHomeworkRepository;
     }
@@ -79,6 +77,7 @@ public class CourseHomeworkServiceImpl implements CourseHomeworkService {
         log.debug("Request to delete CourseHomework : {}", id);
         courseHomeworkRepository.deleteById(id);
     }
+
     /**
      * Get one courseHomework by id.
      *
@@ -91,4 +90,25 @@ public class CourseHomeworkServiceImpl implements CourseHomeworkService {
         courseHomework = courseHomeworkRepository.findByPlanId(id);
         return courseHomework;
     }
+
+    /**
+     * Get the "course_id" courseHomework.
+     *
+     * @param course_id the id of the entity.
+     * @return the entity.
+     */
+    @Override
+    public List<CourseHomework> getAllTaskByCourse(Long course_id) {
+        List<CourseHomework> courseHomework = new ArrayList<>();
+        courseHomework = courseHomeworkRepository.findByCourseId(course_id);
+        return courseHomework;
+    }
+
+    @Override
+    public void updateTask(Long id, String homework_memo) {
+        log.debug("REST request to update CourseHomework : {},{}", id,homework_memo);
+        CourseHomework result=courseHomeworkRepository.findById(id).get();
+        result.setHomeworkMemo(homework_memo);
+    }
 }
+

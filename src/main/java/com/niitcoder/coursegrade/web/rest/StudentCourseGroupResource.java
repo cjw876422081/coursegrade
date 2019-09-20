@@ -115,11 +115,19 @@ public class StudentCourseGroupResource {
     }
 
     /**
+     * {@code GET  /student-course-groups/:group} : get the "group" studentCourseGroup.
      *
-     * @param id
-     * @param pageable
-     * @return
+     * @param group the student of the studentCourseGroup to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the studentCourseGroup, or with status {@code 404 (Not Found)}.
      */
+    @GetMapping("/student-course-groups/group")
+    public ResponseEntity<List<Student>> getStudentByCourseGroup(@RequestParam String group,Pageable pageable) {
+        log.debug("REST request to get StudentCourseGroup : {}", group);
+        Page<Student> page = studentCourseGroupService.findStudentByGroup(group,pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
     @GetMapping("/student-course-groups/id")
     @ApiOperation(value="查询指定班级已加入的学生名单")
     public ResponseEntity<Page<StudentCourseGroup>> getStudentByCourseGroup(@RequestParam Long id,Pageable pageable) {
@@ -131,7 +139,6 @@ public class StudentCourseGroupResource {
             e.printStackTrace();
             throw  new BadRequestAlertException(e.getMessage(),ENTITY_NAME,"not found");
         }
-
     }
 
     /**

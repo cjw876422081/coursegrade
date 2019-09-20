@@ -14,5 +14,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 @Repository
 public interface StudentCourseGroupRepository extends JpaRepository<StudentCourseGroup, Long> {
-List<StudentCourseGroup> findByGroupId(Long id);
+
+    List<StudentCourseGroup> findByGroupId(Long id);
+
 }

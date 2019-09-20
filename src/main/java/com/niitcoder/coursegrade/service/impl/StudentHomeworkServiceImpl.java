@@ -1,7 +1,8 @@
 package com.niitcoder.coursegrade.service.impl;
 
 import com.alibaba.fastjson.util.TypeUtils;
-import com.niitcoder.coursegrade.domain.CourseInfo;
+import com.niitcoder.coursegrade.domain.User;
+import com.niitcoder.coursegrade.repository.UserRepository;
 import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
 import com.niitcoder.coursegrade.domain.StudentHomework;
@@ -35,10 +36,12 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
     private final Logger log = LoggerFactory.getLogger(StudentHomeworkServiceImpl.class);
 
     private final StudentHomeworkRepository studentHomeworkRepository;
+    private final UserRepository userRepository;
     private final JdbcTemplate jdbcTemplate;
 
-    public StudentHomeworkServiceImpl(StudentHomeworkRepository studentHomeworkRepository, JdbcTemplate jdbcTemplate) {
+    public StudentHomeworkServiceImpl(StudentHomeworkRepository studentHomeworkRepository, UserRepository userRepository, JdbcTemplate jdbcTemplate) {
         this.studentHomeworkRepository = studentHomeworkRepository;
+        this.userRepository = userRepository;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -117,16 +120,34 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
     }
 
     @Override
-    public Page<StudentHomework> findHomework(String name,Pageable pageable)
-    {
-        return studentHomeworkRepository.findByStudent(name,pageable);
+    public Page<StudentHomework> findHomework(String student,Pageable pageable) throws Exception {
+        List<StudentHomework> studentHomeworks=studentHomeworkRepository.findByStudent(student,pageable);
+        String loginName= SecurityUtils.getCurrentUserLogin().get();
+        for(StudentHomework studentHomework:studentHomeworks){
+            String courseUser=studentHomework.getHomework().getPlan().getCourse().getCourseUser();
+            if(loginName.equals(courseUser)){
+                //检查学生是否存在
+                List<User> students=userRepository.findByLogin(student);
+                if(students!=null&&students.size()>0){
+                    return listConvertToPage(studentHomeworks,pageable);
+                }else{
+                    throw new Exception("学生不存在");
+                }
+            }else{
+                throw new Exception("没有查看权限");
+            }
+        }
+        return null;
+
     }
 
-    /**
-     * 根据作业id查学生提交情况
-     * @param id
-     * @return
-     */
+    @Override
+    public Optional<StudentHomework> updateStudentHomeworkGrade(Long id, Long grade) {
+        log.debug("Request to update StudentHomeworkGrade : {},{}", id,grade);
+        String sql="UPDATE student_homework SET grade="+grade+" WHERE id="+id;
+        this.jdbcTemplate.update(sql);
+        return studentHomeworkRepository.findById(id);
+    }
 
     @Override
     public Page<StudentHomework> getStudentHomeworkByCourseHomework(Long id,Pageable pageable) throws Exception{
@@ -146,13 +167,4 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
             throw new Exception("该作业不存在");
         }
     }
-
-    @Override
-    public Optional<StudentHomework> updateStudentHomeworkGrade(Long id, Long grade) {
-        log.debug("Request to update StudentHomeworkGrade : {},{}", id,grade);
-        String sql="UPDATE student_homework SET grade="+grade+" WHERE id="+id;
-        this.jdbcTemplate.update(sql);
-        return studentHomeworkRepository.findById(id);
-    }
-
 }
