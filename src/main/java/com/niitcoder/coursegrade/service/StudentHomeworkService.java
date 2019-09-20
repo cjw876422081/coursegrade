@@ -21,7 +21,7 @@ public interface StudentHomeworkService {
      * @param studentHomework the entity to save.
      * @return the persisted entity.
      */
-    StudentHomework save(StudentHomework studentHomework);
+    StudentHomework save(StudentHomework studentHomework) throws Exception;
 
     /**
      * Get all the studentHomeworks.
@@ -47,7 +47,7 @@ public interface StudentHomeworkService {
      */
     void delete(Long id);
 
-    Integer getOrderCourseGrade(Integer homework , String  student) ;
+    Integer getOrderCourseGrade(Long homework , String  student) throws Exception;
 
     /**
      * 根据student查询一条作业提交记录
