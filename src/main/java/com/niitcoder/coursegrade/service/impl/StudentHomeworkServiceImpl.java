@@ -1,6 +1,7 @@
 package com.niitcoder.coursegrade.service.impl;
 
 import com.alibaba.fastjson.util.TypeUtils;
+import com.niitcoder.coursegrade.domain.CourseInfo;
 import com.niitcoder.coursegrade.domain.User;
 import com.niitcoder.coursegrade.repository.UserRepository;
 import com.niitcoder.coursegrade.security.SecurityUtils;
@@ -96,14 +97,13 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
     }
 
     @Override
-    public Integer getOrderCourseGrade(Integer homework, String student) {
-        log.debug("Request to delete StudentHomework : {}", homework , student);
-        String sql = "select grade from student_homework where homework_id=" +homework +" and student = "+ "\""+student +"\"";
-        List<Map<String, Object>> sqlResult =jdbcTemplate.queryForList(sql);
-        if (!sqlResult.isEmpty()){
-            return (Integer) sqlResult.get(0).get("grade");
+    public Integer getOrderCourseGrade(Long homework, String student) throws Exception {
+        log.debug("Request to getOrderCourseGrade StudentHomework : {}", homework , student);
+        Optional<StudentHomework> studentHomework = studentHomeworkRepository.findByHomeworkIdAndAndStudent(homework , student);
+        if (!studentHomework.isPresent()){
+            throw  new  Exception("没有找到该指定课程的成绩");
         }
-        return 0 ;
+        return studentHomework.get().getGrade();
     }
 
     /**

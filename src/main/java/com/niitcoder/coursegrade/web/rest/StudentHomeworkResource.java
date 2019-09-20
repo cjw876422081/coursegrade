@@ -105,18 +105,6 @@ public class StudentHomeworkResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    /**
-     * {@code GET  /student-homeworks/:id} : get the "id" studentHomework.
-     *
-     * @param id the id of the studentHomework to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the studentHomework, or with status {@code 404 (Not Found)}.
-     */
-    @GetMapping("/student-homeworks/{id}")
-    public ResponseEntity<StudentHomework> getStudentHomework(@PathVariable Long id) {
-        log.debug("REST request to get StudentHomework : {}", id);
-        Optional<StudentHomework> studentHomework = studentHomeworkService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(studentHomework);
-    }
 
     /**
      * {@code DELETE  /student-homeworks/:id} : delete the "id" studentHomework.
@@ -139,15 +127,23 @@ public class StudentHomeworkResource {
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
 
     }
+    @ApiOperation("查询课程得分")
+    @GetMapping("/student-homeworks-grade/{homework}")
+    public ResponseEntity getStudentHomeworkgrade(@PathVariable Long homework) {
+        String student = SecurityUtils.getCurrentUserLogin().get();
+        log.debug("REST request to get student-homeworks-grade : {}", homework, student);
+        Integer result = 0;
+        try {
+            result = studentHomeworkService.getOrderCourseGrade(homework, student);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(),ENTITY_NAME,"getStudentHomework get error");
+        }
+        return ResponseEntity.ok(result);
 
-    @GetMapping("/student-homeworks-grade/{homework}/{student}")
-    public ResponseEntity<Integer> getStudentHomework(@PathVariable Integer homework, @PathVariable String student) {
-        log.debug("REST request to get StudentHomework : {}", homework, student);
-        Integer result = studentHomeworkService.getOrderCourseGrade(homework, student);
-        return ResponseEntity.ok(
-            result
-        );
     }
+
+
     @ApiOperation(value = "查询指定的一条学生提交记录")
     @GetMapping("/student-homeworks/student")
     public ResponseEntity<Page<StudentHomework>> findCourseHomework(@RequestParam String student, Pageable pageable) {

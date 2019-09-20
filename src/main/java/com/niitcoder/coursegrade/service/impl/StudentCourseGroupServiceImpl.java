@@ -3,7 +3,6 @@ package com.niitcoder.coursegrade.service.impl;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.niitcoder.coursegrade.domain.CourseInfo;
 import com.niitcoder.coursegrade.repository.CourseInfoRepository;
-import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.StudentCourseGroupService;
 import com.niitcoder.coursegrade.domain.StudentCourseGroup;
 import com.niitcoder.coursegrade.repository.StudentCourseGroupRepository;
@@ -115,51 +114,52 @@ public class StudentCourseGroupServiceImpl implements StudentCourseGroupService 
         return null;
     }
 
+
     @Override
-    public Page<StudentCourseGroup> findStudentByGroup(Long id, Pageable pageable)throws Exception {
-        log.debug("Request to findByCourseName  : {}", id);
-
-        List<StudentCourseGroup> studentCourseGroups=studentCourseGroupRepository.findByGroupId(id);
-
-        String loginName= SecurityUtils.getCurrentUserLogin().get();
-        if(studentCourseGroups!=null &&studentCourseGroups.size()>0) {
-            String userName=studentCourseGroups.get(0).getGroup().getCourse().getCourseUser();
-            if (!userName.equals(loginName)) {
-                throw new Exception("无权搜索该班级学生！");
-            } else {
-                return listConvertToPage(studentCourseGroups, pageable);
-            }
-
-        }else {
-            throw new Exception("班级学生不存在");
+    public void delete( String student , Long course_id) throws Exception {
+        log.debug("Request to delete StudentCourseGroup : {}", course_id);
+        List<Map<String, Object>> result = this.getCourseGroup(student , course_id) ;
+        String sql = "delete from student_course_group where student =\"" +student +"\"  and group_id in (" +
+            " select id from course_group where course_id = " +
+             + course_id+")" ;
+        if (result.size() > 0 ){
+            jdbcTemplate.execute(sql);
+        }else{
+            throw new Exception("班级id 出错") ;
         }
-    }
 
-
-    /**
-     * Delete the studentCourseGroup by id.
-     *
-     * @param id the id of the entity.
-     */
-    @Override
-    public void delete(Long id) {
-        log.debug("Request to delete StudentCourseGroup : {}", id);
-        studentCourseGroupRepository.deleteById(id);
     }
 
     @Override
-    public List<Map<String, Object>> getCourseGroup(String student, Long course_id) {
-        String sql = "select student from student_course_group where group_id = (\n" +
-            "\tselect id from course_group where course_id = "+ course_id +" and id =(\n" +
-            "\tselect group_id from student_course_group where student = \""+student+"\"\n" +
-            ")\n" +
-            ") " ;
+    public List<Map<String, Object>> getCourseGroup(String student, Long course_id) throws Exception {
+
+
+        String sql = "select * from student_course_group where group_id = (" +
+            "select id from course_group where course_id = "+ course_id +" and id =(" +
+            "select group_id from student_course_group where student = \""+student+"\"" +
+            ")) " ;
+
+        List<Map<String, Object>> result = jdbcTemplate.queryForList(sql);
+        if (result.size() <= 0 ){
+            throw  new Exception("没有查询到结果") ;
+        }else{
+            return result ;
+        }
+
+    }
+
+    @Override
+    public List<Map<String, Object>> getMyCourse(String student) throws Exception {
+        String sql = "SELECT * FROM course_info WHERE id=(" +
+                        "SELECT course_id FROM course_group WHERE id =(" +
+                             "SELECT group_id FROM student_course_group WHERE student = \""+ student+"\"))" ;
+
         List<Map<String, Object>> result = jdbcTemplate.queryForList(sql) ;
-        return result ;
+        if( result.size() <= 0  ){
+            throw new Exception("该用户没有加入任何课程");
+        }
+        return result;
     }
 
-    @Override
-    public List<CourseInfo> getMyCourse(String student) {
-        return courseInfoRepository.findByStudent(student);
-    }
+
 }
