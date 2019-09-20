@@ -7,6 +7,7 @@ import com.niitcoder.coursegrade.service.dto.StudentHomewrokDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -53,7 +54,7 @@ public interface StudentHomeworkService {
      */
     Page<StudentHomework> findHomework(String name,Pageable pageable);
 
-    Page<StudentHomewrokDTO> getStudentHomeworkByCourseHomework(String homeworkCode, Pageable pageable);
+    Page<StudentHomework> getStudentHomeworkByCourseHomework(Long id,Pageable pageable) throws Exception;
 
     Optional<StudentHomework> updateStudentHomeworkGrade(Long id,Long grade);
 

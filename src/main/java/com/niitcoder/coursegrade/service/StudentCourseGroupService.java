@@ -42,12 +42,12 @@ public interface StudentCourseGroupService {
     Optional<StudentCourseGroup> findOne(Long id);
 
     /**
-     * Get the "group" studentCourseGroup.
      *
-     * @param group the group of the entity.
-     * @return the entity.
+     * @param id
+     * @param pageable
+     * @return
      */
-    Page<Student> findStudentByGroup(String group, Pageable pageable);
+    Page<StudentCourseGroup> findStudentByGroup(Long id, Pageable pageable) throws Exception;
 
     /**
      * Delete the "id" studentCourseGroup.

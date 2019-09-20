@@ -1,6 +1,8 @@
 package com.niitcoder.coursegrade.service.impl;
 
 import com.alibaba.fastjson.util.TypeUtils;
+import com.niitcoder.coursegrade.domain.CourseInfo;
+import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
 import com.niitcoder.coursegrade.domain.StudentHomework;
 import com.niitcoder.coursegrade.repository.StudentHomeworkRepository;
@@ -120,37 +122,29 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
         return studentHomeworkRepository.findByStudent(name,pageable);
     }
 
+    /**
+     * 根据作业id查学生提交情况
+     * @param id
+     * @return
+     */
+
     @Override
-    public Page<StudentHomewrokDTO> getStudentHomeworkByCourseHomework(String homeworkCode, Pageable pageable) {
-        log.debug("Request to get StudentHomework : {}", homeworkCode);
-        String sql="SELECT a.* FROM student_homework a,course_homework b WHERE b.homework_code='"+
-            homeworkCode+"' AND a.homework_id=b.id";
-
-        List<Map<String,Object>> sqlResult=this.jdbcTemplate.queryForList(sql);
-        List<StudentHomewrokDTO> result = new ArrayList<StudentHomewrokDTO>();
-
-        if(sqlResult!=null && sqlResult.size()>0){
-            for (Map<String, Object> sqlItem : sqlResult) {
-                StudentHomewrokDTO item = new StudentHomewrokDTO();
-                item.setId(TypeUtils.castToLong(sqlItem.get("id")));
-                item.setSubmitMemo(TypeUtils.castToString(sqlItem.get("submit_memo")));
-
-                String time1=TypeUtils.castToString(sqlItem.get("read_time"));
-                time1=time1.replace(".0",".000Z").replace(" ","T");
-                item.setSubmitTime(ZonedDateTime.parse(time1, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.systemDefault())));
-
-                String time2=TypeUtils.castToString(sqlItem.get("submit_time"));
-                time2=time2.replace(".0",".000Z").replace(" ","T");
-                item.setReadTime(ZonedDateTime.parse(time2, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.systemDefault())));
-
-                item.setGrade(TypeUtils.castToInt(sqlItem.get("grade")));
-                item.setStudent(TypeUtils.castToString(sqlItem.get("student")));
-                item.setTeacher(TypeUtils.castToString(sqlItem.get("teacher")));
-                result.add(item);
+    public Page<StudentHomework> getStudentHomeworkByCourseHomework(Long id,Pageable pageable) throws Exception{
+        log.debug("Request to get StudentHomework : {}", id);
+        //Optional<StudentHomework> courseInfo=studentHomeworkRepository.findById(id);
+        List<StudentHomework> studentHomeworks=new ArrayList<StudentHomework>();
+        studentHomeworks=studentHomeworkRepository.findByHomeworkId(id);
+        String loginName= SecurityUtils.getCurrentUserLogin().get();
+        if(studentHomeworks!=null && studentHomeworks.size()>0) {
+            String userName=studentHomeworks.get(0).getHomework().getPlan().getCourse().getCourseUser();
+            if (!userName.equals(loginName)) {
+                throw new Exception("无权查询此作业");
+            } else {
+                return listConvertToPage(studentHomeworks, pageable);
             }
-            return listConvertToPage(result,pageable);
+        }else {
+            throw new Exception("该作业不存在");
         }
-        return null;
     }
 
     @Override

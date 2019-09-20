@@ -3,6 +3,7 @@ package com.niitcoder.coursegrade.service.impl;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.niitcoder.coursegrade.domain.CourseInfo;
 import com.niitcoder.coursegrade.repository.CourseInfoRepository;
+import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.StudentCourseGroupService;
 import com.niitcoder.coursegrade.domain.StudentCourseGroup;
 import com.niitcoder.coursegrade.repository.StudentCourseGroupRepository;
@@ -94,24 +95,23 @@ public class StudentCourseGroupServiceImpl implements StudentCourseGroupService 
     }
 
     @Override
-    public Page<Student> findStudentByGroup(String group, Pageable pageable) {
-        log.debug("Request to findByCourseName  : {}", group);
-        String sql="SELECT a.* FROM student_course_group a,"+" course_group. b  WHERE b.group_name = '"+
-            group+"' AND a.group_id = b.id";
+    public Page<StudentCourseGroup> findStudentByGroup(Long id, Pageable pageable)throws Exception {
+        log.debug("Request to findByCourseName  : {}", id);
 
-        List<Map<String,Object>> sqlResult=this.jdbcTemplate.queryForList(sql);
-        List<Student> result = new ArrayList<Student>();
+        List<StudentCourseGroup> studentCourseGroups=studentCourseGroupRepository.findByGroupId(id);
 
-        if(sqlResult!=null && sqlResult.size()>0){
-            for (Map<String, Object> sqlItem : sqlResult) {
-                Student item=new Student();
-                item.setId(TypeUtils.castToLong(sqlItem.get("id")));
-                item.setLogin(TypeUtils.castToString(sqlItem.get("student")));
-                result.add(item);
+        String loginName= SecurityUtils.getCurrentUserLogin().get();
+        if(studentCourseGroups!=null &&studentCourseGroups.size()>0) {
+            String userName=studentCourseGroups.get(0).getGroup().getCourse().getCourseUser();
+            if (!userName.equals(loginName)) {
+                throw new Exception("无权搜索该课程学生！");
+            } else {
+                return listConvertToPage(studentCourseGroups, pageable);
             }
-            return listConvertToPage(result,pageable);
+
+        }else {
+            throw new Exception("课程不存在");
         }
-        return null;
     }
 
     /**

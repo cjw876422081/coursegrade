@@ -1,7 +1,9 @@
 package com.niitcoder.coursegrade.web.rest;
 
 import com.niitcoder.coursegrade.domain.CourseAttachment;
-import com.niitcoder.coursegrade.domain.CourseAttachment_;
+
+
+
 import com.niitcoder.coursegrade.domain.StudentHomework;
 import com.niitcoder.coursegrade.service.CourseAttachmentService;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
@@ -11,6 +13,7 @@ import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -157,12 +160,17 @@ public class StudentHomeworkResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    @GetMapping("/student-homeworks/homeworkCode")
-    public ResponseEntity<List<StudentHomewrokDTO>> getStudentHomeworkByomeworkCode(@RequestParam String homeworkCode,Pageable pageable) {
-        log.debug("REST request Hto get StudentHomework : {}", homeworkCode);
-        Page<StudentHomewrokDTO> page=studentHomeworkService.getStudentHomeworkByCourseHomework(homeworkCode,pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    @GetMapping("/student-homeworks/id")
+    @ApiOperation(value="根据作业id查学生提交情况")
+    public ResponseEntity<Page<StudentHomework>> getStudentHomeworkByomeworkId(@RequestParam Long id,Pageable pageable) {
+        log.debug("REST request Hto get StudentHomework : {}", id);
+        try{
+            Page<StudentHomework> studentHomeworks=studentHomeworkService.getStudentHomeworkByCourseHomework(id,pageable);
+            return ResponseEntity.ok(studentHomeworks);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw  new BadRequestAlertException(e.getMessage(),ENTITY_NAME,"not found");
+        }
     }
 
     @PutMapping("/student-homeworks/id/grade")

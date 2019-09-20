@@ -8,6 +8,7 @@ import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -114,17 +115,23 @@ public class StudentCourseGroupResource {
     }
 
     /**
-     * {@code GET  /student-course-groups/:group} : get the "group" studentCourseGroup.
      *
-     * @param group the student of the studentCourseGroup to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the studentCourseGroup, or with status {@code 404 (Not Found)}.
+     * @param id
+     * @param pageable
+     * @return
      */
-    @GetMapping("/student-course-groups/group")
-    public ResponseEntity<List<Student>> getStudentByCourseGroup(@RequestParam String group,Pageable pageable) {
-        log.debug("REST request to get StudentCourseGroup : {}", group);
-        Page<Student> page = studentCourseGroupService.findStudentByGroup(group,pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    @GetMapping("/student-course-groups/id")
+    @ApiOperation(value="查询指定班级已加入的学生名单")
+    public ResponseEntity<Page<StudentCourseGroup>> getStudentByCourseGroup(@RequestParam Long id,Pageable pageable) {
+        log.debug("REST request to get StudentCourseGroup : {}", id);
+        try {
+            Page<StudentCourseGroup> studentCourseGroups = studentCourseGroupService.findStudentByGroup(id,pageable);
+            return ResponseEntity.ok(studentCourseGroups);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw  new BadRequestAlertException(e.getMessage(),ENTITY_NAME,"not found");
+        }
+
     }
 
     /**
