@@ -1,7 +1,6 @@
 package com.niitcoder.coursegrade.web.rest;
 
 import com.niitcoder.coursegrade.domain.CourseAttachment;
-import com.niitcoder.coursegrade.domain.CourseAttachment_;
 import com.niitcoder.coursegrade.domain.StudentHomework;
 import com.niitcoder.coursegrade.service.CourseAttachmentService;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
@@ -59,9 +58,8 @@ public class StudentHomeworkResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new studentHomework, or with status {@code 400 (Bad Request)} if the studentHomework has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @ApiOperation(value = "提交作业")
     @PostMapping("/student-homeworks")
-    public ResponseEntity<StudentHomework> createStudentHomework(@RequestBody StudentHomework studentHomework) throws Exception {
+    public ResponseEntity<StudentHomework> createStudentHomework(@RequestBody StudentHomework studentHomework) throws URISyntaxException {
         log.debug("REST request to save StudentHomework : {}", studentHomework);
         if (studentHomework.getId() != null) {
             throw new BadRequestAlertException("A new studentHomework cannot already have an ID", ENTITY_NAME, "idexists");
@@ -87,12 +85,7 @@ public class StudentHomeworkResource {
         if (studentHomework.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        StudentHomework result = null;
-        try {
-            result = studentHomeworkService.save(studentHomework);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        StudentHomework result = studentHomeworkService.save(studentHomework);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, studentHomework.getId().toString()))
             .body(result);
@@ -101,7 +94,6 @@ public class StudentHomeworkResource {
     /**
      * {@code GET  /student-homeworks} : get all the studentHomeworks.
      *
-
      * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of studentHomeworks in body.
      */
@@ -132,7 +124,6 @@ public class StudentHomeworkResource {
      * @param id the id of the studentHomework to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @ApiOperation(value = "删除已提交作业及其附件")
     @DeleteMapping("/student-homeworks/{id}")
     public ResponseEntity<Void> deleteStudentHomework(@PathVariable Long id) {
         log.debug("REST request to delete StudentHomework : {}", id);
@@ -149,24 +140,14 @@ public class StudentHomeworkResource {
 
     }
 
-    @ApiOperation("查询课程得分")
-    @GetMapping("/student-homeworks-grade/{homework}")
-    public ResponseEntity getStudentHomeworkgrade(@PathVariable Long homework) {
-        String student = SecurityUtils.getCurrentUserLogin().get();
-        log.debug("REST request to get student-homeworks-grade : {}", homework, student);
-        Integer result = 0;
-        try {
-            result = studentHomeworkService.getOrderCourseGrade(homework, student);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BadRequestAlertException(e.getMessage(),ENTITY_NAME,"getStudentHomework get error");
-        }
-        return ResponseEntity.ok(result);
-
+    @GetMapping("/student-homeworks-grade/{homework}/{student}")
+    public ResponseEntity<Integer> getStudentHomework(@PathVariable Integer homework, @PathVariable String student) {
+        log.debug("REST request to get StudentHomework : {}", homework, student);
+        Integer result = studentHomeworkService.getOrderCourseGrade(homework, student);
+        return ResponseEntity.ok(
+            result
+        );
     }
-
-
-
     @ApiOperation(value = "通过学生名查询指定的一条学生提交的作业")
     @GetMapping("/student-homeworks/student")
     public ResponseEntity<Page<StudentHomework>> findCourseHomework(@RequestParam String student, Pageable pageable) {
