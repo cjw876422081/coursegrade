@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -25,4 +26,8 @@ public interface CourseInfoRepository extends JpaRepository<CourseInfo, Long> {
         "            SELECT course_id FROM course_group WHERE id=(\n" +
         "            SELECT group_id FROM student_course_group WHERE student=?1))")
     List<CourseInfo> findByStudent(String student);
+
+    Optional<CourseInfo> findById(Long id);
+
+    List<CourseInfo> findByCourseUser(String login);
 }

@@ -1,6 +1,5 @@
 package com.niitcoder.coursegrade.service.impl;
 
-import com.alibaba.fastjson.util.TypeUtils;
 import com.niitcoder.coursegrade.domain.*;
 import com.niitcoder.coursegrade.repository.*;
 import com.niitcoder.coursegrade.security.SecurityUtils;
@@ -9,16 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -34,12 +29,14 @@ public class CourseGroupServiceImpl implements CourseGroupService {
     private final StudentCourseGroupRepository studentCourseGroupRepository;
     private final CoursePlanRepository coursePlanRepository;
     private final CourseNoteRepository courseNoteRepository;
+    private final CourseInfoRepository courseInfoRepository;
 
-    public CourseGroupServiceImpl(CourseGroupRepository courseGroupRepository, StudentCourseGroupRepository studentCourseGroupRepository, CoursePlanRepository coursePlanRepository, CourseNoteRepository courseNoteRepository) {
+    public CourseGroupServiceImpl(CourseGroupRepository courseGroupRepository, StudentCourseGroupRepository studentCourseGroupRepository, CoursePlanRepository coursePlanRepository, CourseNoteRepository courseNoteRepository, CourseInfoRepository courseInfoRepository) {
         this.courseGroupRepository = courseGroupRepository;
         this.studentCourseGroupRepository = studentCourseGroupRepository;
         this.coursePlanRepository = coursePlanRepository;
         this.courseNoteRepository = courseNoteRepository;
+        this.courseInfoRepository = courseInfoRepository;
     }
 
     /**
@@ -91,23 +88,26 @@ public class CourseGroupServiceImpl implements CourseGroupService {
     public List<CourseGroup> findByCourseId(Long id) throws Exception {
         log.debug("Request to findByCourseName  : {}", id);
         String loginName = SecurityUtils.getCurrentUserLogin().get();
-        List<CourseGroup> courseGroups = courseGroupRepository.findByCourseCourseUser(loginName);
-        List<CourseGroup> courseGroupList=null;
-        if(courseGroups!=null&&courseGroups.size()>0) {
-            boolean flag=true;
-            for (CourseGroup courseGroup:courseGroups) {
-                if (courseGroup.getCourse().getId() == id) {
-                    flag=false;
-                    courseGroupList=courseGroupRepository.findByCourseId(id);
+        CourseInfo courseInfo=courseInfoRepository.findById(id).get();
+        List<CourseInfo> courseInfos=courseInfoRepository.findByCourseUser(loginName);
+        if(courseInfos!=null&&courseInfos.size()>0){
+            if(courseInfo!=null){
+                boolean flag=true;
+                for(CourseInfo courseInfo1:courseInfos){
+                    if(courseInfo1.getId()==courseInfo.getId()){
+                        flag=false;
+                    }
                 }
-            }
-            if(flag){
-                throw new Exception("该课程下未创建班级");
-            }else {
-                return courseGroupList;
+                if(flag){
+                    throw new Exception("无权限查询此课程下的班级");
+                }else{
+                    return courseGroupRepository.findByCourseId(id);
+                }
+            }else{
+                throw new Exception("此课程不存在");
             }
         }
-        throw new Exception("未创建班级");
+        throw new Exception("无权限查询开设班级");
     }
 
     /**

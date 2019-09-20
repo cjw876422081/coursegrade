@@ -142,14 +142,6 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
     }
 
     @Override
-    public Optional<StudentHomework> updateStudentHomeworkGrade(Long id, Long grade) {
-        log.debug("Request to update StudentHomeworkGrade : {},{}", id,grade);
-        String sql="UPDATE student_homework SET grade="+grade+" WHERE id="+id;
-        this.jdbcTemplate.update(sql);
-        return studentHomeworkRepository.findById(id);
-    }
-
-    @Override
     public Page<StudentHomework> getStudentHomeworkByCourseHomework(Long id,Pageable pageable) throws Exception{
         log.debug("Request to get StudentHomework : {}", id);
         //Optional<StudentHomework> courseInfo=studentHomeworkRepository.findById(id);
@@ -165,6 +157,24 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
             }
         }else {
             throw new Exception("该作业不存在");
+        }
+    }
+    @Override
+    public Optional<StudentHomework> updateStudentHomeworkGrade(Long id, Integer grade) throws Exception {
+        log.debug("Request to update StudentHomeworkGrade : {},{}", id,grade);
+        Optional<StudentHomework> studentHomework=studentHomeworkRepository.findById(id);
+        if(!studentHomework.isPresent()){
+            throw new Exception("该作业不存在");
+        }else {
+            String loginName = SecurityUtils.getCurrentUserLogin().get();
+            String teacher=studentHomework.get().getHomework().getPlan().getCourse().getCourseUser();
+            if(loginName.equals(teacher)){
+                String sql="UPDATE student_homework SET grade="+grade+" WHERE id="+id;
+                this.jdbcTemplate.update(sql);
+                return studentHomeworkRepository.findById(id);
+            }else{
+                throw new Exception("无权限对作业评分");
+            }
         }
     }
 }

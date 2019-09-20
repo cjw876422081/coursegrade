@@ -54,8 +54,8 @@ public interface StudentHomeworkService {
      */
     Page<StudentHomework> findHomework(String student, Pageable pageable) throws Exception;
 
-    Optional<StudentHomework> updateStudentHomeworkGrade(Long id,Long grade);
-
     Page<StudentHomework> getStudentHomeworkByCourseHomework(Long id,Pageable pageable) throws Exception;
+
+    Optional<StudentHomework> updateStudentHomeworkGrade(Long id,Integer grade) throws Exception;
 
 }

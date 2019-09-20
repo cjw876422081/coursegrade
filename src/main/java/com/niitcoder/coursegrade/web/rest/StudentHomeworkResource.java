@@ -148,7 +148,7 @@ public class StudentHomeworkResource {
             result
         );
     }
-    @ApiOperation(value = "查询指定的一条学生提交记录")
+    @ApiOperation(value = "通过学生名查询指定的一条学生提交的作业")
     @GetMapping("/student-homeworks/student")
     public ResponseEntity<Page<StudentHomework>> findCourseHomework(@RequestParam String student, Pageable pageable) {
         Page<StudentHomework> page = null;
@@ -163,7 +163,7 @@ public class StudentHomeworkResource {
 
 
     @GetMapping("/student-homeworks/id")
-    @ApiOperation(value="根据作业id查学生提交情况")
+    @ApiOperation(value="查询指定作业的学生提交记录")
     public ResponseEntity<Page<StudentHomework>> getStudentHomeworkByomeworkId(@RequestParam Long id,Pageable pageable) {
         log.debug("REST request Hto get StudentHomework : {}", id);
         try{
@@ -176,13 +176,16 @@ public class StudentHomeworkResource {
     }
 
     @PutMapping("/student-homeworks/id/grade")
-    public ResponseEntity<StudentHomework> updateStudentHomeworkGrade(@RequestParam Long id, @RequestParam Long grade) throws URISyntaxException {
-        log.debug("REST request to update StudentHomeworkGrade : {},{}", id, grade);
-        if (id == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+    @ApiOperation(value="给学生作业评分")
+    public ResponseEntity<StudentHomework> updateStudentHomeworkGrade(@RequestParam Long id,@RequestParam Integer grade) {
+        log.debug("REST request to update StudentHomeworkGrade : {},{}",id,grade);
+        Optional<StudentHomework> studentHomework = null;
+        try {
+            studentHomework = studentHomeworkService.updateStudentHomeworkGrade(id,grade);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "CourseGroup update error");
         }
-        Optional<StudentHomework> studentHomework = studentHomeworkService.updateStudentHomeworkGrade(id, grade);
         return ResponseUtil.wrapOrNotFound(studentHomework);
     }
-
 }

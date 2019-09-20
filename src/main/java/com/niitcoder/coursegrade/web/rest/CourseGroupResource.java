@@ -126,7 +126,7 @@ public class CourseGroupResource {
      * @param id the course of the courseGroup to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the courseGroup, or with status {@code 404 (Not Found)}.
      */
-    @ApiOperation("根据指定课程id查询已经开设的班级")
+    @ApiOperation("查询指定课程已经开设的班级")
     @GetMapping("/course-groups/id")
     public ResponseEntity<List<CourseGroup>> getCourseGroupByCourse(@RequestParam Long id) {
         log.debug("REST request to get CourseGroup : {}", id);
