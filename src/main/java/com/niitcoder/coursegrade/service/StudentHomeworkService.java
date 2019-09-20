@@ -7,6 +7,7 @@ import com.niitcoder.coursegrade.service.dto.StudentHomewrokDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -46,15 +47,15 @@ public interface StudentHomeworkService {
      */
     void delete(Long id);
 
-    Integer getOrderCourseGrade(Integer homework , String  student) ;
+    Integer getOrderCourseGrade(Long homework , String  student) throws Exception;
 
     /**
      * 根据student查询一条作业提交记录
      */
-    Page<StudentHomework> findHomework(String name,Pageable pageable);
-
-    Page<StudentHomewrokDTO> getStudentHomeworkByCourseHomework(String homeworkCode, Pageable pageable);
+    Page<StudentHomework> findHomework(String student, Pageable pageable) throws Exception;
 
     Optional<StudentHomework> updateStudentHomeworkGrade(Long id,Long grade);
+
+    Page<StudentHomework> getStudentHomeworkByCourseHomework(Long id,Pageable pageable) throws Exception;
 
 }

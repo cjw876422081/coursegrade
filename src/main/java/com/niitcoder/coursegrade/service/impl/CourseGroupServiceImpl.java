@@ -1,25 +1,21 @@
 package com.niitcoder.coursegrade.service.impl;
 
-import com.niitcoder.coursegrade.domain.CourseInfo;
-import com.niitcoder.coursegrade.service.CourseGroupService;
-import com.niitcoder.coursegrade.domain.CourseGroup;
-import com.niitcoder.coursegrade.repository.CourseGroupRepository;
 import com.alibaba.fastjson.util.TypeUtils;
-import com.niitcoder.coursegrade.service.dto.CourseGroupDTO;
+import com.niitcoder.coursegrade.domain.*;
+import com.niitcoder.coursegrade.repository.*;
+import com.niitcoder.coursegrade.security.SecurityUtils;
+import com.niitcoder.coursegrade.service.CourseGroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +31,15 @@ public class CourseGroupServiceImpl implements CourseGroupService {
     private final Logger log = LoggerFactory.getLogger(CourseGroupServiceImpl.class);
 
     private final CourseGroupRepository courseGroupRepository;
-    private final JdbcTemplate jdbcTemplate;
+    private final StudentCourseGroupRepository studentCourseGroupRepository;
+    private final CoursePlanRepository coursePlanRepository;
+    private final CourseNoteRepository courseNoteRepository;
 
-    public CourseGroupServiceImpl(CourseGroupRepository courseGroupRepository, JdbcTemplate jdbcTemplate) {
+    public CourseGroupServiceImpl(CourseGroupRepository courseGroupRepository, StudentCourseGroupRepository studentCourseGroupRepository, CoursePlanRepository coursePlanRepository, CourseNoteRepository courseNoteRepository) {
         this.courseGroupRepository = courseGroupRepository;
-        this.jdbcTemplate = jdbcTemplate;
+        this.studentCourseGroupRepository = studentCourseGroupRepository;
+        this.coursePlanRepository = coursePlanRepository;
+        this.courseNoteRepository = courseNoteRepository;
     }
 
     /**
@@ -49,24 +49,66 @@ public class CourseGroupServiceImpl implements CourseGroupService {
      * @return the persisted entity.
      */
     @Override
-    public CourseGroup save(CourseGroup courseGroup) {
+    public CourseGroup save(CourseGroup courseGroup) throws Exception {
         log.debug("Request to save CourseGroup : {}", courseGroup);
-        return courseGroupRepository.save(courseGroup);
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        List<CourseGroup> courseGroups=courseGroupRepository.findByCourseCourseUser(loginName);
+        if(courseGroups!=null &&courseGroups.size()>0){
+            courseGroup.setDataTime(ZonedDateTime.now());
+            courseGroup.setCourse(courseGroups.get(0).getCourse());
+            return courseGroupRepository.save(courseGroup);
+        }else{
+            throw new Exception("无创建和更改班级权限.");
+        }
     }
 
     /**
      * Get all the courseGroups.
      *
-     * @param pageable the pagination information.
+     *
      * @return the list of entities.
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<CourseGroup> findAll(Pageable pageable) {
+    public List<CourseGroup> findAll() throws Exception {
         log.debug("Request to get all CourseGroups");
-        return courseGroupRepository.findAll(pageable);
+
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        List<CourseGroup> courseGroups=courseGroupRepository.findByCourseCourseUser(loginName);
+        if(courseGroups!=null && courseGroups.size()>0){
+            return courseGroups;
+        }else{
+            throw new Exception("无查询班级权限.");
+        }
     }
 
+    /**
+     * 通过课程ID检索开设的班级
+     * @param id
+     * @return
+     */
+    @Override
+    public List<CourseGroup> findByCourseId(Long id) throws Exception {
+        log.debug("Request to findByCourseName  : {}", id);
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        List<CourseGroup> courseGroups = courseGroupRepository.findByCourseCourseUser(loginName);
+        List<CourseGroup> courseGroupList=null;
+        if(courseGroups!=null&&courseGroups.size()>0) {
+            boolean flag=true;
+            for (CourseGroup courseGroup:courseGroups) {
+                if (courseGroup.getCourse().getId() == id) {
+                    flag=false;
+                    courseGroupList=courseGroupRepository.findByCourseId(id);
+                }
+            }
+            if(flag){
+                throw new Exception("该课程下未创建班级");
+            }else {
+                return courseGroupList;
+            }
+        }
+        throw new Exception("未创建班级");
+    }
 
     /**
      * Get one courseGroup by id.
@@ -76,77 +118,74 @@ public class CourseGroupServiceImpl implements CourseGroupService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<CourseGroup> findOne(Long id) {
+    public Optional<CourseGroup> findOne(Long id) throws Exception {
         log.debug("Request to get CourseGroup : {}", id);
-        return courseGroupRepository.findById(id);
-    }
-
-    /**
-     * list转page
-     * @param list
-     * @param pageable
-     * @param <T>
-     * @return
-     */
-    public <T> Page<T> listConvertToPage(List<T> list, Pageable pageable) {
-        int start = (int)pageable.getOffset();
-        int end = (start + pageable.getPageSize()) > list.size() ? list.size() : ( start + pageable.getPageSize());
-        return new PageImpl<T>(list.subList(start, end), pageable, list.size());
-    }
-    /**
-     * Get one courseGroup by course.
-     *
-     * @param course the course of the entity.
-     * @return the entity.
-     *//*
-    @Override
-    @Transactional(readOnly = true)
-    public List<CourseGroup> findGroupByCourse(CourseInfo course) {
-        log.debug("Request to get CourseGroup : {}", course);
-        return courseGroupRepository.findAllByCourse(course);
-    }*/
-
-    /**
-     * 通过课程名检索课程
-     * @param course
-     * @return
-     */
-    @Override
-    public Page<CourseGroupDTO> findByCourse(String course,Pageable pageable) {
-        log.debug("Request to findByCourseName  : {}", course);
-        String sql="SELECT a.* FROM course_group a,course_info b WHERE b.course_name = '"+
-                    course+"' AND a.course_id = b.id";
-
-        List<Map<String,Object>> sqlResult=this.jdbcTemplate.queryForList(sql);
-        List<CourseGroupDTO> result = new ArrayList<CourseGroupDTO>();
-
-        if(sqlResult!=null && sqlResult.size()>0){
-            for (Map<String, Object> sqlItem : sqlResult) {
-                CourseGroupDTO item=new CourseGroupDTO();
-                item.setId(TypeUtils.castToLong(sqlItem.get("id")));
-                item.setGroupCode(TypeUtils.castToString(sqlItem.get("group_code")));
-                item.setGroupName(TypeUtils.castToString(sqlItem.get("group_name")));
-                item.setGroupCount(TypeUtils.castToInt(sqlItem.get("group_count")));
-
-                String time=TypeUtils.castToString(sqlItem.get("data_time"));
-                time=time.replace(".0",".000Z").replace(" ","T");
-                item.setDataTime(ZonedDateTime.parse(time, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.systemDefault())));
-
-                result.add(item);
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        List<CourseGroup> courseGroups=courseGroupRepository.findByCourseCourseUser(loginName);
+        if(courseGroups!=null && courseGroups.size()>0){
+            boolean flag=true;
+            for(CourseGroup courseGroup: courseGroups){
+                if(courseGroup.getId()==id){
+                    flag=false;
+                    break;
+                }
             }
-            return listConvertToPage(result,  pageable);
+            if(flag){
+                throw new Exception("无权限查询此班级.");
+            }else{
+                return courseGroupRepository.findById(id);
+            }
         }
-        return null;
+        throw new Exception("无权限查询班级.");
     }
-
     /**
      * Delete the courseGroup by id.
      *
      * @param id the id of the entity.
      */
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws Exception {
         log.debug("Request to delete CourseGroup : {}", id);
-        courseGroupRepository.deleteById(id);
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        //查询用户创建的班级，检查用户是否创建过班级，若没有则没有权限解散班级
+        List<CourseGroup> courseGroups=courseGroupRepository.findByCourseCourseUser(loginName);
+        if(courseGroups!=null &&courseGroups.size()>0){
+            //默认没有权限删除班级，设置flag为false
+            boolean flag=false;
+           // 检查将要删除的班级是否是该用户创建
+            for(CourseGroup item: courseGroups){
+                //若在用户创建的班级中找到将要删除的班级的id，将flag设置为true
+                if(item.getId()==id){
+                    flag=true;
+                    break;
+                }
+            }
+            //flag为true时
+            if(flag){
+                //检查将要删除的班级是否有学生，若有则不能解散班级
+                List<StudentCourseGroup> studentCourseGroups= studentCourseGroupRepository.findByGroupId(id);
+                if(studentCourseGroups!=null &&studentCourseGroups.size()>0){
+                    throw new Exception("班级存在学生加入信息.");
+                }
+                //通过班级id找到课程id
+                Long courseInfoId=courseGroupRepository.findById(id).get().getCourse().getId();
+
+                //检查课程有没有笔记
+                Page<CourseNote> notes=courseNoteRepository.findByCourseId(courseInfoId, PageRequest.of(0,5));
+                if(notes.getTotalElements()>0){
+                    throw new Exception("班级对应课程存在笔记信息。");
+                }
+                //检查课程有没有授课内容
+                List<CoursePlan> plans=coursePlanRepository.findByCourseId(courseInfoId);
+                if(plans!=null && !plans.isEmpty()){
+                    throw new Exception("班级对应课程已经存在授课内容信息。");
+                }
+                courseGroupRepository.deleteById(id);
+            }else{//flag为false时
+                throw new Exception("无权限解散此班级.");
+            }
+        }else{
+            throw new Exception("无权限解散班级.");
+        }
     }
 }
