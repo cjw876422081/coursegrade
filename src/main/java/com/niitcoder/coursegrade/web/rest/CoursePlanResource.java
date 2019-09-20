@@ -1,6 +1,5 @@
 package com.niitcoder.coursegrade.web.rest;
 
-import com.niitcoder.coursegrade.domain.CourseInfo;
 import com.niitcoder.coursegrade.domain.CoursePlan;
 import com.niitcoder.coursegrade.service.CoursePlanService;
 import com.niitcoder.coursegrade.service.dto.CourseInfoPlan;
@@ -10,6 +9,7 @@ import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +33,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api")
+@Api("授课内容接口")
 public class CoursePlanResource {
 
     private final Logger log = LoggerFactory.getLogger(CoursePlanResource.class);
@@ -68,25 +68,18 @@ public class CoursePlanResource {
             .body(result);
     }
 
-    /**
-     * {@code PUT  /course-plans} : Updates an existing coursePlan.
-     *
-     * @param coursePlan the coursePlan to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated coursePlan,
-     * or with status {@code 400 (Bad Request)} if the coursePlan is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the coursePlan couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
+    @ApiOperation(value = "修改课程信息")
     @PutMapping("/course-plans")
     public ResponseEntity<CoursePlan> updateCoursePlan(@RequestBody CoursePlan coursePlan) throws URISyntaxException {
         log.debug("REST request to update CoursePlan : {}", coursePlan);
         if (coursePlan.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        CoursePlan coursePlan1 = new CoursePlan();
+        coursePlan1 = coursePlanService.findOne(coursePlan.getId()).get();
+        coursePlan.setDataTime(coursePlan1.getDataTime());
         CoursePlan result = coursePlanService.save(coursePlan);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, coursePlan.getId().toString()))
-            .body(result);
+        return ResponseEntity.ok(coursePlan);
     }
 
     /**
@@ -133,7 +126,7 @@ public class CoursePlanResource {
     @ApiImplicitParam(name = "id", value = "授课内容父级id")
     @GetMapping("/course-plans/child/{id}")
     public ResponseEntity<List<CoursePlan>> getCoursePlanByParentsId(@PathVariable Long id) {
-//        log.debug("REST request to get getCoursePlanByParentsId : {}", id);
+        log.debug("REST request to get getCoursePlanByParentsId : {}", id);
         List<CoursePlan> coursePlan = coursePlanService.getPlanByParentId(id);
         return ResponseEntity.ok(coursePlan);
     }
