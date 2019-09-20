@@ -113,16 +113,4 @@ public class CourseAttachmentServiceImpl implements CourseAttachmentService {
         log.debug("Request to delete CourseAttachment : {}", id);
         courseAttachmentRepository.deleteById(id);
     }
-
-    @Override
-    public Optional<List<CourseAttachment>> getCourseAttachmentsByFileUserAndHomeworkId(String fileUser, Long homeworkId) {
-        log.debug("Request to get CourseAttachments : {}",fileUser,homeworkId);
-        return courseAttachmentRepository.findCourseAttachmentsByFileUserAndHomework_Id(fileUser, homeworkId);
-    }
-
-    @Override
-    public void deleteByFileUserAndHomeworkId(String fileUser, Long homeworkId) {
-        log.debug("Request to delete CourseAttachment ：{}",fileUser,homeworkId);
-        courseAttachmentRepository.deleteCourseAttachmentByFileUserAndHomework_Id(fileUser,homeworkId);
-    }
 }

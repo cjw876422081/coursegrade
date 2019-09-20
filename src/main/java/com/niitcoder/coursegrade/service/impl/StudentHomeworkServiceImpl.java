@@ -1,6 +1,9 @@
 package com.niitcoder.coursegrade.service.impl;
 
 import com.alibaba.fastjson.util.TypeUtils;
+import com.niitcoder.coursegrade.domain.CourseAttachment;
+import com.niitcoder.coursegrade.repository.CourseAttachmentRepository;
+import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
 import com.niitcoder.coursegrade.domain.StudentHomework;
 import com.niitcoder.coursegrade.repository.StudentHomeworkRepository;
@@ -18,10 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Service Implementation for managing {@link StudentHomework}.
@@ -33,10 +33,12 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
     private final Logger log = LoggerFactory.getLogger(StudentHomeworkServiceImpl.class);
 
     private final StudentHomeworkRepository studentHomeworkRepository;
+    private final CourseAttachmentRepository courseAttachmentRepository;
     private final JdbcTemplate jdbcTemplate;
 
-    public StudentHomeworkServiceImpl(StudentHomeworkRepository studentHomeworkRepository, JdbcTemplate jdbcTemplate) {
+    public StudentHomeworkServiceImpl(StudentHomeworkRepository studentHomeworkRepository, CourseAttachmentRepository courseAttachmentRepository,JdbcTemplate jdbcTemplate) {
         this.studentHomeworkRepository = studentHomeworkRepository;
+        this.courseAttachmentRepository = courseAttachmentRepository;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -47,9 +49,34 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
      * @return the persisted entity.
      */
     @Override
-    public StudentHomework save(StudentHomework studentHomework) {
+    public StudentHomework save(StudentHomework studentHomework) throws Exception {
         log.debug("Request to save StudentHomework : {}", studentHomework);
-        return studentHomeworkRepository.save(studentHomework);
+        Long homeworkId = studentHomework.getHomework().getId();
+        // 验证学生提交作业对应的作业是否属于自己的课程
+       String sql = "SELECT c4.id " +
+                   "FROM student_course_group s1,course_group c1,course_info c2,course_plan c3,course_homework c4 " +
+                   "WHERE s1.group_id=c1.id " +
+                   "AND c1.course_id=c2.id " +
+                   "AND c3.course_id=c2.id " +
+                   "AND c4.plan_id=c3.id " +
+                   "AND c3.parent_plan_id !=\"\";";
+        List<Map<String,Object>> list=this.jdbcTemplate.queryForList(sql);
+        Boolean flag = false;
+        for (int i = 0; i <list.size() ; i++) {
+            Map idMap = list.get(i);
+           if(idMap.get("id") == homeworkId){
+               flag = true;
+               break;
+           }
+        }
+        if(flag){
+            String loginName = SecurityUtils.getCurrentUserLogin().get();
+            studentHomework.setStudent(loginName);
+            studentHomework.setSubmitTime(ZonedDateTime.now());
+            studentHomeworkRepository.save(studentHomework);
+            return studentHomework;
+        }
+        throw new Exception("该作业不属于你的课程！");
     }
 
     /**
@@ -87,6 +114,14 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
     @Override
     public void delete(Long id) {
         log.debug("Request to delete StudentHomework : {}", id);
+        Optional<StudentHomework> studentHomework = studentHomeworkRepository.findById(id);
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        Long homeworkId = studentHomework.get().getHomework().getId();
+        // 查找提交作业时所携带的附件 如果有则删除
+        Optional<List<CourseAttachment>> courseAttachments = courseAttachmentRepository.findCourseAttachmentsByFileUserAndHomework_Id(loginName,homeworkId);
+        if(courseAttachments.isPresent()){
+            courseAttachmentRepository.deleteCourseAttachmentByFileUserAndHomework_Id(loginName,homeworkId);
+        }
         studentHomeworkRepository.deleteById(id);
     }
 

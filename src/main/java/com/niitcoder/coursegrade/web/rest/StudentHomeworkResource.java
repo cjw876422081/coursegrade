@@ -11,6 +11,7 @@ import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,11 +45,9 @@ public class StudentHomeworkResource {
 
     private final StudentHomeworkService studentHomeworkService;
 
-    private final CourseAttachmentService courseAttachmentService;
 
     public StudentHomeworkResource(StudentHomeworkService studentHomeworkService, CourseAttachmentService courseAttachmentService) {
         this.studentHomeworkService = studentHomeworkService;
-        this.courseAttachmentService = courseAttachmentService;
     }
 
     /**
@@ -58,8 +57,9 @@ public class StudentHomeworkResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new studentHomework, or with status {@code 400 (Bad Request)} if the studentHomework has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @ApiOperation(value = "提交作业")
     @PostMapping("/student-homeworks")
-    public ResponseEntity<StudentHomework> createStudentHomework(@RequestBody StudentHomework studentHomework) throws URISyntaxException {
+    public ResponseEntity<StudentHomework> createStudentHomework(@RequestBody StudentHomework studentHomework) throws Exception {
         log.debug("REST request to save StudentHomework : {}", studentHomework);
         if (studentHomework.getId() != null) {
             throw new BadRequestAlertException("A new studentHomework cannot already have an ID", ENTITY_NAME, "idexists");
@@ -80,7 +80,7 @@ public class StudentHomeworkResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/student-homeworks")
-    public ResponseEntity<StudentHomework> updateStudentHomework(@RequestBody StudentHomework studentHomework) throws URISyntaxException {
+    public ResponseEntity<StudentHomework> updateStudentHomework(@RequestBody StudentHomework studentHomework) throws Exception {
         log.debug("REST request to update StudentHomework : {}", studentHomework);
         if (studentHomework.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -126,17 +126,10 @@ public class StudentHomeworkResource {
      * @param id the id of the studentHomework to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
+    @ApiOperation(value = "删除已提交作业及其附件")
     @DeleteMapping("/student-homeworks/{id}")
     public ResponseEntity<Void> deleteStudentHomework(@PathVariable Long id) {
         log.debug("REST request to delete StudentHomework : {}", id);
-        Optional<StudentHomework> studentHomework = studentHomeworkService.findOne(id);
-        Long homeworkId = studentHomework.get().getHomework().getId();
-        String loginName = SecurityUtils.getCurrentUserLogin().get();
-        // 查找提交作业时所携带的附件 如果有则删除
-        Optional<List<CourseAttachment>> courseAttachments = courseAttachmentService.getCourseAttachmentsByFileUserAndHomeworkId(loginName,homeworkId);
-        if(courseAttachments.isPresent()){
-            courseAttachmentService.deleteByFileUserAndHomeworkId(loginName,homeworkId);
-        }
         studentHomeworkService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
 
@@ -145,9 +138,7 @@ public class StudentHomeworkResource {
     public ResponseEntity<Integer> getStudentHomework(@PathVariable Integer homework , @PathVariable String student) {
         log.debug("REST request to get StudentHomework : {}", homework , student);
         Integer result = studentHomeworkService.getOrderCourseGrade(homework , student) ;
-        return ResponseEntity.ok(
-            result
-        );
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/student-homeworks/name")
