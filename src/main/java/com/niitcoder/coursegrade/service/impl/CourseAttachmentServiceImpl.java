@@ -49,6 +49,7 @@ public class CourseAttachmentServiceImpl implements CourseAttachmentService {
     public CourseAttachment save(CourseAttachment courseAttachment) {
         log.debug("Request to save CourseAttachment : {}", courseAttachment);
         return courseAttachmentRepository.save(courseAttachment);
+
     }
 
     @Override
