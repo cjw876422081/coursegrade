@@ -15,4 +15,6 @@ import java.util.List;
 @Repository
 public interface StudentCourseGroupRepository extends JpaRepository<StudentCourseGroup, Long> {
 
+    List<StudentCourseGroup> findByGroupId(Long id);
+
 }

@@ -22,16 +22,10 @@ public interface CourseGroupService {
      * @param courseGroup the entity to save.
      * @return the persisted entity.
      */
-    CourseGroup save(CourseGroup courseGroup);
+    CourseGroup save(CourseGroup courseGroup) throws Exception;
 
-    /**
-     * Get all the courseGroups.
-     *
-     * @param pageable the pagination information.
-     * @return the list of entities.
-     */
-    Page<CourseGroup> findAll(Pageable pageable);
 
+    List<CourseGroup> findAll() throws Exception;
 
     /**
      * Get the "id" courseGroup.
@@ -42,19 +36,9 @@ public interface CourseGroupService {
     Optional<CourseGroup> findOne(Long id);
 
     /**
-     * Get the "course" courseGroup.
-     *
-     * @param course the course of the entity.
-     * @return the entity.
-     */
-    /*List<CourseGroup> findGroupByCourse(CourseInfo course);*/
-
-
-    Page<CourseGroupDTO> findByCourse(String course,Pageable pageable);
-    /**
      * Delete the "id" courseGroup.
      *
      * @param id the id of the entity.
      */
-    void delete(Long id);
+    void delete(Long id) throws Exception;
 }

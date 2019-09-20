@@ -9,6 +9,7 @@ import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,13 +54,20 @@ public class CourseGroupResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new courseGroup, or with status {@code 400 (Bad Request)} if the courseGroup has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @ApiOperation(value="开设班级")
     @PostMapping("/course-groups")
     public ResponseEntity<CourseGroup> createCourseGroup(@RequestBody CourseGroup courseGroup) throws URISyntaxException {
         log.debug("REST request to save CourseGroup : {}", courseGroup);
         if (courseGroup.getId() != null) {
             throw new BadRequestAlertException("A new courseGroup cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        CourseGroup result = courseGroupService.save(courseGroup);
+        CourseGroup result = null;
+        try {
+            result = courseGroupService.save(courseGroup);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "CourseGroup Create error");
+        }
         return ResponseEntity.created(new URI("/api/course-groups/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -74,13 +82,20 @@ public class CourseGroupResource {
      * or with status {@code 500 (Internal Server Error)} if the courseGroup couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @ApiOperation(value = "更新班级信息")
     @PutMapping("/course-groups")
     public ResponseEntity<CourseGroup> updateCourseGroup(@RequestBody CourseGroup courseGroup) throws URISyntaxException {
         log.debug("REST request to update CourseGroup : {}", courseGroup);
         if (courseGroup.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        CourseGroup result = courseGroupService.save(courseGroup);
+        CourseGroup result = null;
+        try {
+            result = courseGroupService.save(courseGroup);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "CourseGroup Update error");
+        }
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, courseGroup.getId().toString()))
             .body(result);
@@ -89,17 +104,20 @@ public class CourseGroupResource {
     /**
      * {@code GET  /course-groups} : get all the courseGroups.
      *
-
-     * @param pageable the pagination information.
-
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of courseGroups in body.
      */
+    @ApiOperation(value="查询所有已经开设的班级")
     @GetMapping("/course-groups")
-    public ResponseEntity<List<CourseGroup>> getAllCourseGroups(Pageable pageable) {
+    public ResponseEntity<List<CourseGroup>> getAllCourseGroups() {/*根据login*/
         log.debug("REST request to get a page of CourseGroups");
-        Page<CourseGroup> page = courseGroupService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        List<CourseGroup> courseGroups = null;
+        try {
+            courseGroups = courseGroupService.findAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "CourseGroup FindAll error");
+        }
+        return ResponseEntity.ok(courseGroups);
     }
 
     /**
@@ -108,6 +126,7 @@ public class CourseGroupResource {
      * @param id the id of the courseGroup to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the courseGroup, or with status {@code 404 (Not Found)}.
      */
+    @ApiOperation(value="通过id查询已经开设班级")
     @GetMapping("/course-groups/{id}")
     public ResponseEntity<CourseGroup> getCourseGroup(@PathVariable Long id) {
         log.debug("REST request to get CourseGroup : {}", id);
@@ -116,29 +135,21 @@ public class CourseGroupResource {
     }
 
     /**
-     * {@code GET  /course-groups/:id} : get the "id" courseGroup.
-     *
-     * @param course the course of the courseGroup to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the courseGroup, or with status {@code 404 (Not Found)}.
-     */
-    @GetMapping("/course-groups/course")
-    public ResponseEntity<List<CourseGroupDTO>> getCourseGroupByCourse(@RequestParam String course,Pageable pageable) {
-        log.debug("REST request to get CourseGroup : {}", course);
-        Page<CourseGroupDTO> page = courseGroupService.findByCourse(course,pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
-    }
-
-    /**
      * {@code DELETE  /course-groups/:id} : delete the "id" courseGroup.
      *
      * @param id the id of the courseGroup to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
+    @ApiOperation(value="解散班级")
     @DeleteMapping("/course-groups/{id}")
     public ResponseEntity<Void> deleteCourseGroup(@PathVariable Long id) {
         log.debug("REST request to delete CourseGroup : {}", id);
-        courseGroupService.delete(id);
+        try {
+            courseGroupService.delete(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "CourseGroup Delete error");
+        }
 
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }

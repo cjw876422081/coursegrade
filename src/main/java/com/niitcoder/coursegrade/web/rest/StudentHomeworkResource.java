@@ -1,7 +1,6 @@
 package com.niitcoder.coursegrade.web.rest;
 
 import com.niitcoder.coursegrade.domain.CourseAttachment;
-import com.niitcoder.coursegrade.domain.CourseAttachment_;
 import com.niitcoder.coursegrade.domain.StudentHomework;
 import com.niitcoder.coursegrade.service.CourseAttachmentService;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
@@ -11,6 +10,7 @@ import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
