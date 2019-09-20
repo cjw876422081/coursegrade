@@ -55,7 +55,7 @@ public class StudentHomeworkResourceIT {
     private static final Integer DEFAULT_GRADE = 1;
     private static final Integer UPDATED_GRADE = 2;
     private static final Integer SMALLER_GRADE = 1 - 1;
-    
+
     private static final String DEFAULT_STUDENT = "AAAAAAAAAA";
     private static final String UPDATED_STUDENT = "BBBBBBBBBB";
 
@@ -201,7 +201,7 @@ public class StudentHomeworkResourceIT {
             .andExpect(jsonPath("$.[*].student").value(hasItem(DEFAULT_STUDENT.toString())))
             .andExpect(jsonPath("$.[*].teacher").value(hasItem(DEFAULT_TEACHER.toString())));
     }
-
+    
     @Test
     @Transactional
     public void getStudentHomework() throws Exception {

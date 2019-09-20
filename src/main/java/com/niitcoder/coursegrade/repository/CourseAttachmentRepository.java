@@ -18,7 +18,7 @@ import java.util.Optional;
 public interface CourseAttachmentRepository extends JpaRepository<CourseAttachment, Long> {
 
     /**
-     * 查询已提交作业所携带的附件
+     * 查询作业附件
      * @param fileUser
      * @param homeworkId
      * @return
@@ -26,10 +26,10 @@ public interface CourseAttachmentRepository extends JpaRepository<CourseAttachme
     Optional<List<CourseAttachment>> findCourseAttachmentsByFileUserAndHomework_Id(String fileUser,Long homeworkId);
 
     /**
-     * 删除已提交作业所携带的附件
+     * 删除作业附件
      * @param fileUser
-     * @param homeworkId
+     * @param id
      */
-    void deleteCourseAttachmentByFileUserAndHomework_Id(String fileUser,Long homeworkId);
+    void deleteCourseAttachmentByFileUserAndHomework_Id(String fileUser,Long id);
 
 }

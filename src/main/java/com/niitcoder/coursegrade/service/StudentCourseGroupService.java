@@ -56,10 +56,10 @@ public interface StudentCourseGroupService {
      *
      * @param id the id of the entity.
      */
-    void delete( String student, Long id) throws Exception;
+    void delete(Long id);
 
-    List<Map<String, Object>> getCourseGroup(String student , Long course_id ) throws Exception;
+    List<Map<String, Object>> getCourseGroup(String student , Long course_id ) ;
 
-    List<Map<String, Object>> getMyCourse(String student ) throws Exception;
+    List<CourseInfo> getMyCourse(String student);
 
 }
