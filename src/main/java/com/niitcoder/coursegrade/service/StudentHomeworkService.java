@@ -21,7 +21,7 @@ public interface StudentHomeworkService {
      * @param studentHomework the entity to save.
      * @return the persisted entity.
      */
-    StudentHomework save(StudentHomework studentHomework);
+    StudentHomework save(StudentHomework studentHomework) throws Exception;
 
     /**
      * Get all the studentHomeworks.

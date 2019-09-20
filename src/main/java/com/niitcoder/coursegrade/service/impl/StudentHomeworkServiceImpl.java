@@ -52,9 +52,33 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
      * @return the persisted entity.
      */
     @Override
-    public StudentHomework save(StudentHomework studentHomework) {
+    public StudentHomework save(StudentHomework studentHomework) throws Exception {
         log.debug("Request to save StudentHomework : {}", studentHomework);
-        return studentHomeworkRepository.save(studentHomework);
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        Long homeworkId = studentHomework.getHomework().getId();
+        String sql = "SELECT c4.id " +
+            "FROM student_course_group s1,course_group c1,course_info c2,course_plan c3,course_homework c4 " +
+            "WHERE s1.group_id=c1.id " +
+            "AND c1.course_id=c2.id " +
+            "AND c3.course_id=c2.id " +
+            "AND c4.plan_id=c3.id " +
+            "AND c3.parent_plan_id !=\"\";";
+        List<Map<String,Object>> list = this.jdbcTemplate.queryForList(sql);
+        Boolean flag = false;
+        for (int i = 0; i <list.size() ; i++) {
+           Map idMap = list.get(i);
+            if(idMap.get("id")==homeworkId){
+                flag = true;
+                break;
+            }
+        }
+        if(flag){
+            studentHomework.setStudent(loginName);
+            studentHomework.setSubmitTime(ZonedDateTime.now());
+            studentHomeworkRepository.save(studentHomework);
+            return studentHomework;
+        }
+       throw new Exception("该作业不属于你的课程！");
     }
 
     /**
