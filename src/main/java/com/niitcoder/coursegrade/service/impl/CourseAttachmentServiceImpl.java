@@ -29,7 +29,6 @@ import java.util.Optional;
 @Service
 @Transactional
 public class CourseAttachmentServiceImpl implements CourseAttachmentService {
-
     private final Logger log = LoggerFactory.getLogger(CourseAttachmentServiceImpl.class);
 
     private final CourseAttachmentRepository courseAttachmentRepository;
@@ -53,26 +52,26 @@ public class CourseAttachmentServiceImpl implements CourseAttachmentService {
 
     @Override
     public CourseAttachment save(String type, Long entity, FileInfo fileInfo) {
-        CourseAttachment courseAttachment=new CourseAttachment();
+        CourseAttachment courseAttachment = new CourseAttachment();
         courseAttachment.setAttachmentType(type);
         courseAttachment.setFileName(fileInfo.getFullPath());
         courseAttachment.setFilePath(fileInfo.getPath());
         courseAttachment.setFileUser(SecurityUtils.getCurrentUserLogin().get());
         courseAttachment.setFileSize(fileInfo.getSize());
-        courseAttachment.setOriginName(fileInfo.getFileName()+"."+fileInfo.getFileExtName());
+        courseAttachment.setOriginName(fileInfo.getFileName() + "." + fileInfo.getFileExtName());
         courseAttachment.setUploadTime(ZonedDateTime.now());
         //根据类型创建对象
-        if(type.equalsIgnoreCase(CourseNoteType.NOTE)){
-            CourseNote note=new CourseNote();
+        if (type.equalsIgnoreCase(CourseNoteType.NOTE)) {
+            CourseNote note = new CourseNote();
             note.setId(entity);
             courseAttachment.setNote(note);
 
-        }else if(type.equalsIgnoreCase(CourseNoteType.HOMEWORK)){
-            StudentHomework homework=new StudentHomework();
+        } else if (type.equalsIgnoreCase(CourseNoteType.HOMEWORK)) {
+            StudentHomework homework = new StudentHomework();
             homework.setId(entity);
             courseAttachment.setHomework(homework);
         }
-        courseAttachment=courseAttachmentRepository.save(courseAttachment);
+        courseAttachment = courseAttachmentRepository.save(courseAttachment);
         return courseAttachment;
     }
 
@@ -115,14 +114,13 @@ public class CourseAttachmentServiceImpl implements CourseAttachmentService {
     }
 
     @Override
-    public Optional<List<CourseAttachment>> getCourseAttachmentsByFileUserAndHomeworkId(String fileUser, Long homeworkId) {
-        log.debug("Request to get CourseAttachments : {}",fileUser,homeworkId);
-        return courseAttachmentRepository.findCourseAttachmentsByFileUserAndHomework_Id(fileUser, homeworkId);
+    public void deleteByFileUserAndHomeworkId(String loginName, Long homeworkId) {
+
     }
 
     @Override
-    public void deleteByFileUserAndHomeworkId(String fileUser, Long homeworkId) {
-        log.debug("Request to delete CourseAttachment ：{}",fileUser,homeworkId);
-        courseAttachmentRepository.deleteCourseAttachmentByFileUserAndHomework_Id(fileUser,homeworkId);
+    public Optional<List<CourseAttachment>> getCourseAttachmentsByFileUserAndHomeworkId(String loginName, Long homeworkId) {
+        return Optional.empty();
     }
 }
+

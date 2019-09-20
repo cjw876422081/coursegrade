@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -18,6 +19,7 @@ import java.util.List;
 public interface StudentHomeworkRepository extends JpaRepository<StudentHomework, Long> {
 
     List<StudentHomework> findByStudent(String student, Pageable pageable);
+    Optional<StudentHomework>findByHomeworkIdAndAndStudent(Long homework , String string ) ;
 
     List<StudentHomework> findByHomeworkId(Long id);
 }

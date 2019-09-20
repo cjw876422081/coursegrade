@@ -48,19 +48,7 @@ public interface CourseAttachmentService {
      */
     void delete(Long id);
 
-    /**
-     * 查找作业附件
-     * @param fileUser
-     * @param homeworkId
-     * @return
-     */
-    Optional<List<CourseAttachment>> getCourseAttachmentsByFileUserAndHomeworkId(String fileUser,Long homeworkId);
+    void deleteByFileUserAndHomeworkId(String loginName, Long homeworkId);
 
-    /**
-     * 删除作业附件
-     * @param fileUser
-     * @param homeworkId
-     */
-    void deleteByFileUserAndHomeworkId(String fileUser,Long homeworkId);
-
+    Optional<List<CourseAttachment>> getCourseAttachmentsByFileUserAndHomeworkId(String loginName, Long homeworkId);
 }
