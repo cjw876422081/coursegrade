@@ -115,10 +115,31 @@ public class CourseGroupResource {
             courseGroups = courseGroupService.findAll();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "CourseGroup FindAll error");
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "CourseGroup GetdAll error");
         }
         return ResponseEntity.ok(courseGroups);
     }
+
+    /**
+     * {@code GET  /course-groups/:id} : get the "id" courseGroup.
+     *
+     * @param id the course of the courseGroup to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the courseGroup, or with status {@code 404 (Not Found)}.
+     */
+    @ApiOperation("根据指定课程id查询已经开设的班级")
+    @GetMapping("/course-groups/id")
+    public ResponseEntity<List<CourseGroup>> getCourseGroupByCourse(@RequestParam Long id) {
+        log.debug("REST request to get CourseGroup : {}", id);
+        List<CourseGroup> courseGroups = null;
+        try {
+            courseGroups = courseGroupService.findByCourseId(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "CourseGroup GetByCourse error");
+        }
+        return ResponseEntity.ok(courseGroups);
+    }
+
 
     /**
      * {@code GET  /course-groups/:id} : get the "id" courseGroup.
@@ -130,7 +151,13 @@ public class CourseGroupResource {
     @GetMapping("/course-groups/{id}")
     public ResponseEntity<CourseGroup> getCourseGroup(@PathVariable Long id) {
         log.debug("REST request to get CourseGroup : {}", id);
-        Optional<CourseGroup> courseGroup = courseGroupService.findOne(id);
+        Optional<CourseGroup> courseGroup = null;
+        try {
+            courseGroup = courseGroupService.findOne(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "CourseGroup GetById error");
+        }
         return ResponseUtil.wrapOrNotFound(courseGroup);
     }
 
@@ -150,7 +177,6 @@ public class CourseGroupResource {
             e.printStackTrace();
             throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "CourseGroup Delete error");
         }
-
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
 }

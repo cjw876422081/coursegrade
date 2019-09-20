@@ -33,8 +33,9 @@ public interface CourseGroupService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<CourseGroup> findOne(Long id);
+    Optional<CourseGroup> findOne(Long id) throws Exception;
 
+    List<CourseGroup> findByCourseId(Long id) throws Exception;
     /**
      * Delete the "id" courseGroup.
      *

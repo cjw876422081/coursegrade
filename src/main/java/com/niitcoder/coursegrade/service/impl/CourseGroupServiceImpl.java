@@ -1,5 +1,6 @@
 package com.niitcoder.coursegrade.service.impl;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.niitcoder.coursegrade.domain.*;
 import com.niitcoder.coursegrade.repository.*;
 import com.niitcoder.coursegrade.security.SecurityUtils;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -72,14 +75,40 @@ public class CourseGroupServiceImpl implements CourseGroupService {
 
         String loginName = SecurityUtils.getCurrentUserLogin().get();
         List<CourseGroup> courseGroups=courseGroupRepository.findByCourseCourseUser(loginName);
-        if(courseGroups!=null &&courseGroups.size()>0){
-            Long courseId=courseGroups.get(0).getCourse().getId();
-            return courseGroupRepository.findAllByCourseId(courseId);
+        if(courseGroups!=null && courseGroups.size()>0){
+            return courseGroups;
         }else{
             throw new Exception("无查询班级权限.");
         }
     }
 
+    /**
+     * 通过课程ID检索开设的班级
+     * @param id
+     * @return
+     */
+    @Override
+    public List<CourseGroup> findByCourseId(Long id) throws Exception {
+        log.debug("Request to findByCourseName  : {}", id);
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        List<CourseGroup> courseGroups = courseGroupRepository.findByCourseCourseUser(loginName);
+        List<CourseGroup> courseGroupList=null;
+        if(courseGroups!=null&&courseGroups.size()>0) {
+            boolean flag=true;
+            for (CourseGroup courseGroup:courseGroups) {
+                if (courseGroup.getCourse().getId() == id) {
+                    flag=false;
+                    courseGroupList=courseGroupRepository.findByCourseId(id);
+                }
+            }
+            if(flag){
+                throw new Exception("该课程下未创建班级");
+            }else {
+                return courseGroupList;
+            }
+        }
+        throw new Exception("未创建班级");
+    }
 
     /**
      * Get one courseGroup by id.
@@ -89,24 +118,26 @@ public class CourseGroupServiceImpl implements CourseGroupService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<CourseGroup> findOne(Long id) {
+    public Optional<CourseGroup> findOne(Long id) throws Exception {
         log.debug("Request to get CourseGroup : {}", id);
-        return courseGroupRepository.findById(id);
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        List<CourseGroup> courseGroups=courseGroupRepository.findByCourseCourseUser(loginName);
+        if(courseGroups!=null && courseGroups.size()>0){
+            boolean flag=true;
+            for(CourseGroup courseGroup: courseGroups){
+                if(courseGroup.getId()==id){
+                    flag=false;
+                    break;
+                }
+            }
+            if(flag){
+                throw new Exception("无权限查询此班级.");
+            }else{
+                return courseGroupRepository.findById(id);
+            }
+        }
+        throw new Exception("无权限查询班级.");
     }
-
-    /**
-     * list转page
-     * @param list
-     * @param pageable
-     * @param <T>
-     * @return
-     */
-    public <T> Page<T> listConvertToPage(List<T> list, Pageable pageable) {
-        int start = (int)pageable.getOffset();
-        int end = (start + pageable.getPageSize()) > list.size() ? list.size() : ( start + pageable.getPageSize());
-        return new PageImpl<T>(list.subList(start, end), pageable, list.size());
-    }
-
     /**
      * Delete the courseGroup by id.
      *
