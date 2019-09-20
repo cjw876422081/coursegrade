@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
-
+import java.util.List;
 
 
 /**
@@ -17,6 +17,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StudentHomeworkRepository extends JpaRepository<StudentHomework, Long> {
 
-    Page<StudentHomework> findByStudent(String name, Pageable pageable);
+    List<StudentHomework> findByStudent(String student, Pageable pageable);
 
 }

@@ -4,6 +4,7 @@ import com.niitcoder.coursegrade.CoursegradeApp;
 import com.niitcoder.coursegrade.domain.CourseHomework;
 import com.niitcoder.coursegrade.repository.CourseHomeworkRepository;
 import com.niitcoder.coursegrade.service.CourseHomeworkService;
+import com.niitcoder.coursegrade.service.CoursePlanService;
 import com.niitcoder.coursegrade.web.rest.errors.ExceptionTranslator;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -84,11 +85,12 @@ public class CourseHomeworkResourceIT {
     private MockMvc restCourseHomeworkMockMvc;
 
     private CourseHomework courseHomework;
+    private CoursePlanService coursePlanService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final CourseHomeworkResource courseHomeworkResource = new CourseHomeworkResource(courseHomeworkService);
+        final CourseHomeworkResource courseHomeworkResource = new CourseHomeworkResource(courseHomeworkService, coursePlanService);
         this.restCourseHomeworkMockMvc = MockMvcBuilders.standaloneSetup(courseHomeworkResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)

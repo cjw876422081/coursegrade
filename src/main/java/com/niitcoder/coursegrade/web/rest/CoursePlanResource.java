@@ -49,13 +49,8 @@ public class CoursePlanResource {
         this.coursePlanService = coursePlanService;
     }
 
-    /**
-     * {@code POST  /course-plans} : Create a new coursePlan.
-     *
-     * @param coursePlan the coursePlan to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new coursePlan, or with status {@code 400 (Bad Request)} if the coursePlan has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
+
+    @ApiOperation(value = "教师创建授课内容")
     @PostMapping("/course-plans")
     public ResponseEntity<CoursePlan> createCoursePlan(@RequestBody CoursePlan coursePlan) throws URISyntaxException {
         log.debug("REST request to save CoursePlan : {}", coursePlan);
@@ -116,16 +111,16 @@ public class CoursePlanResource {
         return ResponseUtil.wrapOrNotFound(coursePlan);
     }
 
-    /**
-     * {@code DELETE  /course-plans/:id} : delete the "id" coursePlan.
-     *
-     * @param id the id of the coursePlan to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
+    @ApiOperation(value = "删除已创建授课内容")
     @DeleteMapping("/course-plans/{id}")
     public ResponseEntity<Void> deleteCoursePlan(@PathVariable Long id) {
         log.debug("REST request to delete CoursePlan : {}", id);
-        coursePlanService.delete(id);
+        try {
+            coursePlanService.delete(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(),ENTITY_NAME,"group exists");
+        }
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
 
@@ -135,15 +130,6 @@ public class CoursePlanResource {
     public ResponseEntity<List<CoursePlan>> getCoursePlanByParentsId(@PathVariable Long id) {
 //        log.debug("REST request to get getCoursePlanByParentsId : {}", id);
         List<CoursePlan> coursePlan = coursePlanService.getPlanByParentId(id);
-        return ResponseEntity.ok(coursePlan);
-    }
-
-    @ApiOperation(value = "查询单个课程的全部授课内容，没有课程信息")
-    @ApiImplicitParam(name = "courseId", value = "课程id")
-    @GetMapping("/course-plans/tree2/{courseId}")
-    public ResponseEntity<List<CoursePlanDTO>> getCoursePlanTree2(@PathVariable Long courseId) {
-        log.debug("REST request to get getCoursePlanByParentsId : {}", courseId);
-        List<CoursePlanDTO> coursePlan = coursePlanService.getCoursePlanDTOByCourseId(courseId);
         return ResponseEntity.ok(coursePlan);
     }
 

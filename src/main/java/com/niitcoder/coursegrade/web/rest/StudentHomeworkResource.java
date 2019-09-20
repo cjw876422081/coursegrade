@@ -94,9 +94,7 @@ public class StudentHomeworkResource {
     /**
      * {@code GET  /student-homeworks} : get all the studentHomeworks.
      *
-
      * @param pageable the pagination information.
-
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of studentHomeworks in body.
      */
     @GetMapping("/student-homeworks")
@@ -133,45 +131,50 @@ public class StudentHomeworkResource {
         Long homeworkId = studentHomework.get().getHomework().getId();
         String loginName = SecurityUtils.getCurrentUserLogin().get();
         // 查找提交作业时所携带的附件 如果有则删除
-        Optional<List<CourseAttachment>> courseAttachments = courseAttachmentService.getCourseAttachmentsByFileUserAndHomeworkId(loginName,homeworkId);
-        if(courseAttachments.isPresent()){
-            courseAttachmentService.deleteByFileUserAndHomeworkId(loginName,homeworkId);
+        Optional<List<CourseAttachment>> courseAttachments = courseAttachmentService.getCourseAttachmentsByFileUserAndHomeworkId(loginName, homeworkId);
+        if (courseAttachments.isPresent()) {
+            courseAttachmentService.deleteByFileUserAndHomeworkId(loginName, homeworkId);
         }
         studentHomeworkService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
 
     }
+
     @GetMapping("/student-homeworks-grade/{homework}/{student}")
-    public ResponseEntity<Integer> getStudentHomework(@PathVariable Integer homework , @PathVariable String student) {
-        log.debug("REST request to get StudentHomework : {}", homework , student);
-        Integer result = studentHomeworkService.getOrderCourseGrade(homework , student) ;
+    public ResponseEntity<Integer> getStudentHomework(@PathVariable Integer homework, @PathVariable String student) {
+        log.debug("REST request to get StudentHomework : {}", homework, student);
+        Integer result = studentHomeworkService.getOrderCourseGrade(homework, student);
         return ResponseEntity.ok(
             result
         );
     }
-
-    @GetMapping("/student-homeworks/name")
-    public ResponseEntity<List<StudentHomework>> findCourseHomework(@RequestParam String name,Pageable pageable){
-        Page<StudentHomework> page=studentHomeworkService.findHomework(name,pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    @ApiOperation(value = "查询指定的一条学生提交记录")
+    @GetMapping("/student-homeworks/student")
+    public ResponseEntity<Page<StudentHomework>> findCourseHomework(@RequestParam String student, Pageable pageable) {
+        Page<StudentHomework> page = null;
+        try {
+            page = studentHomeworkService.findHomework(student, pageable);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(),ENTITY_NAME,"StudentHomework find error");
+        }
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("/student-homeworks/homeworkCode")
-    public ResponseEntity<List<StudentHomewrokDTO>> getStudentHomeworkByomeworkCode(@RequestParam String homeworkCode,Pageable pageable) {
+    public ResponseEntity<Page<StudentHomewrokDTO>> getStudentHomeworkByomeworkCode(@RequestParam String homeworkCode, Pageable pageable) {
         log.debug("REST request Hto get StudentHomework : {}", homeworkCode);
-        Page<StudentHomewrokDTO> page=studentHomeworkService.getStudentHomeworkByCourseHomework(homeworkCode,pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        Page<StudentHomewrokDTO> page = studentHomeworkService.getStudentHomeworkByCourseHomework(homeworkCode, pageable);
+        return ResponseEntity.ok(page);
     }
 
     @PutMapping("/student-homeworks/id/grade")
-    public ResponseEntity<StudentHomework> updateStudentHomeworkGrade(@RequestParam Long id,@RequestParam Long grade) throws URISyntaxException {
-        log.debug("REST request to update StudentHomeworkGrade : {},{}",id,grade);
+    public ResponseEntity<StudentHomework> updateStudentHomeworkGrade(@RequestParam Long id, @RequestParam Long grade) throws URISyntaxException {
+        log.debug("REST request to update StudentHomeworkGrade : {},{}", id, grade);
         if (id == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        Optional<StudentHomework> studentHomework =studentHomeworkService.updateStudentHomeworkGrade(id,grade);
+        Optional<StudentHomework> studentHomework = studentHomeworkService.updateStudentHomeworkGrade(id, grade);
         return ResponseUtil.wrapOrNotFound(studentHomework);
     }
 
