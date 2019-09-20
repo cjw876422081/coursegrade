@@ -100,8 +100,6 @@ public class StudentCourseGroupServiceImpl implements StudentCourseGroupService 
 
         List<StudentCourseGroup> studentCourseGroups=studentCourseGroupRepository.findByGroupId(id);
 
-
-
         String loginName= SecurityUtils.getCurrentUserLogin().get();
         if(studentCourseGroups!=null &&studentCourseGroups.size()>0) {
             String userName=studentCourseGroups.get(0).getGroup().getCourse().getCourseUser();
