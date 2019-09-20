@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
 /**
  * Spring Data  repository for the CoursePlan entity.
  */
@@ -16,4 +15,5 @@ public interface CoursePlanRepository extends JpaRepository<CoursePlan, Long> {
     List<CoursePlan> findByParentPlanId(Long id);
 
     List<CoursePlan> findByCourseId(Long courseId);
+
 }
