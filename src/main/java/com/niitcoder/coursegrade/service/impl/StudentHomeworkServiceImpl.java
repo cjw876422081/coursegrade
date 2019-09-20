@@ -1,6 +1,8 @@
 package com.niitcoder.coursegrade.service.impl;
 
 import com.alibaba.fastjson.util.TypeUtils;
+import com.niitcoder.coursegrade.domain.User;
+import com.niitcoder.coursegrade.repository.UserRepository;
 import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
 import com.niitcoder.coursegrade.domain.StudentHomework;
@@ -34,10 +36,12 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
     private final Logger log = LoggerFactory.getLogger(StudentHomeworkServiceImpl.class);
 
     private final StudentHomeworkRepository studentHomeworkRepository;
+    private final UserRepository userRepository;
     private final JdbcTemplate jdbcTemplate;
 
-    public StudentHomeworkServiceImpl(StudentHomeworkRepository studentHomeworkRepository, JdbcTemplate jdbcTemplate) {
+    public StudentHomeworkServiceImpl(StudentHomeworkRepository studentHomeworkRepository, UserRepository userRepository, JdbcTemplate jdbcTemplate) {
         this.studentHomeworkRepository = studentHomeworkRepository;
+        this.userRepository = userRepository;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -122,7 +126,13 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
         for(StudentHomework studentHomework:studentHomeworks){
             String courseUser=studentHomework.getHomework().getPlan().getCourse().getCourseUser();
             if(loginName.equals(courseUser)){
-                return listConvertToPage(studentHomeworks,pageable);
+                //检查学生是否存在
+                List<User> students=userRepository.findByLogin(student);
+                if(students!=null&&students.size()>0){
+                    return listConvertToPage(studentHomeworks,pageable);
+                }else{
+                    throw new Exception("学生不存在");
+                }
             }else{
                 throw new Exception("没有查看权限");
             }
