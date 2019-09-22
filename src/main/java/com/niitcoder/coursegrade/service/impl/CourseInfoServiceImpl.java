@@ -3,13 +3,10 @@ package com.niitcoder.coursegrade.service.impl;
 import com.niitcoder.coursegrade.domain.CourseGroup;
 import com.niitcoder.coursegrade.domain.CourseNote;
 import com.niitcoder.coursegrade.domain.CoursePlan;
-import com.niitcoder.coursegrade.repository.CourseGroupRepository;
-import com.niitcoder.coursegrade.repository.CourseNoteRepository;
-import com.niitcoder.coursegrade.repository.CoursePlanRepository;
+import com.niitcoder.coursegrade.repository.*;
 import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.CourseInfoService;
 import com.niitcoder.coursegrade.domain.CourseInfo;
-import com.niitcoder.coursegrade.repository.CourseInfoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,11 +33,15 @@ public class CourseInfoServiceImpl implements CourseInfoService {
     private final CourseGroupRepository courseGroupRepository;
     private final CoursePlanRepository coursePlanRepository;
     private final CourseNoteRepository courseNoteRepository;
-    public CourseInfoServiceImpl(CourseInfoRepository courseInfoRepository, CourseGroupRepository courseGroupRepository, CoursePlanRepository coursePlanRepository, CourseNoteRepository courseNoteRepository) {
+    private final CourseHomeworkRepository courseHomeworkRepository;
+    private final CourseAttachmentRepository courseAttachmentRepository;
+    public CourseInfoServiceImpl(CourseInfoRepository courseInfoRepository, CourseGroupRepository courseGroupRepository, CoursePlanRepository coursePlanRepository, CourseNoteRepository courseNoteRepository, CourseHomeworkRepository courseHomeworkRepository, CourseAttachmentRepository courseAttachmentRepository) {
         this.courseInfoRepository = courseInfoRepository;
         this.courseGroupRepository = courseGroupRepository;
         this.coursePlanRepository = coursePlanRepository;
         this.courseNoteRepository = courseNoteRepository;
+        this.courseHomeworkRepository = courseHomeworkRepository;
+        this.courseAttachmentRepository = courseAttachmentRepository;
     }
 
     /**

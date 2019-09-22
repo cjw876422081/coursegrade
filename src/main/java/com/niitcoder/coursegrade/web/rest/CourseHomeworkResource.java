@@ -120,7 +120,11 @@ public class CourseHomeworkResource {
     @DeleteMapping("/course-homeworks/{id}")
     public ResponseEntity<Void> deleteCourseHomework(@PathVariable Long id) {
         log.debug("REST request to delete CourseHomework : {}", id);
-        courseHomeworkService.delete(id);
+        try {
+            courseHomeworkService.delete(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
 

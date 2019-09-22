@@ -2,7 +2,7 @@ package com.niitcoder.coursegrade.repository;
 
 import com.niitcoder.coursegrade.domain.CourseAttachment;
 import com.niitcoder.coursegrade.domain.CourseHomework;
-import com.niitcoder.coursegrade.domain.CourseHomework_;
+import com.niitcoder.coursegrade.domain.CourseHomework;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -31,5 +31,8 @@ public interface CourseAttachmentRepository extends JpaRepository<CourseAttachme
      * @param id
      */
     void deleteCourseAttachmentByFileUserAndHomework_Id(String fileUser,Long id);
+
+    List<CourseAttachment> findByHomeworkId(Long id);
+
 
 }
