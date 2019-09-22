@@ -2,6 +2,8 @@ package com.niitcoder.coursegrade.web.rest;
 
 import com.niitcoder.coursegrade.domain.CourseHomework;
 import com.niitcoder.coursegrade.service.CourseHomeworkService;
+import com.niitcoder.coursegrade.service.CoursePlanService;
+import com.niitcoder.coursegrade.service.dto.CourseInfoPlan;
 import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
@@ -38,8 +40,11 @@ public class CourseHomeworkResource {
 
     private final CourseHomeworkService courseHomeworkService;
 
-    public CourseHomeworkResource(CourseHomeworkService courseHomeworkService) {
+    private final CoursePlanService coursePlanService;
+
+    public CourseHomeworkResource(CourseHomeworkService courseHomeworkService, CoursePlanService coursePlanService) {
         this.courseHomeworkService = courseHomeworkService;
+        this.coursePlanService = coursePlanService;
     }
 
     /**
@@ -85,9 +90,7 @@ public class CourseHomeworkResource {
     /**
      * {@code GET  /course-homeworks} : get all the courseHomeworks.
      *
-
      * @param pageable the pagination information.
-
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of courseHomeworks in body.
      */
     @GetMapping("/course-homeworks")
@@ -140,5 +143,25 @@ public class CourseHomeworkResource {
         log.debug("REST request to get CourseHomework : {}", id);
         List<CourseHomework> courseHomework = courseHomeworkService.findByPlanId(id);
         return ResponseEntity.ok(courseHomework);
+    }
+
+    @ApiOperation(value = "根据指定课程获取对应作业的内容")
+    @GetMapping("/homework-grade/{id}")
+    public ResponseEntity<CourseInfoPlan> getCourseHomeworkByCoueseId(@PathVariable Long id) {
+        log.debug("REST request to get CourseHomework : {}", id);
+        CourseInfoPlan courseInfoPlan = coursePlanService.getCourseInfoPlan(id);
+        return ResponseEntity.ok(courseInfoPlan);
+    }
+    @ApiOperation(value = "修改作业内容")
+    @PutMapping("/course-homeworks/updateCourseHomework")
+    public ResponseEntity<Void> updateCourseHomework(@RequestParam Long id,@RequestParam String homework_memo) throws URISyntaxException {
+        log.debug("REST request to update CourseHomework : {},{}", id,homework_memo);
+        if (id == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        courseHomeworkService.updateTask(id,homework_memo);
+        return ResponseEntity.noContent()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

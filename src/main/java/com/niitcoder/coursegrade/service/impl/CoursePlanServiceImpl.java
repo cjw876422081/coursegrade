@@ -1,8 +1,11 @@
 package com.niitcoder.coursegrade.service.impl;
 
 import com.alibaba.fastjson.util.TypeUtils;
+import com.niitcoder.coursegrade.domain.CourseHomework;
 import com.niitcoder.coursegrade.domain.CourseInfo;
+import com.niitcoder.coursegrade.repository.CourseHomeworkRepository;
 import com.niitcoder.coursegrade.repository.CourseInfoRepository;
+import com.niitcoder.coursegrade.service.CourseHomeworkService;
 import com.niitcoder.coursegrade.service.CoursePlanService;
 import com.niitcoder.coursegrade.domain.CoursePlan;
 import com.niitcoder.coursegrade.repository.CoursePlanRepository;
@@ -38,11 +41,15 @@ public class CoursePlanServiceImpl implements CoursePlanService {
 
     private final CourseInfoRepository courseInfoRepository;
 
+    private final CourseHomeworkRepository courseHomeworkRepository;
+
     private final JdbcTemplate jdbcTemplate;
 
-    public CoursePlanServiceImpl(CoursePlanRepository coursePlanRepository, CourseInfoRepository courseInfoRepository, JdbcTemplate jdbcTemplate) {
+    public CoursePlanServiceImpl(CoursePlanRepository coursePlanRepository, CourseInfoRepository courseInfoRepository,
+                                 CourseHomeworkRepository courseHomeworkRepository, JdbcTemplate jdbcTemplate) {
         this.coursePlanRepository = coursePlanRepository;
         this.courseInfoRepository = courseInfoRepository;
+        this.courseHomeworkRepository = courseHomeworkRepository;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -131,7 +138,7 @@ public class CoursePlanServiceImpl implements CoursePlanService {
 
     @Override
     public List<CoursePlanDTO> getCoursePlanDTOByCourseId(Long courseId) {
-        String sql = "SELECT a.*,(SELECT COUNT(1) FROM course_info b WHERE b.id=a.course_id) as leaf FROM course_plan a WHERE a.course_id = " + courseId;
+        String sql = "SELECT a.*,(SELECT COUNT(1) FROM course_plan b WHERE b.parent_plan_id=a.id) as leaf FROM course_plan a WHERE a.course_id =" + courseId;
         List<Map<String, Object>> sqlResults = jdbcTemplate.queryForList(sql);
         List<CoursePlanDTO> result = new ArrayList<>();
         for (Map<String, Object> sqlResult : sqlResults) {
@@ -146,6 +153,10 @@ public class CoursePlanServiceImpl implements CoursePlanService {
             coursePlanDTO.setPlanTime(ZonedDateTime.parse(time, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.systemDefault())));
             coursePlanDTO.setPlanCount(TypeUtils.castToInt(sqlResult.get("plan_count")));
             coursePlanDTO.setCourse(TypeUtils.castToLong(sqlResult.get("course_id")));
+
+            List<CourseHomework> courseHomeworks = new ArrayList<>();
+            courseHomeworks = courseHomeworkRepository.findByPlanId(TypeUtils.castToLong(sqlResult.get("id")));
+            coursePlanDTO.setCourseHomeworks(courseHomeworks);
             if (!coursePlanDTO.isLeaf()) {
                 coursePlanDTO.setChildren(getSubPlan(coursePlanDTO.getId()));
             }
@@ -171,6 +182,10 @@ public class CoursePlanServiceImpl implements CoursePlanService {
             coursePlanDTO.setPlanTime(ZonedDateTime.parse(time, DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.systemDefault())));
             coursePlanDTO.setPlanCount(TypeUtils.castToInt(sqlResult.get("plan_count")));
             coursePlanDTO.setCourse(TypeUtils.castToLong(sqlResult.get("course_id")));
+
+            List<CourseHomework> courseHomeworks = new ArrayList<>();
+            courseHomeworks = courseHomeworkRepository.findByPlanId(TypeUtils.castToLong(sqlResult.get("id")));
+            coursePlanDTO.setCourseHomeworks(courseHomeworks);
             if (!coursePlanDTO.isLeaf()) {
                 coursePlanDTO.setChildren(getSubPlan(coursePlanDTO.getId()));
             }
@@ -178,6 +193,4 @@ public class CoursePlanServiceImpl implements CoursePlanService {
         }
         return result;
     }
-
-
 }

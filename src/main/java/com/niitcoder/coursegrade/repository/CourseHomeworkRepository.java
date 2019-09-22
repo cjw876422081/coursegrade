@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -17,4 +18,11 @@ import java.util.List;
 public interface CourseHomeworkRepository extends JpaRepository<CourseHomework, Long> {
 @Query(value = "SELECT * FROM course_homework WHERE plan_id = :id", nativeQuery = true)
 List<CourseHomework> findByPlanId(@Param("id") Long id);
+
+//查询指定课程的
+@Query("select a from CourseHomework a where a.plan.course.id=?1")
+    List<CourseHomework> findByCourseId(Long course_id);
+
+    @Override
+    Optional<CourseHomework> findById(Long aLong);
 }

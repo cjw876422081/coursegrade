@@ -1,7 +1,6 @@
 package com.niitcoder.coursegrade.web.rest;
 
 import com.niitcoder.coursegrade.domain.CourseAttachment;
-import com.niitcoder.coursegrade.domain.CourseAttachment_;
 import com.niitcoder.coursegrade.domain.StudentHomework;
 import com.niitcoder.coursegrade.service.CourseAttachmentService;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
@@ -11,6 +10,7 @@ import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -94,9 +94,7 @@ public class StudentHomeworkResource {
     /**
      * {@code GET  /student-homeworks} : get all the studentHomeworks.
      *
-
      * @param pageable the pagination information.
-
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of studentHomeworks in body.
      */
     @GetMapping("/student-homeworks")
@@ -133,46 +131,61 @@ public class StudentHomeworkResource {
         Long homeworkId = studentHomework.get().getHomework().getId();
         String loginName = SecurityUtils.getCurrentUserLogin().get();
         // 查找提交作业时所携带的附件 如果有则删除
-        Optional<List<CourseAttachment>> courseAttachments = courseAttachmentService.getCourseAttachmentsByFileUserAndHomeworkId(loginName,homeworkId);
-        if(courseAttachments.isPresent()){
-            courseAttachmentService.deleteByFileUserAndHomeworkId(loginName,homeworkId);
+        Optional<List<CourseAttachment>> courseAttachments = courseAttachmentService.getCourseAttachmentsByFileUserAndHomeworkId(loginName, homeworkId);
+        if (courseAttachments.isPresent()) {
+            courseAttachmentService.deleteByFileUserAndHomeworkId(loginName, homeworkId);
         }
         studentHomeworkService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
 
     }
+
     @GetMapping("/student-homeworks-grade/{homework}/{student}")
-    public ResponseEntity<Integer> getStudentHomework(@PathVariable Integer homework , @PathVariable String student) {
-        log.debug("REST request to get StudentHomework : {}", homework , student);
-        Integer result = studentHomeworkService.getOrderCourseGrade(homework , student) ;
+    public ResponseEntity<Integer> getStudentHomework(@PathVariable Integer homework, @PathVariable String student) {
+        log.debug("REST request to get StudentHomework : {}", homework, student);
+        Integer result = studentHomeworkService.getOrderCourseGrade(homework, student);
         return ResponseEntity.ok(
             result
         );
     }
-
-    @GetMapping("/student-homeworks/name")
-    public ResponseEntity<List<StudentHomework>> findCourseHomework(@RequestParam String name,Pageable pageable){
-        Page<StudentHomework> page=studentHomeworkService.findHomework(name,pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    @ApiOperation(value = "查询指定的一条学生提交的作业,2组")
+    @GetMapping("/student-homeworks/studentId")
+    public ResponseEntity<Page<StudentHomework>> findCourseHomework(@RequestParam Long studentId, Pageable pageable) {
+        Page<StudentHomework> page = null;
+        try {
+            page = studentHomeworkService.findHomeworkByStudentId(studentId,pageable);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(),ENTITY_NAME,"StudentHomework find error");
+        }
+        return ResponseEntity.ok(page);
     }
 
-    @GetMapping("/student-homeworks/homeworkCode")
-    public ResponseEntity<List<StudentHomewrokDTO>> getStudentHomeworkByomeworkCode(@RequestParam String homeworkCode,Pageable pageable) {
-        log.debug("REST request Hto get StudentHomework : {}", homeworkCode);
-        Page<StudentHomewrokDTO> page=studentHomeworkService.getStudentHomeworkByCourseHomework(homeworkCode,pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+
+    @GetMapping("/student-homeworks/id")
+    @ApiOperation(value="查询指定作业的学生提交记录,2组")
+    public ResponseEntity<Page<StudentHomework>> getStudentHomeworkByHomeworkId(@RequestParam Long id,Pageable pageable) {
+        log.debug("REST request Hto get StudentHomework : {}", id);
+        try{
+            Page<StudentHomework> studentHomeworks=studentHomeworkService.getStudentHomeworkByCourseHomeworkId(id,pageable);
+            return ResponseEntity.ok(studentHomeworks);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw  new BadRequestAlertException(e.getMessage(),ENTITY_NAME,"not found");
+        }
     }
 
     @PutMapping("/student-homeworks/id/grade")
-    public ResponseEntity<StudentHomework> updateStudentHomeworkGrade(@RequestParam Long id,@RequestParam Long grade) throws URISyntaxException {
+    @ApiOperation(value="给学生作业评分,2组")
+    public ResponseEntity<StudentHomework> updateStudentHomeworkGrade(@RequestParam Long id,@RequestParam Integer grade) {
         log.debug("REST request to update StudentHomeworkGrade : {},{}",id,grade);
-        if (id == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        Optional<StudentHomework> studentHomework = null;
+        try {
+            studentHomework = studentHomeworkService.updateStudentHomeworkGrade(id,grade);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "CourseGroup update error");
         }
-        Optional<StudentHomework> studentHomework =studentHomeworkService.updateStudentHomeworkGrade(id,grade);
         return ResponseUtil.wrapOrNotFound(studentHomework);
     }
-
 }

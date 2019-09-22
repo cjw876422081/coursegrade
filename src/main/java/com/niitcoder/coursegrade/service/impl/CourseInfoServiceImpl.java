@@ -126,4 +126,55 @@ public class CourseInfoServiceImpl implements CourseInfoService {
             throw new Exception("未找到课程");
         }
     }
+
+    /**
+     * 检查登陆用户是否创建过课程
+     * @return
+     * @throws Exception
+     */
+    public boolean checkLoginName() throws Exception {
+        boolean flag=false;
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        List<CourseInfo> courseInfos=courseInfoRepository.findByCourseUser(loginName);
+        //检查用户是否创建过课程,若有,则设置flag为true
+        if(courseInfos!=null && courseInfos.size()>0){
+            flag=true;
+        }
+        return flag;
+    }
+
+    /**
+     * 检查课程是否存在
+     * @param courseInfoId
+     * @return
+     * @throws Exception
+     */
+    public CourseInfo isExistCourseInfo(Long courseInfoId) throws Exception {
+
+        Optional<CourseInfo> courseInfo=courseInfoRepository.findById(courseInfoId);
+        //检查课程是否存在，存在，则返回查到的课程，不存在，则抛出异常
+        if(courseInfo.isPresent()){
+            return courseInfo.get();
+        }else{
+            throw new Exception("课程不存在");
+        }
+    }
+
+    /**
+     * 检查课程是否由该用户创建
+     * @param courseInfoId
+     * @return
+     * @throws Exception
+     */
+    public boolean isCreateByLogin(Long courseInfoId) throws Exception {
+        boolean flag=false;
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        //检查课程是否存在
+        CourseInfo courseInfo=isExistCourseInfo(courseInfoId);
+        //检查课程是否由该用户创建，若是，则设置flag为true
+        if(courseInfo.getCourseUser().equals(loginName)){
+            flag=true;
+        }
+        return flag;
+    }
 }

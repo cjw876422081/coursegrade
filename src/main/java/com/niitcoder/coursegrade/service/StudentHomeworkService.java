@@ -7,6 +7,7 @@ import com.niitcoder.coursegrade.service.dto.StudentHomewrokDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -20,7 +21,7 @@ public interface StudentHomeworkService {
      * @param studentHomework the entity to save.
      * @return the persisted entity.
      */
-    StudentHomework save(StudentHomework studentHomework);
+    StudentHomework save(StudentHomework studentHomework) throws Exception;
 
     /**
      * Get all the studentHomeworks.
@@ -51,10 +52,11 @@ public interface StudentHomeworkService {
     /**
      * 根据student查询一条作业提交记录
      */
-    Page<StudentHomework> findHomework(String name,Pageable pageable);
+    Page<StudentHomework> findHomeworkByStudentId(Long studentId,Pageable pageable) throws Exception;
 
-    Page<StudentHomewrokDTO> getStudentHomeworkByCourseHomework(String homeworkCode, Pageable pageable);
+    Page<StudentHomework> getStudentHomeworkByCourseHomeworkId(Long id,Pageable pageable) throws Exception;
 
-    Optional<StudentHomework> updateStudentHomeworkGrade(Long id,Long grade);
+    Optional<StudentHomework> updateStudentHomeworkGrade(Long id,Integer grade) throws Exception;
 
+    <T> Page<T> listConvertToPage(List<T> list, Pageable pageable);
 }

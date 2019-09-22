@@ -16,22 +16,17 @@ import java.util.Optional;
  */
 public interface CourseGroupService {
 
+    CourseGroup isExistCourseInfo(Long id) throws Exception;
     /**
      * Save a courseGroup.
      *
      * @param courseGroup the entity to save.
      * @return the persisted entity.
      */
-    CourseGroup save(CourseGroup courseGroup);
+    CourseGroup save(CourseGroup courseGroup,Long courseInfoId) throws Exception;
 
-    /**
-     * Get all the courseGroups.
-     *
-     * @param pageable the pagination information.
-     * @return the list of entities.
-     */
-    Page<CourseGroup> findAll(Pageable pageable);
 
+    List<CourseGroup> findAll() throws Exception;
 
     /**
      * Get the "id" courseGroup.
@@ -39,22 +34,13 @@ public interface CourseGroupService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<CourseGroup> findOne(Long id);
+    Optional<CourseGroup> findOne(Long id) throws Exception;
 
-    /**
-     * Get the "course" courseGroup.
-     *
-     * @param course the course of the entity.
-     * @return the entity.
-     */
-    /*List<CourseGroup> findGroupByCourse(CourseInfo course);*/
-
-
-    Page<CourseGroupDTO> findByCourse(String course,Pageable pageable);
+    List<CourseGroup> findByCourseId(Long id) throws Exception;
     /**
      * Delete the "id" courseGroup.
      *
      * @param id the id of the entity.
      */
-    void delete(Long id);
+    void delete(Long id) throws Exception;
 }

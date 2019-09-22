@@ -38,4 +38,10 @@ public interface CourseInfoService {
     Page<CourseInfo> findByLogin(String login,Pageable page);
 
     CourseInfo findById(Long id) throws Exception;
+
+    boolean checkLoginName() throws Exception;
+
+    CourseInfo isExistCourseInfo(Long courseInfoId) throws Exception;
+
+    boolean isCreateByLogin(Long courseInfoId) throws Exception;
 }
