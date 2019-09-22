@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -21,4 +22,7 @@ List<CourseHomework> findByPlanId(@Param("id") Long id);
 //查询指定课程的
 @Query("select a from CourseHomework a where a.plan.course.id=?1")
     List<CourseHomework> findByCourseId(Long course_id);
+
+    @Override
+    Optional<CourseHomework> findById(Long aLong);
 }

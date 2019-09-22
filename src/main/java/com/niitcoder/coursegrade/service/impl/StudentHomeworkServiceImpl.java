@@ -1,13 +1,10 @@
 package com.niitcoder.coursegrade.service.impl;
 
-import com.alibaba.fastjson.util.TypeUtils;
-import com.niitcoder.coursegrade.domain.User;
-import com.niitcoder.coursegrade.repository.UserRepository;
+import com.niitcoder.coursegrade.domain.*;
+import com.niitcoder.coursegrade.repository.*;
 import com.niitcoder.coursegrade.security.SecurityUtils;
+import com.niitcoder.coursegrade.service.CourseInfoService;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
-import com.niitcoder.coursegrade.domain.StudentHomework;
-import com.niitcoder.coursegrade.repository.StudentHomeworkRepository;
-import com.niitcoder.coursegrade.service.dto.StudentHomewrokDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,9 +15,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,11 +31,19 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
 
     private final StudentHomeworkRepository studentHomeworkRepository;
     private final UserRepository userRepository;
+    private final CourseInfoService courseInfoRepository;
+    private final CourseHomeworkRepository courseHomeworkRepository;
+    private final CourseGroupRepository courseGroupRepository;
+    private final StudentCourseGroupRepository studentCourseGroupRepository;
     private final JdbcTemplate jdbcTemplate;
 
-    public StudentHomeworkServiceImpl(StudentHomeworkRepository studentHomeworkRepository, UserRepository userRepository, JdbcTemplate jdbcTemplate) {
+    public StudentHomeworkServiceImpl(StudentHomeworkRepository studentHomeworkRepository, UserRepository userRepository, CourseInfoService courseInfoRepository, CourseHomeworkRepository courseHomeworkRepository, CourseGroupRepository courseGroupRepository, StudentCourseGroupRepository studentCourseGroupRepository, JdbcTemplate jdbcTemplate) {
         this.studentHomeworkRepository = studentHomeworkRepository;
         this.userRepository = userRepository;
+        this.courseInfoRepository = courseInfoRepository;
+        this.courseHomeworkRepository = courseHomeworkRepository;
+        this.courseGroupRepository = courseGroupRepository;
+        this.studentCourseGroupRepository = studentCourseGroupRepository;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -118,45 +120,52 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
         int end = (start + pageable.getPageSize()) > list.size() ? list.size() : ( start + pageable.getPageSize());
         return new PageImpl<T>(list.subList(start, end), pageable, list.size());
     }
-
     @Override
-    public Page<StudentHomework> findHomework(String student,Pageable pageable) throws Exception {
-        List<StudentHomework> studentHomeworks=studentHomeworkRepository.findByStudent(student,pageable);
-        String loginName= SecurityUtils.getCurrentUserLogin().get();
-        for(StudentHomework studentHomework:studentHomeworks){
-            String courseUser=studentHomework.getHomework().getPlan().getCourse().getCourseUser();
-            if(loginName.equals(courseUser)){
-                //检查学生是否存在
-                List<User> students=userRepository.findByLogin(student);
-                if(students!=null&&students.size()>0){
-                    return listConvertToPage(studentHomeworks,pageable);
-                }else{
-                    throw new Exception("学生不存在");
-                }
-            }else{
-                throw new Exception("没有查看权限");
-            }
+    public Page<StudentHomework> findHomeworkByStudentId(Long studentId,Pageable pageable) throws Exception{
+        //检查学生是否存在
+        Optional<User> student=userRepository.findById(studentId);
+        if(!student.isPresent()) {
+            throw new Exception("学生不存在");
         }
-        return null;
-
+        //检查学生所在班级
+        String studentLogin=student.get().getLogin();
+        Optional<StudentCourseGroup> studentCourseGroup=studentCourseGroupRepository.findByStudent(studentLogin);
+        if(!studentCourseGroup.isPresent()) {
+            throw new Exception("未找到学生所在班级");
+        }
+        //通过studentCourseGroup找到班级对应的课程
+        CourseInfo courseInfo=studentCourseGroup.get().getGroup().getCourse();
+        String loginName= SecurityUtils.getCurrentUserLogin().get();
+        if(!courseInfo.getCourseUser().equals(loginName)){
+            throw new Exception("无权限查询该学生作业");
+        }
+        //通过student和courseId找到studentHomework
+        Long courseId=courseInfo.getId();
+        List<StudentHomework> studentHomeworkList=studentHomeworkRepository.findByStudentAndHomeworkPlanCourseId(studentLogin,courseId,pageable);
+        //判断学生是否提交作业
+        if(studentHomeworkList!=null && studentHomeworkList.size()>0){
+            return listConvertToPage(studentHomeworkList,pageable);
+        }
+        throw new Exception("该学生未提交作业");
     }
 
     @Override
-    public Page<StudentHomework> getStudentHomeworkByCourseHomework(Long id,Pageable pageable) throws Exception{
+    public Page<StudentHomework> getStudentHomeworkByCourseHomeworkId(Long id,Pageable pageable) throws Exception{
         log.debug("Request to get StudentHomework : {}", id);
-        //Optional<StudentHomework> courseInfo=studentHomeworkRepository.findById(id);
-        List<StudentHomework> studentHomeworks=new ArrayList<StudentHomework>();
-        studentHomeworks=studentHomeworkRepository.findByHomeworkId(id);
-        String loginName= SecurityUtils.getCurrentUserLogin().get();
-        if(studentHomeworks!=null && studentHomeworks.size()>0) {
-            String userName=studentHomeworks.get(0).getHomework().getPlan().getCourse().getCourseUser();
-            if (!userName.equals(loginName)) {
-                throw new Exception("无权查询此作业");
-            } else {
-                return listConvertToPage(studentHomeworks, pageable);
-            }
-        }else {
+        Optional<CourseHomework> courseHomework=courseHomeworkRepository.findById(id);
+        if(!courseHomework.isPresent()){
             throw new Exception("该作业不存在");
+        }
+        String loginName= SecurityUtils.getCurrentUserLogin().get();
+        String courseUser=courseHomework.get().getPlan().getCourse().getCourseUser();
+        if (!courseUser.equals(loginName)) {
+            throw new Exception("无权查询此作业");
+        }
+        List<StudentHomework> studentHomeworks=studentHomeworkRepository.findByHomeworkId(id);
+        if(studentHomeworks!=null && studentHomeworks.size()>0) {
+            return listConvertToPage(studentHomeworks, pageable);
+        }else{
+            throw new Exception("未查询到提交的作业");
         }
     }
     @Override
@@ -164,17 +173,16 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
         log.debug("Request to update StudentHomeworkGrade : {},{}", id,grade);
         Optional<StudentHomework> studentHomework=studentHomeworkRepository.findById(id);
         if(!studentHomework.isPresent()){
-            throw new Exception("该作业不存在");
-        }else {
-            String loginName = SecurityUtils.getCurrentUserLogin().get();
-            String teacher=studentHomework.get().getHomework().getPlan().getCourse().getCourseUser();
-            if(loginName.equals(teacher)){
-                String sql="UPDATE student_homework SET grade="+grade+" WHERE id="+id;
-                this.jdbcTemplate.update(sql);
-                return studentHomeworkRepository.findById(id);
-            }else{
-                throw new Exception("无权限对作业评分");
-            }
+            throw new Exception("该提交作业不存在");
+        }
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        String teacher=studentHomework.get().getHomework().getPlan().getCourse().getCourseUser();
+        if(loginName.equals(teacher)){
+            String sql="UPDATE student_homework SET grade="+grade+" WHERE id="+id;
+            this.jdbcTemplate.update(sql);
+            return studentHomeworkRepository.findById(id);
+        }else{
+            throw new Exception("无权限对此作业评分");
         }
     }
 }

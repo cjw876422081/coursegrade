@@ -20,4 +20,6 @@ public interface StudentHomeworkRepository extends JpaRepository<StudentHomework
     List<StudentHomework> findByStudent(String student, Pageable pageable);
 
     List<StudentHomework> findByHomeworkId(Long id);
+
+    List<StudentHomework> findByStudentAndHomeworkPlanCourseId(String student,Long id,Pageable pageable);
 }

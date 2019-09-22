@@ -148,12 +148,12 @@ public class StudentHomeworkResource {
             result
         );
     }
-    @ApiOperation(value = "通过学生名查询指定的一条学生提交的作业")
-    @GetMapping("/student-homeworks/student")
-    public ResponseEntity<Page<StudentHomework>> findCourseHomework(@RequestParam String student, Pageable pageable) {
+    @ApiOperation(value = "查询指定的一条学生提交的作业,2组")
+    @GetMapping("/student-homeworks/studentId")
+    public ResponseEntity<Page<StudentHomework>> findCourseHomework(@RequestParam Long studentId, Pageable pageable) {
         Page<StudentHomework> page = null;
         try {
-            page = studentHomeworkService.findHomework(student, pageable);
+            page = studentHomeworkService.findHomeworkByStudentId(studentId,pageable);
         } catch (Exception e) {
             e.printStackTrace();
             throw new BadRequestAlertException(e.getMessage(),ENTITY_NAME,"StudentHomework find error");
@@ -163,11 +163,11 @@ public class StudentHomeworkResource {
 
 
     @GetMapping("/student-homeworks/id")
-    @ApiOperation(value="查询指定作业的学生提交记录")
-    public ResponseEntity<Page<StudentHomework>> getStudentHomeworkByomeworkId(@RequestParam Long id,Pageable pageable) {
+    @ApiOperation(value="查询指定作业的学生提交记录,2组")
+    public ResponseEntity<Page<StudentHomework>> getStudentHomeworkByHomeworkId(@RequestParam Long id,Pageable pageable) {
         log.debug("REST request Hto get StudentHomework : {}", id);
         try{
-            Page<StudentHomework> studentHomeworks=studentHomeworkService.getStudentHomeworkByCourseHomework(id,pageable);
+            Page<StudentHomework> studentHomeworks=studentHomeworkService.getStudentHomeworkByCourseHomeworkId(id,pageable);
             return ResponseEntity.ok(studentHomeworks);
         }catch (Exception e){
             e.printStackTrace();
@@ -176,7 +176,7 @@ public class StudentHomeworkResource {
     }
 
     @PutMapping("/student-homeworks/id/grade")
-    @ApiOperation(value="给学生作业评分")
+    @ApiOperation(value="给学生作业评分,2组")
     public ResponseEntity<StudentHomework> updateStudentHomeworkGrade(@RequestParam Long id,@RequestParam Integer grade) {
         log.debug("REST request to update StudentHomeworkGrade : {},{}",id,grade);
         Optional<StudentHomework> studentHomework = null;

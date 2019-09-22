@@ -54,16 +54,16 @@ public class CourseGroupResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new courseGroup, or with status {@code 400 (Bad Request)} if the courseGroup has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @ApiOperation(value="开设班级")
-    @PostMapping("/course-groups")
-    public ResponseEntity<CourseGroup> createCourseGroup(@RequestBody CourseGroup courseGroup) throws URISyntaxException {
+    @ApiOperation(value="开设班级,2组")
+    @PostMapping("/course-groups/courseInfoId")
+    public ResponseEntity<CourseGroup> createCourseGroup(@RequestBody CourseGroup courseGroup,@RequestParam Long courseInfoId) throws URISyntaxException {
         log.debug("REST request to save CourseGroup : {}", courseGroup);
         if (courseGroup.getId() != null) {
             throw new BadRequestAlertException("A new courseGroup cannot already have an ID", ENTITY_NAME, "idexists");
         }
         CourseGroup result = null;
         try {
-            result = courseGroupService.save(courseGroup);
+            result = courseGroupService.save(courseGroup,courseInfoId);
         } catch (Exception e) {
             e.printStackTrace();
             throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "CourseGroup Create error");
@@ -82,16 +82,16 @@ public class CourseGroupResource {
      * or with status {@code 500 (Internal Server Error)} if the courseGroup couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @ApiOperation(value = "更新班级信息")
-    @PutMapping("/course-groups")
-    public ResponseEntity<CourseGroup> updateCourseGroup(@RequestBody CourseGroup courseGroup) throws URISyntaxException {
+    @ApiOperation(value = "更新班级信息,2组")
+    @PutMapping("/course-groups/courseInfoId")
+    public ResponseEntity<CourseGroup> updateCourseGroup(@RequestBody CourseGroup courseGroup,@RequestParam Long courseInfoId) throws URISyntaxException {
         log.debug("REST request to update CourseGroup : {}", courseGroup);
         if (courseGroup.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         CourseGroup result = null;
         try {
-            result = courseGroupService.save(courseGroup);
+            result = courseGroupService.save(courseGroup,courseInfoId);
         } catch (Exception e) {
             e.printStackTrace();
             throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "CourseGroup Update error");
@@ -106,7 +106,7 @@ public class CourseGroupResource {
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of courseGroups in body.
      */
-    @ApiOperation(value="查询所有已经开设的班级")
+    @ApiOperation(value="查询所有已经开设的班级,2组")
     @GetMapping("/course-groups")
     public ResponseEntity<List<CourseGroup>> getAllCourseGroups() {/*根据login*/
         log.debug("REST request to get a page of CourseGroups");
@@ -126,7 +126,7 @@ public class CourseGroupResource {
      * @param id the course of the courseGroup to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the courseGroup, or with status {@code 404 (Not Found)}.
      */
-    @ApiOperation("查询指定课程已经开设的班级")
+    @ApiOperation("查询指定课程已经开设的班级,2组")
     @GetMapping("/course-groups/id")
     public ResponseEntity<List<CourseGroup>> getCourseGroupByCourse(@RequestParam Long id) {
         log.debug("REST request to get CourseGroup : {}", id);
@@ -147,7 +147,7 @@ public class CourseGroupResource {
      * @param id the id of the courseGroup to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the courseGroup, or with status {@code 404 (Not Found)}.
      */
-    @ApiOperation(value="通过id查询已经开设班级")
+    @ApiOperation(value="通过id查询已经开设班级,2组")
     @GetMapping("/course-groups/{id}")
     public ResponseEntity<CourseGroup> getCourseGroup(@PathVariable Long id) {
         log.debug("REST request to get CourseGroup : {}", id);
@@ -167,7 +167,7 @@ public class CourseGroupResource {
      * @param id the id of the courseGroup to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @ApiOperation(value="解散班级")
+    @ApiOperation(value="解散班级,2组")
     @DeleteMapping("/course-groups/{id}")
     public ResponseEntity<Void> deleteCourseGroup(@PathVariable Long id) {
         log.debug("REST request to delete CourseGroup : {}", id);

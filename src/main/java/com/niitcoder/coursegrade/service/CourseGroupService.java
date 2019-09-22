@@ -16,13 +16,14 @@ import java.util.Optional;
  */
 public interface CourseGroupService {
 
+    CourseGroup isExistCourseInfo(Long id) throws Exception;
     /**
      * Save a courseGroup.
      *
      * @param courseGroup the entity to save.
      * @return the persisted entity.
      */
-    CourseGroup save(CourseGroup courseGroup) throws Exception;
+    CourseGroup save(CourseGroup courseGroup,Long courseInfoId) throws Exception;
 
 
     List<CourseGroup> findAll() throws Exception;

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -17,16 +18,8 @@ import java.util.List;
 @Repository
 public interface CourseGroupRepository extends JpaRepository<CourseGroup, Long> {
     List<CourseGroup> findByCourseId(Long id);
-
-
-    List<CourseInfo> findCourseByCourseId(Long id);
-
-    String findCourseCourseUserByCourseId(Long id);
-
     List<CourseGroup> findByCourseCourseUser(String courseUser);
 
-    List<CourseGroup> findAllByCourseId(Long id);
-
-    Page<CourseGroup> findByCourse(Long id, Pageable pageable) throws Exception;
-
+    @Override
+    Optional<CourseGroup> findById(Long id);
 }

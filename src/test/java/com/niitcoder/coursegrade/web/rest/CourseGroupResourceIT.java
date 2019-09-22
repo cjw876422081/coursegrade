@@ -209,9 +209,9 @@ public class CourseGroupResourceIT {
 
     @Test
     @Transactional
-    public void updateCourseGroup() throws Exception {
+    public void updateCourseGroup(Long courseInfoId) throws Exception {
         // Initialize the database
-        courseGroupService.save(courseGroup);
+        courseGroupService.save(courseGroup,courseInfoId);
 
         int databaseSizeBeforeUpdate = courseGroupRepository.findAll().size();
 
@@ -260,9 +260,9 @@ public class CourseGroupResourceIT {
 
     @Test
     @Transactional
-    public void deleteCourseGroup() throws Exception {
+    public void deleteCourseGroup(Long courseInfoId) throws Exception {
         // Initialize the database
-        courseGroupService.save(courseGroup);
+        courseGroupService.save(courseGroup,courseInfoId);
 
         int databaseSizeBeforeDelete = courseGroupRepository.findAll().size();
 

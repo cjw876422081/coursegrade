@@ -1,24 +1,24 @@
 package com.niitcoder.coursegrade.service.impl;
 
-import com.alibaba.fastjson.util.TypeUtils;
+import com.niitcoder.coursegrade.domain.CourseGroup;
 import com.niitcoder.coursegrade.domain.CourseInfo;
+import com.niitcoder.coursegrade.repository.CourseGroupRepository;
 import com.niitcoder.coursegrade.repository.CourseInfoRepository;
 import com.niitcoder.coursegrade.security.SecurityUtils;
+import com.niitcoder.coursegrade.service.CourseInfoService;
 import com.niitcoder.coursegrade.service.StudentCourseGroupService;
 import com.niitcoder.coursegrade.domain.StudentCourseGroup;
 import com.niitcoder.coursegrade.repository.StudentCourseGroupRepository;
-import com.niitcoder.coursegrade.service.dto.Student;
+import com.niitcoder.coursegrade.service.StudentHomeworkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,11 +34,17 @@ public class StudentCourseGroupServiceImpl implements StudentCourseGroupService 
 
     private final StudentCourseGroupRepository studentCourseGroupRepository;
     private final CourseInfoRepository courseInfoRepository;
+    private final CourseInfoService courseInfoService;
+    private final CourseGroupRepository courseGroupRepository;
+    private final StudentHomeworkService studentHomeworkService;
     private final JdbcTemplate jdbcTemplate ;
 
-    public StudentCourseGroupServiceImpl(StudentCourseGroupRepository studentCourseGroupRepository,CourseInfoRepository courseInfoRepository, JdbcTemplate jdbcTemplate) {
+    public StudentCourseGroupServiceImpl(StudentCourseGroupRepository studentCourseGroupRepository, CourseInfoRepository courseInfoRepository, CourseInfoService courseInfoService, CourseGroupRepository courseGroupRepository, StudentHomeworkService studentHomeworkService, JdbcTemplate jdbcTemplate) {
         this.studentCourseGroupRepository = studentCourseGroupRepository;
         this.courseInfoRepository= courseInfoRepository;
+        this.courseInfoService = courseInfoService;
+        this.courseGroupRepository = courseGroupRepository;
+        this.studentHomeworkService = studentHomeworkService;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -81,60 +87,31 @@ public class StudentCourseGroupServiceImpl implements StudentCourseGroupService 
         return studentCourseGroupRepository.findById(id);
     }
 
-    /**
-     * list转page
-     * @param list
-     * @param pageable
-     * @param <T>
-     * @return
-     */
-    public <T> Page<T> listConvertToPage(List<T> list, Pageable pageable) {
-        int start = (int)pageable.getOffset();
-        int end = (start + pageable.getPageSize()) > list.size() ? list.size() : ( start + pageable.getPageSize());
-        return new PageImpl<T>(list.subList(start, end), pageable, list.size());
-    }
-
     @Override
-    public Page<Student> findStudentByGroup(String group, Pageable pageable) {
-        log.debug("Request to findByCourseName  : {}", group);
-        String sql="SELECT a.* FROM student_course_group a,"+" course_group. b  WHERE b.group_name = '"+
-            group+"' AND a.group_id = b.id";
-
-        List<Map<String,Object>> sqlResult=this.jdbcTemplate.queryForList(sql);
-        List<Student> result = new ArrayList<Student>();
-
-        if(sqlResult!=null && sqlResult.size()>0){
-            for (Map<String, Object> sqlItem : sqlResult) {
-                Student item=new Student();
-                item.setId(TypeUtils.castToLong(sqlItem.get("id")));
-                item.setLogin(TypeUtils.castToString(sqlItem.get("student")));
-                result.add(item);
-            }
-            return listConvertToPage(result,pageable);
-        }
-        return null;
-    }
-
-    @Override
-    public Page<StudentCourseGroup> findStudentByGroup(Long id, Pageable pageable)throws Exception {
+    public Page<StudentCourseGroup> findStudentByGroupId(Long id, Pageable pageable)throws Exception {
         log.debug("Request to findByCourseName  : {}", id);
-
-        List<StudentCourseGroup> studentCourseGroups=studentCourseGroupRepository.findByGroupId(id);
-
-        String loginName= SecurityUtils.getCurrentUserLogin().get();
-        if(studentCourseGroups!=null &&studentCourseGroups.size()>0) {
-            String userName=studentCourseGroups.get(0).getGroup().getCourse().getCourseUser();
-            if (!userName.equals(loginName)) {
-                throw new Exception("无权搜索该班级学生！");
-            } else {
-                return listConvertToPage(studentCourseGroups, pageable);
-            }
-
-        }else {
-            throw new Exception("班级学生不存在");
+        //检查班级是否存在
+        Optional<CourseGroup> courseGroup=courseGroupRepository.findById(id);
+        if(!courseGroup.isPresent()){
+            throw new Exception("班级不存在.");
         }
+        //检查登陆用户是否创建过课程
+        if(!courseInfoService.checkLoginName()){
+            throw new Exception("无权限搜索班级学生.");
+        }
+        //通过班级获得CourseInfo中的courseUser
+        String courseUser=courseGroup.get().getCourse().getCourseUser();
+        String loginName= SecurityUtils.getCurrentUserLogin().get();
+        //判断courseUser与登陆名是否相同
+        if(!courseUser.equals(loginName)){
+            throw new Exception("无权限搜索该班级学生.");
+        }
+        List<StudentCourseGroup> studentCourseGroups=studentCourseGroupRepository.findByGroupId(id);
+        if(studentCourseGroups!=null&&studentCourseGroups.size()>0){
+            return studentHomeworkService.listConvertToPage(studentCourseGroups,pageable);
+        }
+        throw new Exception("该班级未查询到学生加入信息.");
     }
-
 
     /**
      * Delete the studentCourseGroup by id.
