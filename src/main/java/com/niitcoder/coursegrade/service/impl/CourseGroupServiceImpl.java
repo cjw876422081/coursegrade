@@ -126,14 +126,19 @@ public class CourseGroupServiceImpl implements CourseGroupService {
     @Transactional(readOnly = true)
     public Optional<CourseGroup> findOne(Long id) throws Exception {
         log.debug("Request to get CourseGroup : {}", id);
-        //检查班级是否存在
-        CourseGroup courseGroup=isExistCourseInfo(id);
-        //检查班级是否由该用户创建
-        String loginName = SecurityUtils.getCurrentUserLogin().get();
-        if(!courseGroup.getCourse().getCourseUser().equals(loginName)){
-            throw new Exception("无权限查询此班级.");
+        Optional<CourseGroup> result=courseGroupRepository.findById(id);
+        if(result.isPresent()){
+            //检查班级是否由该用户创建
+            String loginName = SecurityUtils.getCurrentUserLogin().get();
+            CourseGroup courseGroup=result.get();
+            if(courseGroup.getCourse()!=null
+                && courseGroup.getCourse().getCourseUser()!=null
+                &&!courseGroup.getCourse().getCourseUser().equals(loginName)){
+                throw new Exception("无权限查询此班级.");
+            }
+
         }
-        return courseGroupRepository.findById(id);
+        return result;
     }
     /**
      * Delete the courseGroup by id.
