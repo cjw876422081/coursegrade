@@ -23,6 +23,17 @@ List<CourseHomework> findByPlanId(@Param("id") Long id);
 @Query("select a from CourseHomework a where a.plan.course.id=?1")
     List<CourseHomework> findByCourseId(Long course_id);
 
+
+    /**
+     * 通过授课内容查找所有作业
+     *
+     * @param planId
+     * @return
+     */
+    @Query("SELECT a FROM CourseHomework a ,CoursePlan b WHERE a.plan = b.id AND b.id = ?1")
+    List<CourseHomework> findByPlanId(int planId);
+
+
     @Override
     Optional<CourseHomework> findById(Long aLong);
 }

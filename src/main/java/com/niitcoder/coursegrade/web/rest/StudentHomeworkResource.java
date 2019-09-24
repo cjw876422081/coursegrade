@@ -59,7 +59,7 @@ public class StudentHomeworkResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/student-homeworks")
-    public ResponseEntity<StudentHomework> createStudentHomework(@RequestBody StudentHomework studentHomework) throws URISyntaxException {
+    public ResponseEntity<StudentHomework> createStudentHomework(@RequestBody StudentHomework studentHomework) throws Exception {
         log.debug("REST request to save StudentHomework : {}", studentHomework);
         if (studentHomework.getId() != null) {
             throw new BadRequestAlertException("A new studentHomework cannot already have an ID", ENTITY_NAME, "idexists");
@@ -80,7 +80,7 @@ public class StudentHomeworkResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/student-homeworks")
-    public ResponseEntity<StudentHomework> updateStudentHomework(@RequestBody StudentHomework studentHomework) throws URISyntaxException {
+    public ResponseEntity<StudentHomework> updateStudentHomework(@RequestBody StudentHomework studentHomework) throws Exception {
         log.debug("REST request to update StudentHomework : {}", studentHomework);
         if (studentHomework.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");

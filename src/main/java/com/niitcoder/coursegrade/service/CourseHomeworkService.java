@@ -47,10 +47,10 @@ public interface CourseHomeworkService {
     void delete(Long id) throws Exception;
 
     /**
-     * Get the "id" courseHomework.
+     * 通过授课内容查找所有作业
      *
-     * @param id the id of the entity.
-     * @return the entity.
+     * @param id
+     * @return
      */
     List<CourseHomework> findByPlanId(Long id);
 
