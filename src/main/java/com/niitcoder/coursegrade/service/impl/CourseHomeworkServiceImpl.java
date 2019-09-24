@@ -113,9 +113,16 @@ public class CourseHomeworkServiceImpl implements CourseHomeworkService {
 
     }
 
+    /**
+     * 通过授课内容查找所有作业
+     *
+     * @param id
+     * @return
+     */
     @Override
     public List<CourseHomework> findByPlanId(Long id) {
-        return null;
+        List<CourseHomework> courseHomework = courseHomeworkRepository.findByPlanId(id);
+        return courseHomework;
     }
 
     @Override
