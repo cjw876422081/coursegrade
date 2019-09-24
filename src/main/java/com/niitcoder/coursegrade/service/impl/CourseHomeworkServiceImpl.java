@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,21 +111,26 @@ public class CourseHomeworkServiceImpl implements CourseHomeworkService {
             throw new Exception("作业不存在");
         }
 
-
-        /**
-         * Get one courseHomework by id.
-         *
-         * @param id the id of the entity.
-         * @return the entity.
-         */
-
-
     }
-
-
 
     @Override
     public List<CourseHomework> findByPlanId(Long id) {
         return null;
     }
+
+    @Override
+    public List<CourseHomework> getAllTaskByCourse(Long course_id) {
+        List<CourseHomework> courseHomework = new ArrayList<>();
+        courseHomework = courseHomeworkRepository.findByCourseId(course_id);
+        return courseHomework;
+    }
+
+    @Override
+    public void updateTask(Long id, String homework_memo) {
+        log.debug("REST request to update CourseHomework : {},{}", id,homework_memo);
+        CourseHomework result=courseHomeworkRepository.findById(id).get();
+        result.setHomeworkMemo(homework_memo);
+    }
+
+
 }
