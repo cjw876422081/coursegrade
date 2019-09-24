@@ -57,10 +57,10 @@ public interface CourseHomeworkService {
     /**
      * Get the "course_id" courseHomework.
      *
-     * @param course_id the id of the entity.
+     * @param courseId the id of the entity.
      * @return the entity.
      */
-    List<CourseHomework> getAllTaskByCourse(Long course_id);
+    List<CourseHomework> getAllTaskByCourse(Long courseId);
 
-    void updateTask(Long id,String homework_memo);
+    CourseHomework updateTask(Long id ,String homework_memo) throws Exception;
 }

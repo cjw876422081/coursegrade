@@ -126,17 +126,27 @@ public class CourseHomeworkServiceImpl implements CourseHomeworkService {
     }
 
     @Override
-    public List<CourseHomework> getAllTaskByCourse(Long course_id) {
+    public List<CourseHomework> getAllTaskByCourse(Long courseId) {
         List<CourseHomework> courseHomework = new ArrayList<>();
-        courseHomework = courseHomeworkRepository.findByCourseId(course_id);
+        courseHomework = courseHomeworkRepository.findByCourseId(courseId);
         return courseHomework;
     }
 
     @Override
-    public void updateTask(Long id, String homework_memo) {
+    public CourseHomework updateTask(Long id, String homework_memo) throws Exception{
         log.debug("REST request to update CourseHomework : {},{}", id,homework_memo);
-        CourseHomework result=courseHomeworkRepository.findById(id).get();
-        result.setHomeworkMemo(homework_memo);
+        CourseHomework courseHomework=courseHomeworkRepository.findById(id).get();
+        //检查作业内容是否由该用户创建
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        if(courseHomework.getPlan()==null &&
+            courseHomework.getPlan().getCourse()==null &&
+            courseHomework.getPlan().getCourse().getCourseUser()==null &&
+            !courseHomework.getPlan().getCourse().getCourseUser().equals(loginName)) {
+            throw new Exception("无权限修改此作业.");
+        }
+        courseHomework.setHomeworkMemo(homework_memo);
+        CourseHomework result=courseHomeworkRepository.save(courseHomework);//保存修改的内容
+        return result;
     }
 
 

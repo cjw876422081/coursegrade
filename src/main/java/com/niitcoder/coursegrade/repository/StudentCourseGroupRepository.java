@@ -21,4 +21,12 @@ public interface StudentCourseGroupRepository extends JpaRepository<StudentCours
     List<StudentCourseGroup> findByGroupId(Long id);
 
     Optional<StudentCourseGroup> findByStudent(String login);
+
+    /**
+     * 根据班级id和登录名查询
+     * @param groupId
+     * @param studentName
+     * @return
+     */
+    Optional<StudentCourseGroup> findByIdAndStudent(Long groupId,String studentName);
 }

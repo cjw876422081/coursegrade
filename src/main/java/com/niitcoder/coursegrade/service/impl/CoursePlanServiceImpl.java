@@ -119,12 +119,7 @@ public class CoursePlanServiceImpl implements CoursePlanService {
 
         List<CoursePlanDTO> coursePlanDTOList = new ArrayList<>();
         coursePlanDTOList = getCoursePlanDTOByCourseId(courseInfoPlan.getId());
-        if (coursePlanDTOList.isEmpty()) {
-            courseInfoPlan.setLeaf(true);
-        } else {
-            courseInfoPlan.setLeaf(false);
-            courseInfoPlan.setChildren(coursePlanDTOList);
-        }
+        courseInfoPlan.setChildren(coursePlanDTOList);
 
         return courseInfoPlan;
     }
