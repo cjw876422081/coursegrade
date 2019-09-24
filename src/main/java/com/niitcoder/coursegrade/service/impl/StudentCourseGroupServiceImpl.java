@@ -107,10 +107,7 @@ public class StudentCourseGroupServiceImpl implements StudentCourseGroupService 
             throw new Exception("无权限搜索该班级学生.");
         }
         List<StudentCourseGroup> studentCourseGroups=studentCourseGroupRepository.findByGroupId(id);
-        if(studentCourseGroups!=null&&studentCourseGroups.size()>0){
-            return studentHomeworkService.listConvertToPage(studentCourseGroups,pageable);
-        }
-        throw new Exception("该班级未查询到学生加入信息.");
+        return studentHomeworkService.listConvertToPage(studentCourseGroups,pageable);
     }
 
     /**

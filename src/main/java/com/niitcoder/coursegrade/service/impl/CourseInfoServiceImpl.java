@@ -133,14 +133,13 @@ public class CourseInfoServiceImpl implements CourseInfoService {
      * @throws Exception
      */
     public boolean checkLoginName() throws Exception {
-        boolean flag=false;
         String loginName = SecurityUtils.getCurrentUserLogin().get();
         List<CourseInfo> courseInfos=courseInfoRepository.findByCourseUser(loginName);
         //检查用户是否创建过课程,若有,则设置flag为true
         if(courseInfos!=null && courseInfos.size()>0){
-            flag=true;
+            return true;
         }
-        return flag;
+        return false;
     }
 
     /**
@@ -167,14 +166,14 @@ public class CourseInfoServiceImpl implements CourseInfoService {
      * @throws Exception
      */
     public boolean isCreateByLogin(Long courseInfoId) throws Exception {
-        boolean flag=false;
         String loginName = SecurityUtils.getCurrentUserLogin().get();
         //检查课程是否存在
         CourseInfo courseInfo=isExistCourseInfo(courseInfoId);
         //检查课程是否由该用户创建，若是，则设置flag为true
-        if(courseInfo.getCourseUser().equals(loginName)){
-            flag=true;
+        if(courseInfo.getCourseUser()!=null
+            &&courseInfo.getCourseUser().equals(loginName)){
+            return true;
         }
-        return flag;
+        return false;
     }
 }

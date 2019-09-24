@@ -45,7 +45,7 @@ public class CourseGroupServiceImpl implements CourseGroupService {
      * @return
      * @throws Exception
      */
-    public CourseGroup isExistCourseInfo(Long id) throws Exception {
+    public CourseGroup isExistCourseGroup(Long id) throws Exception {/*Info改为Group*/
         //检查班级是否存在
         Optional<CourseGroup> courseGroup=courseGroupRepository.findById(id);
         if(!courseGroup.isPresent()){
@@ -67,7 +67,9 @@ public class CourseGroupServiceImpl implements CourseGroupService {
             throw new Exception("无权限创建和更改此班级.");
         }
         courseGroup.setDataTime(ZonedDateTime.now());
-        CourseInfo courseInfo=courseInfoRepository.findById(courseInfoId).get();
+
+        CourseInfo courseInfo=new CourseInfo();
+        courseInfo.setId(courseInfoId);
         courseGroup.setCourse(courseInfo);
         return courseGroupRepository.save(courseGroup);
     }
@@ -86,13 +88,8 @@ public class CourseGroupServiceImpl implements CourseGroupService {
         if(!courseInfoService.checkLoginName()){
             throw new Exception("无权限查询班级.");
         }
-        //检查用户是否创建过班级
         String loginName = SecurityUtils.getCurrentUserLogin().get();
-        List<CourseGroup> courseGroups=courseGroupRepository.findByCourseCourseUser(loginName);
-        if(courseGroups==null || courseGroups.size()==0){
-            throw new Exception("未创建班级.");
-        }
-        return courseGroups;
+        return courseGroupRepository.findByCourseCourseUser(loginName);
     }
 
     /**
@@ -107,13 +104,16 @@ public class CourseGroupServiceImpl implements CourseGroupService {
         if(!courseInfoService.isCreateByLogin(id)){
             throw new Exception("无权限查询此课程下的班级");
         }
+        return courseGroupRepository.findByCourseId(id);
+    }
 
-        //检查用户是否在该课程下创建过班级
-        List<CourseGroup> courseGroups=courseGroupRepository.findByCourseId(id);
-        if(courseGroups==null && courseGroups.size()==0){
-            throw new Exception("此课程下未创建班级");
+    public boolean isCreateByLogin(CourseGroup courseGroup,String loginName){
+        if(courseGroup.getCourse()!=null
+            && courseGroup.getCourse().getCourseUser()!=null
+            &&!courseGroup.getCourse().getCourseUser().equals(loginName)){
+            return true;
         }
-        return courseGroups;
+        return false;
     }
 
     /**
@@ -131,9 +131,7 @@ public class CourseGroupServiceImpl implements CourseGroupService {
             //检查班级是否由该用户创建
             String loginName = SecurityUtils.getCurrentUserLogin().get();
             CourseGroup courseGroup=result.get();
-            if(courseGroup.getCourse()!=null
-                && courseGroup.getCourse().getCourseUser()!=null
-                &&!courseGroup.getCourse().getCourseUser().equals(loginName)){
+            if(!isCreateByLogin(courseGroup,loginName)){
                 throw new Exception("无权限查询此班级.");
             }
 
@@ -149,10 +147,10 @@ public class CourseGroupServiceImpl implements CourseGroupService {
     public void delete(Long id) throws Exception {
         log.debug("Request to delete CourseGroup : {}", id);
         //检查班级是否存在
-        CourseGroup courseGroup=isExistCourseInfo(id);
+        CourseGroup courseGroup=isExistCourseGroup(id);/*Info改为Group*/
         //检查班级是否由该用户创建
         String loginName = SecurityUtils.getCurrentUserLogin().get();
-        if(!courseGroup.getCourse().getCourseUser().equals(loginName)){
+        if(!isCreateByLogin(courseGroup,loginName)){
             throw new Exception("无权限删除此班级.");
         }
         //检查将要删除的班级是否有学生，若有则不能解散班级

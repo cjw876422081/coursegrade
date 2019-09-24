@@ -167,11 +167,7 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
         //通过student和courseId找到studentHomework
         Long courseId=courseInfo.getId();
         List<StudentHomework> studentHomeworkList=studentHomeworkRepository.findByStudentAndHomeworkPlanCourseId(studentLogin,courseId,pageable);
-        //判断学生是否提交作业
-        if(studentHomeworkList!=null && studentHomeworkList.size()>0){
-            return listConvertToPage(studentHomeworkList,pageable);
-        }
-        throw new Exception("该学生未提交作业");
+        return listConvertToPage(studentHomeworkList,pageable);
     }
 
     @Override
@@ -187,11 +183,8 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
             throw new Exception("无权查询此作业");
         }
         List<StudentHomework> studentHomeworks=studentHomeworkRepository.findByHomeworkId(id);
-        if(studentHomeworks!=null && studentHomeworks.size()>0) {
-            return listConvertToPage(studentHomeworks, pageable);
-        }else{
-            throw new Exception("未查询到提交的作业");
-        }
+        return listConvertToPage(studentHomeworks, pageable);
+
     }
     @Override
     public Optional<StudentHomework> updateStudentHomeworkGrade(Long id, Integer grade) throws Exception {

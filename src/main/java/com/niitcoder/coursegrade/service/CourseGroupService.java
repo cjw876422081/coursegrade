@@ -16,7 +16,7 @@ import java.util.Optional;
  */
 public interface CourseGroupService {
 
-    CourseGroup isExistCourseInfo(Long id) throws Exception;
+    CourseGroup isExistCourseGroup(Long id) throws Exception;
     /**
      * Save a courseGroup.
      *
@@ -37,6 +37,8 @@ public interface CourseGroupService {
     Optional<CourseGroup> findOne(Long id) throws Exception;
 
     List<CourseGroup> findByCourseId(Long id) throws Exception;
+
+    boolean isCreateByLogin(CourseGroup courseGroup,String loginName);
     /**
      * Delete the "id" courseGroup.
      *
