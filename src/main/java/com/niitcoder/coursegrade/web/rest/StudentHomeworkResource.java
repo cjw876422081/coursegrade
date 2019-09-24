@@ -84,6 +84,7 @@ public class StudentHomeworkResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         StudentHomework result = studentHomeworkService.save(studentHomework);
+
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, studentHomework.getId().toString()))
             .body(result);

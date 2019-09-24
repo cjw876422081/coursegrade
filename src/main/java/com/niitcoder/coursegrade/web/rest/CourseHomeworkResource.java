@@ -139,7 +139,7 @@ public class CourseHomeworkResource {
      */
     @ApiOperation(value = "根据指定授课内容获取对应作业的内容")
     @GetMapping("/homework-plan/{id}")
-    public ResponseEntity<List<CourseHomework>> getCourseHomeworkByCouesePlan(@PathVariable Long id) {
+      public ResponseEntity<List<CourseHomework>> getCourseHomeworkByCouesePlan(@PathVariable Long id) {
         log.debug("REST request to get CourseHomework : {}", id);
         List<CourseHomework> courseHomework = courseHomeworkService.findByPlanId(id);
         return ResponseEntity.ok(courseHomework);
@@ -147,21 +147,27 @@ public class CourseHomeworkResource {
 
     @ApiOperation(value = "根据指定课程获取对应作业的内容")
     @GetMapping("/homework-grade/{id}")
-    public ResponseEntity<CourseInfoPlan> getCourseHomeworkByCoueseId(@PathVariable Long id) {
+    public ResponseEntity<CourseInfoPlan> getCourseHomeworkByCourseId(@PathVariable Long id) {
         log.debug("REST request to get CourseHomework : {}", id);
         CourseInfoPlan courseInfoPlan = coursePlanService.getCourseInfoPlan(id);
         return ResponseEntity.ok(courseInfoPlan);
     }
     @ApiOperation(value = "修改作业内容")
-    @PutMapping("/course-homeworks/updateCourseHomework")
-    public ResponseEntity<Void> updateCourseHomework(@RequestParam Long id,@RequestParam String homework_memo) throws URISyntaxException {
+    @PutMapping("/course-homework")
+    public ResponseEntity<CourseHomework> updateCourseHomework(@RequestParam Long id,@RequestParam String homework_memo) throws URISyntaxException {
         log.debug("REST request to update CourseHomework : {},{}", id,homework_memo);
         if (id == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        courseHomeworkService.updateTask(id,homework_memo);
-        return ResponseEntity.noContent()
+        CourseHomework result= null;
+        try {
+            result = courseHomeworkService.updateTask(id,homework_memo);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, id.toString()))
-            .build();
+            .body(result);
+
     }
 }
