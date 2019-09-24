@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,15 +35,17 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
     private final CourseHomeworkRepository courseHomeworkRepository;
     private final CourseGroupRepository courseGroupRepository;
     private final StudentCourseGroupRepository studentCourseGroupRepository;
+    private final CourseAttachmentRepository courseAttachmentRepository;
     private final JdbcTemplate jdbcTemplate;
 
-    public StudentHomeworkServiceImpl(StudentHomeworkRepository studentHomeworkRepository, UserRepository userRepository, CourseInfoService courseInfoRepository, CourseHomeworkRepository courseHomeworkRepository, CourseGroupRepository courseGroupRepository, StudentCourseGroupRepository studentCourseGroupRepository, JdbcTemplate jdbcTemplate) {
+    public StudentHomeworkServiceImpl(StudentHomeworkRepository studentHomeworkRepository, UserRepository userRepository, CourseInfoService courseInfoRepository, CourseHomeworkRepository courseHomeworkRepository, CourseGroupRepository courseGroupRepository, StudentCourseGroupRepository studentCourseGroupRepository, CourseAttachmentRepository courseAttachmentRepository, JdbcTemplate jdbcTemplate) {
         this.studentHomeworkRepository = studentHomeworkRepository;
         this.userRepository = userRepository;
         this.courseInfoRepository = courseInfoRepository;
         this.courseHomeworkRepository = courseHomeworkRepository;
         this.courseGroupRepository = courseGroupRepository;
         this.studentCourseGroupRepository = studentCourseGroupRepository;
+        this.courseAttachmentRepository = courseAttachmentRepository;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -58,30 +59,26 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
     public StudentHomework save(StudentHomework studentHomework) throws Exception {
         log.debug("Request to save StudentHomework : {}", studentHomework);
         String loginName = SecurityUtils.getCurrentUserLogin().get();
-        Long homeworkId = studentHomework.getHomework().getId();
-        String sql = "SELECT c4.id " +
-            "FROM student_course_group s1,course_group c1,course_info c2,course_plan c3,course_homework c4 " +
-            "WHERE s1.group_id=c1.id " +
-            "AND c1.course_id=c2.id " +
-            "AND c3.course_id=c2.id " +
-            "AND c4.plan_id=c3.id " +
-            "AND c3.parent_plan_id !=\"\";";
-        List<Map<String,Object>> list = this.jdbcTemplate.queryForList(sql);
-        Boolean flag = false;
-        for (int i = 0; i <list.size() ; i++) {
-           Map idMap = list.get(i);
-            if(idMap.get("id")==homeworkId){
-                flag = true;
-                break;
-            }
+        if (studentHomework.getHomework()==null){
+            throw new Exception("请选择一个作业进行提交");
         }
-        if(flag){
+        Long homeworkId = studentHomework.getHomework().getId();
+        // 根据作业id查询出作业
+        Optional<CourseHomework> courseHomework = courseHomeworkRepository.findById(homeworkId);
+        // 作业id对应一个课程
+        Long courseId = courseHomework.get().getPlan().getCourse().getId();
+        // 根据课程查询出班级
+        List<CourseGroup> courseGroups = courseGroupRepository.findByCourseId(courseId);
+        Long groupId = courseGroups.get(0).getId();
+        // 根据登录名和班级id查询表
+        Optional<StudentCourseGroup> studentCourseGroup = studentCourseGroupRepository.findByIdAndStudent(groupId,loginName);
+        if (studentCourseGroup.isPresent()){
             studentHomework.setStudent(loginName);
             studentHomework.setSubmitTime(ZonedDateTime.now());
             studentHomeworkRepository.save(studentHomework);
             return studentHomework;
         }
-       throw new Exception("该作业不属于你的课程！");
+        throw new Exception("提交的作业不属于你的课程");
     }
 
     /**
@@ -96,7 +93,6 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
         log.debug("Request to get all StudentHomeworks");
         return studentHomeworkRepository.findAll(pageable);
     }
-
 
     /**
      * Get one studentHomework by id.
@@ -117,9 +113,23 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
      * @param id the id of the entity.
      */
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws Exception {
         log.debug("Request to delete StudentHomework : {}", id);
-        studentHomeworkRepository.deleteById(id);
+        String loginName = SecurityUtils.getCurrentUserLogin().get();
+        // 判断要删除的已提交作业是否为自己的
+        Optional<StudentHomework> studentHomework = studentHomeworkRepository.findByIdAndStudent(id,loginName);
+        if (studentHomework.isPresent()) {
+            // 查询已提交作业是否携带附件
+            Long homeworkId = studentHomework.get().getHomework().getId();
+            Optional<List<CourseAttachment>> courseAttachment = courseAttachmentRepository.findCourseAttachmentsByFileUserAndHomework_Id(loginName,homeworkId);
+            if (courseAttachment.isPresent()) {
+                // 删除附件
+                courseAttachmentRepository.deleteCourseAttachmentByFileUserAndHomework_Id(loginName,homeworkId);
+            }
+            studentHomeworkRepository.deleteById(id);
+        }else {
+        throw new Exception("不能删除别人的已提交作业");
+        }
     }
 
     @Override

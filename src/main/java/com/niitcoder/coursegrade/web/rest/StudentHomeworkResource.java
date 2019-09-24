@@ -44,11 +44,8 @@ public class StudentHomeworkResource {
 
     private final StudentHomeworkService studentHomeworkService;
 
-    private final CourseAttachmentService courseAttachmentService;
-
     public StudentHomeworkResource(StudentHomeworkService studentHomeworkService, CourseAttachmentService courseAttachmentService) {
         this.studentHomeworkService = studentHomeworkService;
-        this.courseAttachmentService = courseAttachmentService;
     }
 
     /**
@@ -58,6 +55,7 @@ public class StudentHomeworkResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new studentHomework, or with status {@code 400 (Bad Request)} if the studentHomework has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @ApiOperation(value = "提交作业")
     @PostMapping("/student-homeworks")
     public ResponseEntity<StudentHomework> createStudentHomework(@RequestBody StudentHomework studentHomework) throws Exception {
         log.debug("REST request to save StudentHomework : {}", studentHomework);
@@ -124,17 +122,10 @@ public class StudentHomeworkResource {
      * @param id the id of the studentHomework to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
+    @ApiOperation(value = "删除已提交作业及其附件")
     @DeleteMapping("/student-homeworks/{id}")
-    public ResponseEntity<Void> deleteStudentHomework(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStudentHomework(@PathVariable Long id) throws Exception {
         log.debug("REST request to delete StudentHomework : {}", id);
-        Optional<StudentHomework> studentHomework = studentHomeworkService.findOne(id);
-        Long homeworkId = studentHomework.get().getHomework().getId();
-        String loginName = SecurityUtils.getCurrentUserLogin().get();
-        // 查找提交作业时所携带的附件 如果有则删除
-        Optional<List<CourseAttachment>> courseAttachments = courseAttachmentService.getCourseAttachmentsByFileUserAndHomeworkId(loginName, homeworkId);
-        if (courseAttachments.isPresent()) {
-            courseAttachmentService.deleteByFileUserAndHomeworkId(loginName, homeworkId);
-        }
         studentHomeworkService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
 
