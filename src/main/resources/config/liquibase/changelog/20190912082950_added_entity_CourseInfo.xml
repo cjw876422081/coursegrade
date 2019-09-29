@@ -82,7 +82,7 @@
 
     <changeSet id="2019092901" author="juhuiguang">
         <addColumn tableName="course_info">
-            <column name="course_cover" type="string"></column>
+            <column name="course_cover" type="varchar(255)"></column>
         </addColumn>
     </changeSet>
 
