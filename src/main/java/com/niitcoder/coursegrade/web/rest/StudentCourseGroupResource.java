@@ -1,5 +1,7 @@
 package com.niitcoder.coursegrade.web.rest;
 
+import com.niitcoder.coursegrade.domain.CourseGroup;
+import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.dto.Student;
 import com.niitcoder.coursegrade.domain.StudentCourseGroup;
 import com.niitcoder.coursegrade.service.StudentCourseGroupService;
@@ -23,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -88,9 +91,7 @@ public class StudentCourseGroupResource {
     /**
      * {@code GET  /student-course-groups} : get all the studentCourseGroups.
      *
-
      * @param pageable the pagination information.
-
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of studentCourseGroups in body.
      */
     @GetMapping("/student-course-groups")
@@ -115,39 +116,60 @@ public class StudentCourseGroupResource {
     }
 
     @GetMapping("/student-course-groups/id")
-    @ApiOperation(value="查询指定班级已加入的学生名单,2组")
-    public ResponseEntity<Page<StudentCourseGroup>> getStudentByCourseGroup(@RequestParam Long id,Pageable pageable) {
+    @ApiOperation(value = "查询指定班级已加入的学生名单,2组")
+    public ResponseEntity<Page<StudentCourseGroup>> getStudentByCourseGroup(@RequestParam Long id, Pageable pageable) {
         log.debug("REST request to get StudentCourseGroup : {}", id);
         try {
-            Page<StudentCourseGroup> studentCourseGroups = studentCourseGroupService.findStudentByGroupId(id,pageable);
+            Page<StudentCourseGroup> studentCourseGroups = studentCourseGroupService.findStudentByGroupId(id, pageable);
             return ResponseEntity.ok(studentCourseGroups);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            throw  new BadRequestAlertException(e.getMessage(),ENTITY_NAME,"not found");
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "not found");
         }
     }
 
-    /**
-     * {@code DELETE  /student-course-groups/:id} : delete the "id" studentCourseGroup.
-     *
-     * @param id the id of the studentCourseGroup to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
-    @DeleteMapping("/student-course-groups/{id}")
-    public ResponseEntity<Void> deleteStudentCourseGroup(@PathVariable Long id) {
-        log.debug("REST request to delete StudentCourseGroup : {}", id);
-        studentCourseGroupService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+    @ApiOperation("退出指定课程的班级")
+    @DeleteMapping("/student-course-groups/{course_id}")
+    public ResponseEntity deleteStudentCourseGroup(@PathVariable Long course_id) {
+        String student = SecurityUtils.getCurrentUserLogin().get();
+        log.debug("REST request to delete StudentCourseGroup : {}", course_id);
+        try {
+            studentCourseGroupService.delete(student, course_id);
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "course_id error");
+        }
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName,
+            true, ENTITY_NAME,
+            course_id.toString())).build();
     }
-    @GetMapping("/student-course-order-group/{student}/{course_id}")
-    public  ResponseEntity getCourseGroup(@PathVariable String student ,@PathVariable Long course_id ){
-        log.debug("REST request to get  getCourseGroup : {}", student , course_id);
-        return ResponseEntity.ok(
-            studentCourseGroupService.getCourseGroup(student , course_id)
-        );
+
+    @ApiOperation(value ="查询指定课程的班级")
+    @GetMapping("/student-course-order-group/{course_id}")
+    public  ResponseEntity getCourseGroup(@PathVariable Long course_id ) {
+        String student = SecurityUtils.getCurrentUserLogin().get();
+        log.debug("REST request to get  getCourseGroup : {}", course_id, student);
+        List<CourseGroup> result = null;
+        try {
+            result = studentCourseGroupService.getCourseGroup(student, course_id);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, " no found courseGroup");
+        }
     }
+
+    @ApiOperation("查看自己已经加入的课程")
     @GetMapping("/student-course-group/student")
-    public ResponseEntity getMyCourse(@RequestParam String student){
-        return ResponseEntity.ok(studentCourseGroupService.getMyCourse(student));
+    public ResponseEntity<List<Map<String, Object>>> getMyCourse() {
+        String student = SecurityUtils.getCurrentUserLogin().get();
+        log.debug("REST request to get getMyCourse : {}", student);
+        List<Map<String, Object>> result = null;
+        try {
+            result = studentCourseGroupService.getMyCourse(student);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "not found joining courses");
+        }
     }
 }
