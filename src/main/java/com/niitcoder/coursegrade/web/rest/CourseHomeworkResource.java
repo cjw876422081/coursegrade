@@ -1,9 +1,11 @@
 package com.niitcoder.coursegrade.web.rest;
 
 import com.niitcoder.coursegrade.domain.CourseHomework;
+import com.niitcoder.coursegrade.repository.CourseHomeworkRepository;
 import com.niitcoder.coursegrade.service.CourseHomeworkService;
 import com.niitcoder.coursegrade.service.CoursePlanService;
 import com.niitcoder.coursegrade.service.dto.CourseInfoPlan;
+import com.niitcoder.coursegrade.service.impl.CourseHomeworkServiceImpl;
 import com.niitcoder.coursegrade.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
@@ -145,13 +147,14 @@ public class CourseHomeworkResource {
         return ResponseEntity.ok(courseHomework);
     }
 
-    @ApiOperation(value = "根据指定课程获取对应作业的内容")
-    @GetMapping("/homework-grade/{id}")
-    public ResponseEntity<CourseInfoPlan> getCourseHomeworkByCourseId(@PathVariable Long id) {
-        log.debug("REST request to get CourseHomework : {}", id);
-        CourseInfoPlan courseInfoPlan = coursePlanService.getCourseInfoPlan(id);
-        return ResponseEntity.ok(courseInfoPlan);
+    @ApiOperation(value = "查询指定课程所有作业")
+    @GetMapping("/course-homeworks/getAllTaskByCourse/{id}")
+    public ResponseEntity<List<CourseHomework>> getAllTaskByCourse(@PathVariable Long id) {
+        log.debug("REST request to get AllCourseHomework : {}", id);
+        List<CourseHomework> list = courseHomeworkService.getAllTaskByCourse(id);
+        return ResponseEntity.ok(list);
     }
+
     @ApiOperation(value = "修改作业内容")
     @PutMapping("/course-homework")
     public ResponseEntity<CourseHomework> updateCourseHomework(@RequestParam Long id,@RequestParam String homework_memo) throws URISyntaxException {

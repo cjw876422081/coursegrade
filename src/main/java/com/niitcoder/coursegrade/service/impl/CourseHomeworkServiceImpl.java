@@ -125,10 +125,16 @@ public class CourseHomeworkServiceImpl implements CourseHomeworkService {
         return courseHomework;
     }
 
+    /**
+     * 通过指定课程查找所有作业
+     *
+     * @param
+     * @return
+     */
     @Override
-    public List<CourseHomework> getAllTaskByCourse(Long courseId) {
+    public List<CourseHomework> getAllTaskByCourse(Long id) {
         List<CourseHomework> courseHomework = new ArrayList<>();
-        courseHomework = courseHomeworkRepository.findByCourseId(courseId);
+        courseHomework = courseHomeworkRepository.findByCourseId(id);
         return courseHomework;
     }
 

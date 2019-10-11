@@ -20,7 +20,7 @@ public interface CourseHomeworkRepository extends JpaRepository<CourseHomework, 
 List<CourseHomework> findByPlanId(@Param("id") Long id);
 
 //查询指定课程的
-@Query("select a from CourseHomework a where a.plan.course.id=?1")
+@Query("select a from CourseHomework a where a.plan.course.id=?")
     List<CourseHomework> findByCourseId(Long course_id);
 
 
