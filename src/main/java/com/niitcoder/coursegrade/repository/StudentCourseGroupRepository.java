@@ -28,5 +28,5 @@ public interface StudentCourseGroupRepository extends JpaRepository<StudentCours
      * @param studentName
      * @return
      */
-    Optional<StudentCourseGroup> findByIdAndStudent(Long groupId,String studentName);
+    Optional<StudentCourseGroup> findByGroupIdAndStudent(Long groupId,String studentName);
 }
