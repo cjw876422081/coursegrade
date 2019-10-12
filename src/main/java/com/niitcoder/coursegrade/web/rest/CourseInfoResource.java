@@ -97,4 +97,11 @@ public class CourseInfoResource {
         }
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
+
+    @ApiOperation(value="查找所有教师已经创建的课程")
+    @GetMapping("/allcourse-infos")
+    public ResponseEntity getAllCourses(Pageable pageable){
+        Page<CourseInfo> page = courseInfoService.findAll(pageable);
+        return ResponseEntity.ok(page);
+    }
 }

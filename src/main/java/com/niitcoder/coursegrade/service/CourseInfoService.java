@@ -44,4 +44,5 @@ public interface CourseInfoService {
     CourseInfo isExistCourseInfo(Long courseInfoId) throws Exception;
 
     boolean isCreateByLogin(Long courseInfoId) throws Exception;
+
 }
