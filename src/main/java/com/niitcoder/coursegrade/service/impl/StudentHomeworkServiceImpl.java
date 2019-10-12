@@ -5,6 +5,7 @@ import com.niitcoder.coursegrade.repository.*;
 import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.CourseInfoService;
 import com.niitcoder.coursegrade.service.StudentHomeworkService;
+import jdk.nashorn.internal.objects.annotations.Where;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,18 +69,22 @@ public class StudentHomeworkServiceImpl implements StudentHomeworkService {
         Optional<CourseHomework> courseHomework = courseHomeworkRepository.findById(homeworkId);
         // 作业id对应一个课程
         Long courseId = courseHomework.get().getPlan().getCourse().getId();
-        // 根据课程查询出班级
+        // 根据课程查询出一个或多个班级
         List<CourseGroup> courseGroups = courseGroupRepository.findByCourseId(courseId);
-        Long groupId = courseGroups.get(0).getId();
-        // 根据登录名和班级id查询表
-        Optional<StudentCourseGroup> studentCourseGroup = studentCourseGroupRepository.findByIdAndStudent(groupId,loginName);
-        if (studentCourseGroup.isPresent()){
-            studentHomework.setStudent(loginName);
-            studentHomework.setSubmitTime(ZonedDateTime.now());
-            studentHomeworkRepository.save(studentHomework);
-            return studentHomework;
-        }
-        throw new Exception("提交的作业不属于你的课程");
+        if(!courseGroups.isEmpty()){
+            Iterator<CourseGroup> group = courseGroups.iterator();
+            while (group.hasNext()){
+                CourseGroup courseGroup = group.next();
+                // 根据登录名和班级id查询表
+                Optional<StudentCourseGroup> studentCourseGroup = studentCourseGroupRepository.findByGroupIdAndStudent(courseGroup.getId(),loginName);
+                if(studentCourseGroup.isPresent()){
+                    studentHomework.setStudent(loginName);
+                    studentHomework.setSubmitTime(ZonedDateTime.now());
+                    studentHomeworkRepository.save(studentHomework);
+                    return studentHomework;
+                }
+            }
+        }throw new Exception("提交的作业不属于你的课程");
     }
 
     /**
