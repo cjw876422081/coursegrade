@@ -1,6 +1,8 @@
 package com.niitcoder.coursegrade.web.rest;
 
+import com.niitcoder.coursegrade.service.CourseInfoService;
 import com.niitcoder.coursegrade.domain.CourseGroup;
+import com.niitcoder.coursegrade.domain.CourseInfo;
 import com.niitcoder.coursegrade.security.SecurityUtils;
 import com.niitcoder.coursegrade.service.dto.Student;
 import com.niitcoder.coursegrade.domain.StudentCourseGroup;
@@ -37,6 +39,8 @@ public class StudentCourseGroupResource {
 
     private final Logger log = LoggerFactory.getLogger(StudentCourseGroupResource.class);
 
+    private final CourseInfoService courseInfoService;
+
     private static final String ENTITY_NAME = "studentCourseGroup";
 
     @Value("${jhipster.clientApp.name}")
@@ -44,8 +48,9 @@ public class StudentCourseGroupResource {
 
     private final StudentCourseGroupService studentCourseGroupService;
 
-    public StudentCourseGroupResource(StudentCourseGroupService studentCourseGroupService) {
+    public StudentCourseGroupResource(StudentCourseGroupService studentCourseGroupService,CourseInfoService courseInfoService) {
         this.studentCourseGroupService = studentCourseGroupService;
+        this.courseInfoService = courseInfoService;
     }
 
     /**
@@ -171,5 +176,14 @@ public class StudentCourseGroupResource {
             e.printStackTrace();
             throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "not found joining courses");
         }
+    }
+
+    @ApiOperation("根据当前登录的学生，获取学生已加入的课程")
+    @GetMapping("/student-course-infos/student")
+    public ResponseEntity getStudentCourses(Pageable pageable) {
+        log.debug("REST request to get a page of CourseInfos");
+        String loginName= SecurityUtils.getCurrentUserLogin().get();
+        Page<CourseInfo> page = courseInfoService.findByLogin(loginName, pageable);
+        return ResponseEntity.ok(page);
     }
 }
