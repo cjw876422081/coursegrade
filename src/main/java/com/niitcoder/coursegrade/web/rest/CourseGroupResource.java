@@ -179,4 +179,8 @@ public class CourseGroupResource {
         }
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
+
+    /**
+     *
+     */
 }

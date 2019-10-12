@@ -54,4 +54,5 @@ public interface StudentCourseGroupService {
 
     List<CourseInfo> getMyCourse(String student);
 
+    Page<CourseInfo> getStudentCourses(String student,Pageable pageable);
 }

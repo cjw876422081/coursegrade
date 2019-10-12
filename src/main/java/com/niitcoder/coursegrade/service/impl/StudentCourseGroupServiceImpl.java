@@ -29,7 +29,6 @@ import java.util.Optional;
 @Service
 @Transactional
 public class StudentCourseGroupServiceImpl implements StudentCourseGroupService {
-
     private final Logger log = LoggerFactory.getLogger(StudentCourseGroupServiceImpl.class);
 
     private final StudentCourseGroupRepository studentCourseGroupRepository;
@@ -136,4 +135,9 @@ public class StudentCourseGroupServiceImpl implements StudentCourseGroupService 
     public List<CourseInfo> getMyCourse(String student) {
         return courseInfoRepository.findByStudent(student);
     }
+
+    public Page<CourseInfo> getStudentCourses(String login, Pageable page){
+        return courseInfoRepository.findByCourseUser(login,page);
+    }
+
 }
