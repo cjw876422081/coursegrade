@@ -53,6 +53,9 @@ public class CourseInfo implements Serializable {
     @Column(name = "course_user")
     private String courseUser;
 
+    @Column(name = "course_cover")
+    private String courseCover;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
@@ -147,6 +150,14 @@ public class CourseInfo implements Serializable {
     public CourseInfo courseUser(String courseUser) {
         this.courseUser = courseUser;
         return this;
+    }
+
+    public String getCourseCover() {
+        return courseCover;
+    }
+
+    public void setCourseCover(String courseCover) {
+        this.courseCover = courseCover;
     }
 
     public void setCourseUser(String courseUser) {

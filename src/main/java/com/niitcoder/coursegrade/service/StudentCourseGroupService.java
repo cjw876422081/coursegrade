@@ -1,5 +1,6 @@
 package com.niitcoder.coursegrade.service;
 
+import com.niitcoder.coursegrade.domain.CourseGroup;
 import com.niitcoder.coursegrade.domain.CourseInfo;
 import com.niitcoder.coursegrade.domain.StudentCourseGroup;
 
@@ -48,11 +49,11 @@ public interface StudentCourseGroupService {
      *
      * @param id the id of the entity.
      */
-    void delete(Long id);
+    void delete( String student, Long id) throws Exception;
 
-    List<Map<String, Object>> getCourseGroup(String student , Long course_id ) ;
+    List<CourseGroup> getCourseGroup(String student , Long course_id ) throws Exception;
 
-    List<CourseInfo> getMyCourse(String student);
+    List<Map<String, Object>> getMyCourse(String student ) throws Exception;
 
     Page<CourseInfo> getStudentCourses(String student,Pageable pageable);
 }
