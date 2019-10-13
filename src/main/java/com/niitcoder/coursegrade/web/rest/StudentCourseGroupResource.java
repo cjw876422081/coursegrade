@@ -100,11 +100,10 @@ public class StudentCourseGroupResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of studentCourseGroups in body.
      */
     @GetMapping("/student-course-groups")
-    public ResponseEntity<List<StudentCourseGroup>> getAllStudentCourseGroups(Pageable pageable) {
+    public ResponseEntity getAllStudentCourseGroups(Pageable pageable) {
         log.debug("REST request to get a page of StudentCourseGroups");
         Page<StudentCourseGroup> page = studentCourseGroupService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        return ResponseEntity.ok(page);
     }
 
     /**

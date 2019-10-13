@@ -67,7 +67,6 @@ public class CourseGroupServiceImpl implements CourseGroupService {
             throw new Exception("无权限创建和更改此班级.");
         }
         courseGroup.setDataTime(ZonedDateTime.now());
-
         CourseInfo courseInfo=new CourseInfo();
         courseInfo.setId(courseInfoId);
         courseGroup.setCourse(courseInfo);
