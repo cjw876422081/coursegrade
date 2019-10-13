@@ -62,6 +62,7 @@ public class CoursePlanServiceImpl implements CoursePlanService {
     @Override
     public CoursePlan save(CoursePlan coursePlan) {
         log.debug("Request to save CoursePlan : {}", coursePlan);
+        coursePlan.setDataTime(ZonedDateTime.now());
         return coursePlanRepository.save(coursePlan);
     }
 
