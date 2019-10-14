@@ -180,7 +180,10 @@ public class CourseGroupResource {
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
 
-    /**
-     *
-     */
+    @ApiOperation("根据班级代码查询班级")
+    @GetMapping("/course-groups-groupCode/{groupCode}")
+    public ResponseEntity<CourseGroup> findGroupByGroupCode(@PathVariable String groupCode) {
+        CourseGroup courseGroup=courseGroupService.findByGroupcode(groupCode);
+        return ResponseEntity.ok(courseGroup);
+    }
 }

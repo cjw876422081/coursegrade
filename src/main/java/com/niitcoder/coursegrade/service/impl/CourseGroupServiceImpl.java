@@ -45,6 +45,7 @@ public class CourseGroupServiceImpl implements CourseGroupService {
      * @return
      * @throws Exception
      */
+    @Override
     public CourseGroup isExistCourseGroup(Long id) throws Exception {/*Info改为Group*/
         //检查班级是否存在
         Optional<CourseGroup> courseGroup=courseGroupRepository.findById(id);
@@ -106,7 +107,8 @@ public class CourseGroupServiceImpl implements CourseGroupService {
         return courseGroupRepository.findByCourseId(id);
     }
 
-    public boolean isCreateByLogin(CourseGroup courseGroup,String loginName){
+    @Override
+    public boolean isCreateByLogin(CourseGroup courseGroup, String loginName){
         if(courseGroup.getCourse()!=null
             && courseGroup.getCourse().getCourseUser()!=null
             &&!courseGroup.getCourse().getCourseUser().equals(loginName)){
@@ -158,5 +160,11 @@ public class CourseGroupServiceImpl implements CourseGroupService {
             throw new Exception("班级存在学生信息.");
         }
         courseGroupRepository.deleteById(id);
+    }
+
+    @Override
+    public CourseGroup findByGroupcode(String groupCode)  {
+        CourseGroup courseGroups=courseGroupRepository.findByGroupCode(groupCode);
+        return courseGroups ;
     }
 }

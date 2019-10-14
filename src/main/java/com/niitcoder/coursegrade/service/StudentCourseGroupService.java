@@ -53,7 +53,14 @@ public interface StudentCourseGroupService {
 
     List<CourseGroup> getCourseGroup(String student , Long course_id ) throws Exception;
 
-    List<Map<String, Object>> getMyCourse(String student ) throws Exception;
+    Page getMyCourse(String student,Pageable pageable) throws Exception;
 
     Page<CourseInfo> getStudentCourses(String student,Pageable pageable);
+
+    /**
+     * 根据班级id加入课程
+     * @param studentCourseGroup
+     * @return
+     */
+    boolean joinCourse(StudentCourseGroup studentCourseGroup);
 }

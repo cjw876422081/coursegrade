@@ -29,4 +29,5 @@ public interface StudentCourseGroupRepository extends JpaRepository<StudentCours
      * @return
      */
     Optional<StudentCourseGroup> findByGroupIdAndStudent(Long groupId,String studentName);
+
 }

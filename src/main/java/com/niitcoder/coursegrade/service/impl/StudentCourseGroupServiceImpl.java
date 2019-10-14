@@ -31,6 +31,7 @@ import java.util.Optional;
 public class StudentCourseGroupServiceImpl implements StudentCourseGroupService {
     private final Logger log = LoggerFactory.getLogger(StudentCourseGroupServiceImpl.class);
 
+
     private final StudentCourseGroupRepository studentCourseGroupRepository;
     private final CourseInfoRepository courseInfoRepository;
     private final CourseInfoService courseInfoService;
@@ -94,17 +95,10 @@ public class StudentCourseGroupServiceImpl implements StudentCourseGroupService 
         if(!courseGroup.isPresent()){
             throw new Exception("班级不存在.");
         }
-        //检查登陆用户是否创建过课程
-        if(!courseInfoService.checkLoginName()){
-            throw new Exception("无权限搜索班级学生.");
-        }
         //通过班级获得CourseInfo中的courseUser
         String courseUser=courseGroup.get().getCourse().getCourseUser();
         String loginName= SecurityUtils.getCurrentUserLogin().get();
         //判断courseUser与登陆名是否相同
-        if(!courseUser.equals(loginName)){
-            throw new Exception("无权限搜索该班级学生.");
-        }
         List<StudentCourseGroup> studentCourseGroups=studentCourseGroupRepository.findByGroupId(id);
         return studentHomeworkService.listConvertToPage(studentCourseGroups,pageable);
     }
@@ -143,20 +137,33 @@ public class StudentCourseGroupServiceImpl implements StudentCourseGroupService 
 
 
     @Override
-    public List<Map<String, Object>> getMyCourse(String student) throws Exception {
-        String sql = "SELECT * FROM course_info WHERE id=(" +
-            "SELECT course_id FROM course_group WHERE id =(" +
-            "SELECT group_id FROM student_course_group WHERE student = \""+ student+"\"))" ;
+    public Page getMyCourse(String student, Pageable pageable) throws Exception {
+        String sql = "SELECT course_info.* FROM course_info , course_group , student_course_group" +
+            " WHERE course_info.id  = course_group.course_id and course_group.id = student_course_group.group_id" +
+            " and student_course_group.student =\""+student+"\"";
         List<Map<String, Object>> result = jdbcTemplate.queryForList(sql) ;
+
         if( result.size() <= 0  ){
             throw new Exception("该用户没有加入任何课程");
         }
-        return result;
+        return studentHomeworkService.listConvertToPage(result,pageable);
 
     }
 
+    @Override
     public Page<CourseInfo> getStudentCourses(String login, Pageable page){
         return courseInfoRepository.findByCourseUser(login,page);
+    }
+
+    @Override
+    public boolean joinCourse(StudentCourseGroup studentCourseGroup) {
+        boolean flag=false;
+        studentCourseGroup.setStudent(SecurityUtils.getCurrentUserLogin().get());
+        studentCourseGroupRepository.save(studentCourseGroup);
+        if(studentCourseGroup!=null){
+            flag=true;
+        }
+        return flag;
     }
 
 }

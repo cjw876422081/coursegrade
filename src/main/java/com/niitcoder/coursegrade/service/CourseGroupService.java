@@ -45,4 +45,6 @@ public interface CourseGroupService {
      * @param id the id of the entity.
      */
     void delete(Long id) throws Exception;
+
+    CourseGroup findByGroupcode(String groupCode) ;
 }

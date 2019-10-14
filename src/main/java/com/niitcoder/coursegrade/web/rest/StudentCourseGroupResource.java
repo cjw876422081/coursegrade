@@ -1,5 +1,6 @@
 package com.niitcoder.coursegrade.web.rest;
 
+import com.niitcoder.coursegrade.service.CourseGroupService;
 import com.niitcoder.coursegrade.service.CourseInfoService;
 import com.niitcoder.coursegrade.domain.CourseGroup;
 import com.niitcoder.coursegrade.domain.CourseInfo;
@@ -26,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +44,8 @@ public class StudentCourseGroupResource {
 
     private final CourseInfoService courseInfoService;
 
+    private final CourseGroupService courseGroupService;
+
     private static final String ENTITY_NAME = "studentCourseGroup";
 
     @Value("${jhipster.clientApp.name}")
@@ -48,9 +53,10 @@ public class StudentCourseGroupResource {
 
     private final StudentCourseGroupService studentCourseGroupService;
 
-    public StudentCourseGroupResource(StudentCourseGroupService studentCourseGroupService,CourseInfoService courseInfoService) {
+    public StudentCourseGroupResource(StudentCourseGroupService studentCourseGroupService,CourseInfoService courseInfoService,CourseGroupService courseGroupService) {
         this.studentCourseGroupService = studentCourseGroupService;
         this.courseInfoService = courseInfoService;
+        this.courseGroupService=courseGroupService;
     }
 
     /**
@@ -119,7 +125,7 @@ public class StudentCourseGroupResource {
         return ResponseUtil.wrapOrNotFound(studentCourseGroup);
     }
 
-    @GetMapping("/student-course-groups/id")
+    @GetMapping("/student-course-groups/")
     @ApiOperation(value = "查询指定班级已加入的学生名单,2组")
     public ResponseEntity<Page<StudentCourseGroup>> getStudentByCourseGroup(@RequestParam Long id, Pageable pageable) {
         log.debug("REST request to get StudentCourseGroup : {}", id);
@@ -164,13 +170,13 @@ public class StudentCourseGroupResource {
 
     @ApiOperation("查看自己已经加入的课程")
     @GetMapping("/student-course-group/student")
-    public ResponseEntity<List<Map<String, Object>>> getMyCourse() {
+    public ResponseEntity getMyCourse(Pageable pageable) {
         String student = SecurityUtils.getCurrentUserLogin().get();
         log.debug("REST request to get getMyCourse : {}", student);
-        List<Map<String, Object>> result = null;
+        Page result = null;
         try {
-            result = studentCourseGroupService.getMyCourse(student);
-            return ResponseEntity.ok(result);
+            result = studentCourseGroupService.getMyCourse(student ,pageable);
+            return  ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
             throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "not found joining courses");
@@ -184,5 +190,17 @@ public class StudentCourseGroupResource {
         String loginName= SecurityUtils.getCurrentUserLogin().get();
         Page<CourseInfo> page = courseInfoService.findByLogin(loginName, pageable);
         return ResponseEntity.ok(page);
+    }
+
+    @ApiOperation("根据班级id加入课程")
+    @PostMapping("/student-course-group/groupId")
+    public ResponseEntity joinCourse(String groupCode){
+        log.debug("REST request to join a group");
+        StudentCourseGroup studentCourseGroup=new StudentCourseGroup();
+        CourseGroup courseGroup= courseGroupService.findByGroupcode(groupCode);
+        studentCourseGroup.setGroup(courseGroup);
+        studentCourseGroup.setJoinTime(ZonedDateTime.now());
+        boolean flag=studentCourseGroupService.joinCourse(studentCourseGroup);
+        return ResponseEntity.ok(flag);
     }
 }

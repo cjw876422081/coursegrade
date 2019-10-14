@@ -19,6 +19,7 @@ import java.util.Optional;
 public interface CourseGroupRepository extends JpaRepository<CourseGroup, Long> {
     List<CourseGroup> findByCourseId(Long id);
     List<CourseGroup> findByCourseCourseUser(String courseUser);
+    CourseGroup findByGroupCode(String groupCode);
 
     @Override
     Optional<CourseGroup> findById(Long id);
